@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>French Language Coach</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app">
+        <header>
+            <h1>French Language Coach</h1>
+        </header>
+
+        <main>
+            <div id="scenario-select" class="view active">
+                <h2>Select a Conversation Scenario</h2>
+                <div class="scenarios-grid" id="scenarios-list"></div>
+            </div>
+
+            <div id="chat" class="view hidden">
+                <div class="chat-header">
+                    <button id="back-to-scenarios" class="btn-secondary">Back</button>
+                    <h2 id="chat-scenario-name">Scenario</h2>
+                    <button id="end-session" class="btn-danger">End Session</button>
+                </div>
+                <div class="chat-messages" id="chat-messages"></div>
+                <form id="message-form" class="message-form">
+                    <input type="text" id="message-input" placeholder="Type your message in French..." required>
+                    <button type="submit" class="btn-primary">Send</button>
+                </form>
+            </div>
+
+            <div id="feedback" class="view hidden">
+                <div class="feedback-header">
+                    <h2>Session Feedback</h2>
+                    <button id="back-to-chat" class="btn-secondary">Back to Chat</button>
+                    <button id="new-session" class="btn-primary">New Session</button>
+                </div>
+                <div class="feedback-content" id="feedback-content"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
