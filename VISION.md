@@ -193,8 +193,6 @@ Future endpoints:
 - [x] The French feels natural enough to be genuinely useful for practice
 - [x] The feedback report identifies real errors with accurate corrections
 - [ ] README tells the complete story in under 90 seconds of reading
-- [ ] A Mistral engineer reviewing the GitHub profile would find it credible and interesting
-- [ ] The author uses it regularly after building it
 
 ### Full Vision
 - [ ] Users can seamlessly transition from conversation practice to grammar study to vocabulary review
