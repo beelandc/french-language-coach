@@ -260,6 +260,14 @@ The REASONS canvas (from the SPDD methodology) guides our AI-assisted developmen
 
 > **Note**: We are currently using Mistral Vibe directly without the open-spdd utility. If we adopt open-spdd in the future, this workflow will be updated accordingly.
 
+### Git Workflow
+
+This project uses **GitHub Flow with Issue-Based Branching**: one dedicated branch per GitHub issue, created from `main`, merged back via Pull Request. All development follows this pattern for traceability and isolation.
+
+- **Branch naming**: `{type}/issue-{number}-{description}` (e.g., `feature/issue-42-grammar-lessons`)
+- **Workflow**: Branch from `main` → Develop → PR to `main` → Review → Merge → Cleanup
+- **Full documentation**: See [GIT-WORKFLOW.md](./GIT-WORKFLOW.md) for complete details including examples, worktree usage, and troubleshooting
+
 ## Limitations
 
 - No user authentication
