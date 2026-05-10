@@ -266,5 +266,5 @@ Before merging any PR:
 
 ---
 
-*Last updated: May 2025*
+*Last updated: May 2026*
 *Project: French Language Coach*
