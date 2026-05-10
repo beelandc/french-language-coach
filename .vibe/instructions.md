@@ -75,11 +75,45 @@ For every development request:
 - Issues are organized by milestone (Phase 1.5, Phase 2, etc.)
 - Phase 1.5 (Current Features) is the highest priority
 
+## Git Workflow
+
+**This project uses GitHub Flow with Issue-Based Branching.**
+
+### ✅ DO:
+- **Always create a dedicated branch** from `main` for each GitHub issue
+- **Follow the naming convention**: `{type}/issue-{number}-{description}`
+  - Examples: `feature/issue-42-grammar`, `fix/issue-21-filtering`, `refactor/issue-12-module`
+- **Push your branch** to remote and create a PR to `main`
+- **Reference the issue** in branch name, commit messages, and PR description
+- **Use gh CLI** for GitHub operations when possible
+- **Clean up** merged branches (local and remote)
+
+### ❌ DON'T:
+- Work directly on `main` branch
+- Combine multiple issues in one branch
+- Create branches without a corresponding GitHub issue
+- Merge your own PR without review
+- Forget to update from `main` regularly
+
+### Workflow Quick Reference:
+1. Identify the GitHub issue
+2. `git checkout main && git pull origin main`
+3. `git checkout -b {type}/issue-{number}-{desc}`
+4. Implement changes (following SPDD)
+5. `git push -u origin {branch}`
+6. Create PR to `main` via GitHub UI or `gh pr create`
+7. Get review and approval
+8. Merge (squash and merge preferred)
+9. Delete branch locally and remotely
+
+**See `GIT-WORKFLOW.md` for complete details.**
+
 ## Resources
 
 - **Primary**: `SPDD.md` - Complete methodology documentation
 - **Vision**: `VISION.md` - Project vision and roadmap
 - **Architecture**: `README.md` - Tech stack and architecture
+- **Git Workflow**: `GIT-WORKFLOW.md` - Branch and PR strategy
 - **Issues**: GitHub issues with acceptance criteria
 
 ## Remember
