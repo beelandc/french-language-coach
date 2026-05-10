@@ -224,19 +224,52 @@ This project was developed using **Mistral Vibe**, an AI coding agent that provi
 
 ### AI-Assisted Development Workflow
 
-> **TODO**: Document the specific workflow, Vibe CLI commands, and agent interactions used during development.
->
-> This section will describe:
-> - How Vibe was configured and invoked
-> - The iterative development process with the agent
-> - Prompting strategies for different tasks
-> - Lessons learned and best practices
+This project follows **Structured Prompt Driven Development (SPDD)** methodology as described by Wei Zhang and Jessie Jie Xia (hosted on Martin Fowler's website). SPDD provides a systematic approach to integrating AI coding assistants into the software development lifecycle while maintaining human oversight and quality standards.
+
+#### Intent
+SPDD aims to harness the productivity gains of AI coding assistance while mitigating risks through structured prompts, clear context boundaries, and human-in-the-loop validation. It ensures that AI-generated code aligns with project architecture, quality standards, and business requirements.
+
+#### Vision
+By adopting SPDD, we achieve:
+- **Consistency**: AI assistance follows predictable patterns
+- **Quality**: Structured prompts yield higher-quality outputs
+- **Maintainability**: Clear documentation of AI interactions for future reference
+- **Traceability**: Every AI-generated artifact has a clear lineage
+
+#### REASONS Canvas Components
+The REASONS canvas (from the SPDD methodology) guides our AI-assisted development:
+
+- **Requirements**: Clear acceptance criteria defined in each GitHub issue
+- **Examples**: Concrete test cases and expected behaviors
+- **Architecture**: Existing codebase structure and design patterns
+- **Standards**: Coding conventions, testing requirements (80% coverage)
+- **Omissions**: Explicitly out-of-scope items documented
+- **Notes**: Implementation hints and context
+- **Solutions**: Reference implementations and patterns
+
+#### Workflow
+1. **Issue Definition**: Each feature starts with a well-structured GitHub issue containing acceptance criteria
+2. **Context Gathering**: Agent reviews relevant code, documentation, and existing patterns
+3. **Prompt Engineering**: Structured prompts include: goal, constraints, examples, and validation criteria
+4. **Iterative Development**: Agent generates code, human reviews, refine, repeat
+5. **Validation**: All acceptance criteria verified, tests pass at 80%+ coverage
+6. **Documentation**: Code changes documented, reasoning captured
+
+#### Reference
+- [Structured Prompt Driven Development (Wei Zhang & Jessie Jie Xia)](https://martinfowler.com/articles/structured-prompt-driven.html)
+
+> **Note**: We are currently using Mistral Vibe directly without the open-spdd utility. If we adopt open-spdd in the future, this workflow will be updated accordingly.
 
 ## Limitations
 
 - No user authentication
 - Single-user only (all sessions stored in one database)
 - Requires Mistral API key (paid service)
+
+## License
+
+MIT License
+aid service)
 
 ## License
 
