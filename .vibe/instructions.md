@@ -124,5 +124,5 @@ Your AI capabilities can generate code quickly, but **quality and correctness ar
 
 ---
 
-*Last updated: May 2025*
+*Last updated: May 2026*
 *Project: French Language Coach*

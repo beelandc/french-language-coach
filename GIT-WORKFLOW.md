@@ -1,7 +1,7 @@
 # Git Workflow Strategy
 
 *Strategy: GitHub Flow with Issue-Based Branching*  
-*Last updated: May 2025*
+*Last updated: May 2026*
 
 ## 🎯 Overview
 
