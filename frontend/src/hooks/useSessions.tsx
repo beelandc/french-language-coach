@@ -1,8 +1,8 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, createContext, useContext } from 'react'
 import { sessionApi } from '../utils/api'
 import type { Session, Message, Feedback } from '../types'
 
-interface UseSessionsReturn {
+interface SessionsContextType {
   sessions: Session[]
   currentSessionId: string | null
   currentScenarioId: string | null
@@ -14,9 +14,16 @@ interface UseSessionsReturn {
   getFeedback: (sessionId: string) => Promise<Feedback>
   endSession: () => void
   setCurrentSessionId: (id: string | null) => void
+  clearError: () => void
 }
 
-export function useSessions(): UseSessionsReturn {
+const SessionsContext = createContext<SessionsContextType | undefined>(undefined)
+
+interface SessionsProviderProps {
+  children: React.ReactNode
+}
+
+export function SessionsProvider({ children }: SessionsProviderProps) {
   const [sessions, setSessions] = useState<Session[]>([])
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null)
   const [currentScenarioId, setCurrentScenarioId] = useState<string | null>(null)
@@ -24,18 +31,19 @@ export function useSessions(): UseSessionsReturn {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
 
+  const clearError = useCallback(() => setError(null), [])
+
   const createSession = useCallback(async (scenarioId: string): Promise<string> => {
     setIsLoading(true)
     setError(null)
-    
+
     try {
       const response = await sessionApi.create(scenarioId)
       const newSessionId = response.id
       setCurrentSessionId(newSessionId)
       setCurrentScenarioId(scenarioId)
       setSessionEnded(false)
-      
-      // Add to sessions list
+
       setSessions(prev => [
         ...prev,
         {
@@ -47,7 +55,7 @@ export function useSessions(): UseSessionsReturn {
           feedback: null,
         },
       ])
-      
+
       setIsLoading(false)
       return newSessionId
     } catch (err) {
@@ -59,18 +67,15 @@ export function useSessions(): UseSessionsReturn {
   }, [])
 
   const sendMessage = useCallback(async (sessionId: string, content: string): Promise<Message> => {
-    if (sessionEnded) {
-      throw new Error('This session has ended. Please start a new session.')
-    }
-    
+    if (sessionEnded) throw new Error('This session has ended. Please start a new session.')
+
     setIsLoading(true)
     setError(null)
-    
+
     try {
       const response = await sessionApi.sendMessage(sessionId, content)
-      
-      // Update the session with the new message
-      setSessions(prev => 
+
+      setSessions(prev =>
         prev.map(session => {
           if (session.id === sessionId) {
             return {
@@ -80,7 +85,7 @@ export function useSessions(): UseSessionsReturn {
                 {
                   id: Date.now().toString(),
                   session_id: sessionId,
-                  role: 'user',
+                  role: 'user' as const,
                   content,
                   created_at: new Date().toISOString(),
                 },
@@ -97,7 +102,7 @@ export function useSessions(): UseSessionsReturn {
           return session
         })
       )
-      
+
       const message: Message = {
         id: (Date.now() + 1).toString(),
         session_id: sessionId,
@@ -105,7 +110,7 @@ export function useSessions(): UseSessionsReturn {
         content: response.content,
         created_at: new Date().toISOString(),
       }
-      
+
       setIsLoading(false)
       return message
     } catch (err) {
@@ -119,11 +124,10 @@ export function useSessions(): UseSessionsReturn {
   const getFeedback = useCallback(async (sessionId: string): Promise<Feedback> => {
     setIsLoading(true)
     setError(null)
-    
+
     try {
       const feedback = await sessionApi.getFeedback(sessionId)
-      
-      // Update the session with feedback
+
       setSessions(prev =>
         prev.map(session => {
           if (session.id === sessionId) {
@@ -136,7 +140,7 @@ export function useSessions(): UseSessionsReturn {
           return session
         })
       )
-      
+
       setSessionEnded(true)
       setIsLoading(false)
       return feedback
@@ -148,11 +152,9 @@ export function useSessions(): UseSessionsReturn {
     }
   }, [])
 
-  const endSession = useCallback(() => {
-    setSessionEnded(true)
-  }, [])
+  const endSession = useCallback(() => setSessionEnded(true), [])
 
-  return {
+  const value: SessionsContextType = {
     sessions,
     currentSessionId,
     currentScenarioId,
@@ -164,5 +166,18 @@ export function useSessions(): UseSessionsReturn {
     getFeedback,
     endSession,
     setCurrentSessionId,
+    clearError,
   }
+
+  return (
+    <SessionsContext.Provider value={value}>
+      {children}
+    </SessionsContext.Provider>
+  )
+}
+
+export function useSessions(): SessionsContextType {
+  const context = useContext(SessionsContext)
+  if (context === undefined) throw new Error('useSessions must be used within a SessionsProvider')
+  return context
 }

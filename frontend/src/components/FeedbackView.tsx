@@ -32,23 +32,30 @@ function CorrectionItem({ correction }: CorrectionItemProps) {
 }
 
 export default function FeedbackView({ sessionId }: FeedbackViewProps) {
-  const { getFeedback } = useSessions()
+  const { getFeedback, isLoading: isSessionsLoading } = useSessions()
   const [feedback, setFeedback] = useState<Feedback | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate()
 
+  // Load feedback when component mounts
   useEffect(() => {
     const loadFeedback = async () => {
-      try {
-        if (sessionId) {
-          const fb = await getFeedback(sessionId)
-          setFeedback(fb)
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load feedback')
-      } finally {
+      if (!sessionId) {
+        setError('No session ID provided')
         setIsLoading(false)
+        return
+      }
+      
+      try {
+        const fb = await getFeedback(sessionId)
+        setFeedback(fb)
+        setIsLoading(false)
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to load feedback'
+        setError(errorMessage)
+        setIsLoading(false)
+        console.error('Error loading feedback:', err)
       }
     }
     
@@ -63,16 +70,30 @@ export default function FeedbackView({ sessionId }: FeedbackViewProps) {
     navigate('/')
   }
 
-  if (isLoading) {
-    return <div>Loading feedback...</div>
+  if (isLoading || isSessionsLoading) {
+    return <div className="page-container">Loading feedback...</div>
   }
 
   if (error) {
-    return <div className="error-message">{error}</div>
+    return (
+      <div className="page-container">
+        <div className="error-message">{error}</div>
+        <button className="btn-primary" onClick={handleNewSession}>
+          Back to Home
+        </button>
+      </div>
+    )
   }
 
   if (!feedback) {
-    return <div>No feedback available for this session.</div>
+    return (
+      <div className="page-container">
+        <div>No feedback available for this session.</div>
+        <button className="btn-primary" onClick={handleNewSession}>
+          Back to Home
+        </button>
+      </div>
+    )
   }
 
   return (
@@ -102,11 +123,15 @@ export default function FeedbackView({ sessionId }: FeedbackViewProps) {
         {/* Strengths Section */}
         <div className="feedback-section">
           <h3>Strengths</h3>
-          <ul className="strengths-list">
-            {feedback.strengths.map((strength, index) => (
-              <li key={index}>{strength}</li>
-            ))}
-          </ul>
+          {feedback.strengths.length > 0 ? (
+            <ul className="strengths-list">
+              {feedback.strengths.map((strength, index) => (
+                <li key={index}>{strength}</li>
+              ))}
+            </ul>
+          ) : (
+            <p>No specific strengths identified.</p>
+          )}
         </div>
 
         {/* Focus Area Section */}

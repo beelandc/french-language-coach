@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useSessions } from '../hooks/useSessions'
 import type { Scenario } from '../types'
 
 // Hardcoded scenarios matching backend - will fetch from API in future
@@ -31,6 +33,9 @@ function ScenarioCard({ scenario, onClick }: ScenarioCardProps) {
 
 export default function ScenarioSelector() {
   const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const { createSession, isLoading: isCreating } = useSessions()
+  const navigate = useNavigate()
 
   useEffect(() => {
     // Simulate loading - in future, fetch from API
@@ -40,10 +45,20 @@ export default function ScenarioSelector() {
     return () => clearTimeout(timer)
   }, [])
 
-  const handleScenarioClick = (scenarioId: string) => {
-    // In future: call createSession and navigate to chat
-    // For now, just log
-    console.log('Selected scenario:', scenarioId)
+  const handleScenarioClick = async (scenarioId: string) => {
+    if (isCreating) return
+    
+    setError(null)
+    
+    try {
+      const sessionId = await createSession(scenarioId)
+      // Navigate to chat page with the new session ID
+      navigate(`/chat/${sessionId}`)
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to start session'
+      setError(errorMessage)
+      console.error('Error creating session:', err)
+    }
   }
 
   if (isLoading) {
@@ -51,14 +66,17 @@ export default function ScenarioSelector() {
   }
 
   return (
-    <div className="scenarios-grid">
-      {SCENARIOS.map(scenario => (
-        <ScenarioCard
-          key={scenario.id}
-          scenario={scenario}
-          onClick={() => handleScenarioClick(scenario.id)}
-        />
-      ))}
-    </div>
+    <>
+      {error && <div className="error-message">{error}</div>}
+      <div className="scenarios-grid">
+        {SCENARIOS.map(scenario => (
+          <ScenarioCard
+            key={scenario.id}
+            scenario={scenario}
+            onClick={() => handleScenarioClick(scenario.id)}
+          />
+        ))}
+      </div>
+    </>
   )
 }

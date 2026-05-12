@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSessions } from '../hooks/useSessions'
 import type { ChatInterfaceProps, Message } from '../types'
@@ -16,28 +16,91 @@ function MessageBubble({ message }: MessageBubbleProps) {
   )
 }
 
+interface ChatHeaderProps {
+  scenarioName: string
+  onBack: () => void
+  onEndSession: () => void
+  disabled: boolean
+}
+
+function ChatHeader({ scenarioName, onBack, onEndSession, disabled }: ChatHeaderProps) {
+  return (
+    <div className="chat-header">
+      <button className="btn-secondary" onClick={onBack}>
+        Back
+      </button>
+      <h2>{scenarioName}</h2>
+      <button 
+        className="btn-danger" 
+        onClick={onEndSession}
+        disabled={disabled}
+      >
+        End Session
+      </button>
+    </div>
+  )
+}
+
 export default function ChatInterface({ sessionId }: ChatInterfaceProps) {
   const {
+    currentScenarioId,
     sessionEnded,
-    isLoading,
-    error,
+    isLoading: isSessionsLoading,
+    error: sessionsError,
     sendMessage,
     getFeedback,
     endSession,
+    sessions,
   } = useSessions()
   
   const [messages, setMessages] = useState<Message[]>([])
   const [inputValue, setInputValue] = useState('')
+  const [isSending, setIsSending] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const navigate = useNavigate()
 
+  // Get scenario name from session ID
+  const getScenarioName = useCallback((): string => {
+    if (!sessionId) return 'Chat Session'
+    
+    // Map scenario IDs to names
+    const scenarioNames: Record<string, string> = {
+      'cafe_order': 'Ordering at a Café',
+      'ask_directions': 'Asking for Directions',
+      'job_interview': 'Job Interview',
+      'hotel_checkin': 'Hotel Check-in',
+      'shopping': 'Shopping for Clothes',
+      'doctor_visit': 'Doctor\'s Visit',
+      'train_travel': 'Train Travel',
+      'restaurant_dining': 'Dining at a Restaurant',
+      'apartment_rental': 'Apartment Rental',
+      'museum_visit': 'Museum Visit',
+    }
+    
+    // Find the session and get its scenario ID
+    const session = sessions.find(s => s.id === sessionId)
+    if (session && session.scenario_id) {
+      return scenarioNames[session.scenario_id] || session.scenario_id
+    }
+    
+    // Fallback to currentScenarioId from hook
+    if (currentScenarioId && scenarioNames[currentScenarioId]) {
+      return scenarioNames[currentScenarioId]
+    }
+    
+    return 'Chat Session'
+  }, [sessionId, sessions, currentScenarioId])
+
   // Load existing messages for this session
   useEffect(() => {
-    // In future: fetch session details from API
-    // For now, just set the session ID
-    // This would be replaced with actual API call
-    console.log('Loading session:', sessionId)
-  }, [sessionId])
+    if (!sessionId) return
+    
+    const session = sessions.find(s => s.id === sessionId)
+    if (session && session.messages) {
+      setMessages(session.messages)
+    }
+  }, [sessionId, sessions])
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -49,15 +112,36 @@ export default function ChatInterface({ sessionId }: ChatInterfaceProps) {
     
     if (!inputValue.trim() || !sessionId) return
     
+    setIsSending(true)
+    setError(null)
+    
     try {
-      const message = await sendMessage(sessionId, inputValue)
-      setMessages(prev => [...prev, 
-        { id: Date.now().toString(), session_id: sessionId, role: 'user', content: inputValue, created_at: new Date().toISOString() },
-        message
-      ])
+      // Add user message immediately for better UX
+      const userMessage: Message = {
+        id: Date.now().toString(),
+        session_id: sessionId,
+        role: 'user',
+        content: inputValue,
+        created_at: new Date().toISOString(),
+      }
+      
+      setMessages(prev => [...prev, userMessage])
       setInputValue('')
+      
+      // Send message to API
+      await sendMessage(sessionId, inputValue)
+      
+      // The hook updates the session, so we need to re-sync
+      const session = sessions.find(s => s.id === sessionId)
+      if (session && session.messages) {
+        setMessages(session.messages)
+      }
     } catch (err) {
-      console.error('Failed to send message:', err)
+      const errorMessage = err instanceof Error ? err.message : 'Failed to send message'
+      setError(errorMessage)
+      console.error('Error sending message:', err)
+    } finally {
+      setIsSending(false)
     }
   }
 
@@ -67,11 +151,12 @@ export default function ChatInterface({ sessionId }: ChatInterfaceProps) {
     try {
       endSession()
       const feedback = await getFeedback(sessionId)
-      console.log('Feedback:', feedback)
-      // In future: navigate to feedback page
+      console.log('Feedback received:', feedback)
       navigate(`/feedback/${sessionId}`)
     } catch (err) {
-      console.error('Failed to end session:', err)
+      const errorMessage = err instanceof Error ? err.message : 'Failed to end session'
+      setError(errorMessage)
+      console.error('Error ending session:', err)
     }
   }
 
@@ -79,21 +164,17 @@ export default function ChatInterface({ sessionId }: ChatInterfaceProps) {
     navigate('/')
   }
 
+  const scenarioName = getScenarioName()
+  const isLoading = isSessionsLoading || isSending
+
   return (
     <div className="chat-container">
-      <div className="chat-header">
-        <button className="btn-secondary" onClick={handleBack}>
-          Back
-        </button>
-        <h2>Chat Session</h2>
-        <button 
-          className="btn-danger" 
-          onClick={handleEndSession}
-          disabled={!sessionId}
-        >
-          End Session
-        </button>
-      </div>
+      <ChatHeader
+        scenarioName={scenarioName}
+        onBack={handleBack}
+        onEndSession={handleEndSession}
+        disabled={!sessionId || sessionEnded}
+      />
 
       <div className="chat-messages">
         {messages.length === 0 ? (
@@ -122,6 +203,7 @@ export default function ChatInterface({ sessionId }: ChatInterfaceProps) {
       </form>
 
       {error && <div className="error-message">{error}</div>}
+      {sessionsError && <div className="error-message">{sessionsError}</div>}
     </div>
   )
 }
