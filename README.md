@@ -139,6 +139,11 @@ french-language-coach/
 ├── .env.example             # Template: MISTRAL_API_KEY=, DATABASE_URL=
 ├── .gitignore               # Python, .env, __pycache__, *.db
 ├── requirements.txt         # fastapi, uvicorn, sqlalchemy, aiosqlite, mistralai, python-dotenv, pydantic
+├── tests/                  # pytest tests for backend
+│   ├── __init__.py
+│   ├── conftest.py         # Pytest fixtures and configuration
+│   ├── test_scenarios.py   # Tests for difficulty levels in scenarios
+│   └── test_schemas.py     # Tests for Pydantic schemas
 └── README.md
 ```
 

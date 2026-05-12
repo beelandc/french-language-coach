@@ -35,6 +35,7 @@ When a user asks you to implement something:
 - Structure your prompts using the REASONS canvas
 - Generate tests alongside code (80% coverage required)
 - Document reasoning for significant decisions
+- **Update README.md** when making changes that affect the project structure, API, or setup
 
 ### ❌ DON'T:
 - Start coding without a GitHub issue
@@ -55,6 +56,7 @@ For every development request:
 - [ ] **Acceptance criteria clear**: Do I know exactly what "done" looks like?
 - [ ] **Tests planned**: Have I identified what tests are needed?
 - [ ] **Documentation considered**: Will I need to update README.md, VISION.md, or add docstrings?
+- [ ] **README.md updates**: If adding/change API endpoints, configuration, or project structure, update README.md accordingly
 
 ## Project Specifics
 
@@ -85,6 +87,7 @@ For every development request:
   - Examples: `feature/issue-42-grammar`, `fix/issue-21-filtering`, `refactor/issue-12-module`
 - **Push your branch** to remote and create a PR to `main`
 - **Reference the issue** in branch name, commit messages, and PR description
+- **Include README.md updates** in the same commit/PR as the feature changes
 - **Use gh CLI** for GitHub operations when possible
 - **Clean up** merged branches (local and remote)
 
