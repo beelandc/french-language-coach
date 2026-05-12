@@ -268,6 +268,22 @@ The REASONS canvas (from the SPDD methodology) guides our AI-assisted developmen
 5. **Validation**: All acceptance criteria verified, tests pass at 80%+ coverage
 6. **Documentation**: Code changes documented, reasoning captured
 
+#### SPDD Artifacts
+
+**All AI-assisted development artifacts are captured in the `spdd/` directory.** This includes:
+
+- **Analysis Documents** (`spdd/analysis/`): Structured REASONS canvas analysis for each task
+- **Prompt Documents** (`spdd/prompt/`): Exact prompts sent to AI assistants with context and constraints
+- **Templates** (`spdd/template/`): Reusable templates for creating artifacts
+
+This ensures:
+- **Traceability**: Every AI-generated change can be traced to its source prompt
+- **Reproducibility**: Prompts can be re-run to verify outputs
+- **Transparency**: The development process is visible and auditable
+- **Knowledge Preservation**: Design decisions and context are retained for future developers
+
+**See `spdd/README.md` for complete details on artifact structure and naming conventions.**
+
 #### Reference
 - [Structured Prompt Driven Development (Wei Zhang & Jessie Jie Xia)](https://martinfowler.com/articles/structured-prompt-driven.html)
 

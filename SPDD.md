@@ -82,6 +82,7 @@ The REASONS canvas is the foundation of our SPDD approach. Every development tas
    - Architecture patterns in README.md
 3. **Check VISION.md** - Verify alignment with project vision
 4. **Review tests** - Understand existing test patterns and coverage
+5. **Create Analysis Artifact** - Document your understanding in `spdd/analysis/` using the ANALYSIS-TEMPLATE.md. This captures the REASONS canvas and ensures clarity before prompting the AI.
 
 ### Phase 3: Prompt Engineering
 
@@ -112,6 +113,8 @@ DELIVERABLES:
 - Tests (unit, integration, E2E as applicable)
 - Documentation updates
 ```
+
+**IMPORTANT**: Before sending the prompt to the AI, create a prompt artifact in `spdd/prompt/` using the PROMPT-TEMPLATE.md. After receiving the AI response, update the artifact with the actual prompt used, the AI's response (optionally), and any human review notes. See the [Artifact Capture section](#artifact-capture-the-spdd-directory) for details.
 
 ### Phase 4: Iterative Development
 1. **AI generates initial solution** based on structured prompt
@@ -231,6 +234,83 @@ ACCEPTANCE CRITERIA:
 - Critical user flows per phase
 - Runs in CI on PR
 - One E2E test per major feature
+
+## Artifact Capture: The spdd/ Directory
+
+**CRITICAL**: As part of the SPDD process, all AI-assisted development MUST capture prompts and analysis in the `spdd/` directory.
+
+### Directory Structure
+
+```
+spdd/
+├── README.md                    # Overview of SPDD artifacts
+├── analysis/
+│   └── FLC-XXX-YYYYMMDDHHMM-[Analysis]-{description}.md
+├── prompt/
+│   └── FLC-XXX-YYYYMMDDHHMM-[Feat|Test|Fix|Refactor]-{description}.md
+└── template/
+    ├── ANALYSIS-TEMPLATE.md     # Template for analysis documents
+    ├── PROMPT-TEMPLATE.md       # Template for prompt documents
+    └── TEST-SCENARIOS-TEMPLATE.md
+```
+
+### When to Create Artifacts
+
+| Phase | Artifact Type | Location | Required |
+|-------|--------------|----------|----------|
+| Context Gathering | Analysis (REASONS canvas) | `spdd/analysis/` | **Yes** |
+| Prompt Engineering | Prompt | `spdd/prompt/` | **Yes** |
+| Testing | Test Scenarios | `spdd/prompt/` or `spdd/analysis/` | Recommended |
+
+### Artifact Naming Convention
+
+Files follow the pattern: `FLC-{SEQUENCE}-{TIMESTAMP}-[TYPE]-{description}.md`
+
+- **FLC**: Project code (French Language Coach)
+- **SEQUENCE**: Incremental number (001, 002, ...) per task/issue
+- **TIMESTAMP**: `YYYYMMDDHHMM` format (24-hour time)
+- **TYPE**: `[Analysis]`, `[Feat]`, `[Test]`, `[Fix]`, `[Refactor]`
+- **description**: Brief kebab-case description
+
+### Workflow for Each GitHub Issue
+
+1. **Before prompting the AI**: Create an analysis document in `spdd/analysis/`
+   - Use the REASONS canvas (from `SPDD.md`)
+   - Reference the GitHub issue number
+   - Document all acceptance criteria
+
+2. **When prompting the AI**: Create a prompt document in `spdd/prompt/`
+   - Capture the exact prompt text used
+   - Include context, constraints, examples
+   - Reference the related analysis document
+
+3. **After receiving AI output**: Update the prompt document
+   - Add human review notes
+   - Document any changes made
+   - Record verification status
+
+4. **When creating tests**: Optionally create test scenario documents
+   - Map tests to acceptance criteria
+   - Document edge cases covered
+
+### Example: Complete Issue Workflow
+
+```
+# Working on GitHub Issue #6: "Add session listing endpoint"
+
+1. Create analysis:
+   spdd/analysis/FLC-001-202605121430-[Analysis]-session-listing.md
+
+2. Create feature prompt:
+   spdd/prompt/FLC-001-202605121500-[Feat]-session-listing.md
+
+3. Create test prompt:
+   spdd/prompt/FLC-001-202605121530-[Test]-session-listing.md
+
+4. Commit all artifacts with code changes
+```
+
+**See `spdd/README.md` for complete details on artifact structure and templates.**
 
 ## Tools
 
