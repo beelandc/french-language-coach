@@ -11,7 +11,7 @@ interface SessionsContextType {
   error: string | null
   createSession: (scenarioId: string) => Promise<string>
   sendMessage: (sessionId: string, content: string) => Promise<Message>
-  getFeedback: (sessionId: string) => Promise<Feedback>
+  getFeedback: (sessionId: string, forceRefresh?: boolean) => Promise<Feedback | null>
   endSession: () => void
   setCurrentSessionId: (id: string | null) => void
   clearError: () => void
@@ -39,7 +39,7 @@ export function SessionsProvider({ children }: SessionsProviderProps) {
 
     try {
       const response = await sessionApi.create(scenarioId)
-      const newSessionId = response.id
+      const newSessionId = String(response.id) // Ensure string type
       setCurrentSessionId(newSessionId)
       setCurrentScenarioId(scenarioId)
       setSessionEnded(false)
@@ -74,6 +74,8 @@ export function SessionsProvider({ children }: SessionsProviderProps) {
 
     try {
       const response = await sessionApi.sendMessage(sessionId, content)
+      const now = new Date().toISOString()
+      const timestamp = Date.now()
 
       setSessions(prev =>
         prev.map(session => {
@@ -83,18 +85,18 @@ export function SessionsProvider({ children }: SessionsProviderProps) {
               messages: [
                 ...session.messages,
                 {
-                  id: Date.now().toString(),
+                  id: String(timestamp),
                   session_id: sessionId,
                   role: 'user' as const,
                   content,
-                  created_at: new Date().toISOString(),
+                  created_at: now,
                 },
                 {
-                  id: (Date.now() + 1).toString(),
+                  id: String(timestamp + 1),
                   session_id: sessionId,
                   role: response.role as 'user' | 'assistant',
                   content: response.content,
-                  created_at: new Date().toISOString(),
+                  created_at: now,
                 },
               ],
             }
@@ -104,11 +106,11 @@ export function SessionsProvider({ children }: SessionsProviderProps) {
       )
 
       const message: Message = {
-        id: (Date.now() + 1).toString(),
+        id: String(timestamp + 1),
         session_id: sessionId,
         role: response.role as 'user' | 'assistant',
         content: response.content,
-        created_at: new Date().toISOString(),
+        created_at: now,
       }
 
       setIsLoading(false)
@@ -121,11 +123,19 @@ export function SessionsProvider({ children }: SessionsProviderProps) {
     }
   }, [sessionEnded])
 
-  const getFeedback = useCallback(async (sessionId: string): Promise<Feedback> => {
+  const getFeedback = useCallback(async (sessionId: string, forceRefresh: boolean = false): Promise<Feedback | null> => {
     setIsLoading(true)
     setError(null)
 
     try {
+      // Check if we already have feedback for this session
+      const existingSession = sessions.find(s => s.id === sessionId)
+      if (existingSession?.feedback && !forceRefresh) {
+        // Return cached feedback without making API call
+        setIsLoading(false)
+        return existingSession.feedback
+      }
+
       const feedback = await sessionApi.getFeedback(sessionId)
 
       setSessions(prev =>
@@ -150,7 +160,7 @@ export function SessionsProvider({ children }: SessionsProviderProps) {
       setIsLoading(false)
       throw err
     }
-  }, [])
+  }, [sessions])
 
   const endSession = useCallback(() => setSessionEnded(true), [])
 

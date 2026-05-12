@@ -48,8 +48,11 @@ export default function FeedbackView({ sessionId }: FeedbackViewProps) {
       }
       
       try {
+        // Use cached feedback from hook if available (forceRefresh=false by default)
         const fb = await getFeedback(sessionId)
-        setFeedback(fb)
+        if (fb) {
+          setFeedback(fb)
+        }
         setIsLoading(false)
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to load feedback'

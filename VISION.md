@@ -72,11 +72,11 @@ The user engages in realistic French conversation scenarios with AI role-play. F
 
 ### 🔧 Technical Foundation (Complete)
 
-- **Frontend:** Vanilla HTML/CSS/JavaScript with multi-view navigation
+- **Frontend:** React 19 SPA with TypeScript, Vite, and React Router v6. Organized into reusable components, pages, custom hooks, and utilities. Production build outputs to `static/` directory.
 - **Backend:** FastAPI with async SQLAlchemy
 - **Storage:** SQLite database with session history
 - **AI:** Mistral-large-latest via Mistral API with structured JSON output
-- **Hosting:** Local development server
+- **Hosting:** Local development with Vite (port 5173) + FastAPI (port 8000), production via FastAPI serving static files
 
 ---
 
@@ -129,7 +129,7 @@ Comprehensive cultural context to deepen understanding and fluency.
 
 ## Technical Architecture
 
-**Frontend:** Clean, minimal HTML/CSS with vanilla JavaScript for conversation flow management. Future: Consider lightweight framework (Svelte, Alpine.js) for enhanced interactivity.
+**Frontend:** React 19 SPA with TypeScript, Vite, and React Router v6. The frontend is organized into reusable components (ScenarioSelector, ChatInterface, FeedbackView), pages (HomePage, ChatPage, FeedbackPage), custom hooks (useSessions, useApi), and utility functions. The React app is built with Vite and outputs to the `static/` directory for production serving by FastAPI.
 
 **Backend:** Python with FastAPI. Current endpoints:
 - `POST /sessions/` — creates a new session for a given scenario

@@ -7,7 +7,8 @@ export interface Scenario {
   description: string
 }
 
-// Message types
+// Message types - matches backend schemas
+// Backend Message only has role and content, but we add client-side metadata
 export type MessageRole = 'user' | 'assistant'
 
 export interface Message {
@@ -18,7 +19,13 @@ export interface Message {
   created_at: string
 }
 
-// Session types
+// Backend message format (what comes from API)
+export interface BackendMessage {
+  role: string
+  content: string
+}
+
+// Session types - id is integer from backend, but we treat as string for consistency
 export interface Session {
   id: string
   scenario_id: string

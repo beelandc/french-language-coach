@@ -44,15 +44,16 @@ export async function api<T>(endpoint: string, options: ApiOptions = {}): Promis
 }
 
 // Session API functions
+// Note: Backend returns session_id as integer, but we coerce to string for frontend consistency
 export const sessionApi = {
   create: (scenarioId: string) => 
-    api<{ id: string; scenario_id: string; created_at: string }>('/sessions/', {
+    api<{ id: number; scenario_id: string; created_at: string }>('/sessions/', {
       method: 'POST',
       data: { scenario_id: scenarioId },
     }),
 
   sendMessage: (sessionId: string, content: string) =>
-    api<{ role: string; content: string; session_id: string }>(
+    api<{ role: string; content: string; session_id: number }>(
       `/sessions/${sessionId}/messages/`,
       {
         method: 'POST',
