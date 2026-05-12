@@ -127,6 +127,17 @@ Example header:
 **Issue URL**: https://github.com/beelandc/french-language-coach/issues/6
 ```
 
+## Current SPDD Artifacts
+
+### Session Listing (Issue #6)
+- Analysis: `spdd/analysis/FLC-001-202605120000-[Analysis]-spdd-artifacts-capture.md`
+- Prompt: `spdd/prompt/FLC-001-202605120030-[Feat]-spdd-artifacts-capture.md`
+
+### React Migration (Issue #121)
+- Analysis: `spdd/analysis/FLC-002-202605121600-[Analysis]-issue-121-react-migration.md`
+- Prompt: `spdd/prompt/FLC-002-202605121630-[Feat]-issue-121-react-migration.md`
+- Issue Comment Template: `spdd/issue-121-comment.md` (copy to GitHub issue)
+
 ## Reference
 
 This structure is based on the SPDD practice demonstrated in:
