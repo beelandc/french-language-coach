@@ -127,7 +127,7 @@ DELIVERABLES:
 1. Run all tests - must pass at 80%+ coverage
 2. Verify each acceptance criterion from the issue
 3. Perform manual testing for user-facing features
-4. Update documentation
+4. **Update README.md** - Document any API changes, new endpoints, or configuration options
 5. Create pull request with:
    - Reference to GitHub issue
    - Summary of changes

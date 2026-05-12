@@ -139,6 +139,11 @@ french-language-coach/
 ├── .env.example             # Template: MISTRAL_API_KEY=, DATABASE_URL=
 ├── .gitignore               # Python, .env, __pycache__, *.db
 ├── requirements.txt         # fastapi, uvicorn, sqlalchemy, aiosqlite, mistralai, python-dotenv, pydantic
+├── tests/                  # pytest tests for backend
+│   ├── __init__.py
+│   ├── conftest.py         # Pytest fixtures and configuration
+│   ├── test_scenarios.py   # Tests for difficulty levels in scenarios
+│   └── test_schemas.py     # Tests for Pydantic schemas
 └── README.md
 ```
 
@@ -188,10 +193,17 @@ french-language-coach/
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/sessions/` | Create a new conversation session |
-| GET | `/sessions/{id}` | Get session details and messages |
-| POST | `/sessions/{id}/messages` | Send a message, get AI reply |
+| POST | `/sessions/` | Create a new conversation session. Optional `difficulty` parameter: beginner, intermediate (default), or advanced |
+| GET | `/sessions/{id}` | Get session details and messages. Returns `difficulty` field |
+| POST | `/sessions/{id}/messages` | Send a message, get AI reply. Uses session's difficulty level for system prompt |
 | POST | `/sessions/{id}/feedback` | Generate end-of-session feedback |
+
+### Difficulty Levels
+
+Each scenario supports three difficulty levels that affect the AI's system prompt:
+- **Beginner**: Simpler vocabulary, slower pace, more helpful hints
+- **Intermediate**: Standard prompts (default, backward compatible)
+- **Advanced**: More complex vocabulary, faster pace, native idioms and expressions
 
 ## Scenarios
 
