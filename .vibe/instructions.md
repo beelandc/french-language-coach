@@ -29,6 +29,7 @@ When a user asks you to implement something:
 - Ask for the GitHub issue number if not provided
 - Read the issue carefully, especially acceptance criteria
 - Review `SPDD.md` for the complete methodology
+- Review `spdd/README.md` for artifact capture requirements
 - Review `VISION.md` for project context
 - Review `README.md` for architecture and setup
 - Ask clarifying questions if requirements are unclear
@@ -36,6 +37,7 @@ When a user asks you to implement something:
 - Generate tests alongside code (80% coverage required)
 - Document reasoning for significant decisions
 - **Update README.md** when making changes that affect the project structure, API, or setup
+- **Create SPDD artifacts** in `spdd/` directory for every AI-assisted task
 
 ### ❌ DON'T:
 - Start coding without a GitHub issue
@@ -57,6 +59,7 @@ For every development request:
 - [ ] **Tests planned**: Have I identified what tests are needed?
 - [ ] **Documentation considered**: Will I need to update README.md, VISION.md, or add docstrings?
 - [ ] **README.md updates**: If adding/change API endpoints, configuration, or project structure, update README.md accordingly
+- [ ] **SPDD artifacts created**: Analysis in `spdd/analysis/`, prompt in `spdd/prompt/` (REQUIRED - See SPDD.md)
 
 ## Project Specifics
 
@@ -113,9 +116,49 @@ For every development request:
 
 **See `GIT-WORKFLOW.md` for complete details.**
 
+## SPDD Artifact Requirements
+
+**CRITICAL**: You MUST create SPDD artifacts in the `spdd/` directory for every AI-assisted development task.
+
+### What to Create
+
+1. **Before prompting**: Analysis document in `spdd/analysis/`
+   - Use `spdd/template/ANALYSIS-TEMPLATE.md`
+   - Apply the REASONS canvas
+   - Reference the GitHub issue
+
+2. **When prompting**: Prompt document in `spdd/prompt/`
+   - Use `spdd/template/PROMPT-TEMPLATE.md`
+   - Capture the exact prompt text
+   - Include context, constraints, examples
+
+3. **For testing**: Test scenarios document (recommended)
+   - Use `spdd/template/TEST-SCENARIOS-TEMPLATE.md`
+   - Map tests to acceptance criteria
+
+### Naming Convention
+
+Files must follow: `FLC-{SEQUENCE}-{TIMESTAMP}-[TYPE]-{description}.md`
+
+- **FLC**: Project code (French Language Coach)
+- **SEQUENCE**: Incremental number (001, 002, ...)
+- **TIMESTAMP**: `YYYYMMDDHHMM` format
+- **TYPE**: `[Analysis]`, `[Feat]`, `[Test]`, `[Fix]`, etc.
+- **description**: kebab-case description
+
+### Example
+
+For GitHub issue #6 "Add session listing endpoint":
+```
+spdd/analysis/FLC-001-202605121430-[Analysis]-session-listing.md
+spdd/prompt/FLC-001-202605121500-[Feat]-session-listing.md
+spdd/prompt/FLC-001-202605121530-[Test]-session-listing.md
+```
+
 ## Resources
 
 - **Primary**: `SPDD.md` - Complete methodology documentation
+- **SPDD Artifacts**: `spdd/README.md` - Artifact capture guide
 - **Vision**: `VISION.md` - Project vision and roadmap
 - **Architecture**: `README.md` - Tech stack and architecture
 - **Git Workflow**: `GIT-WORKFLOW.md` - Branch and PR strategy
