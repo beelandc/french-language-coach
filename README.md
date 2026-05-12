@@ -9,21 +9,31 @@ Users select a conversation scenario (e.g., ordering at a café, asking for dire
 ## Tech Stack
 
 - **Backend**: Python + FastAPI
-- **Frontend**: Single-page HTML/CSS/JS (no framework)
+- **Frontend**: React 19 + TypeScript + Vite, React Router v6
 - **Database**: SQLite via SQLAlchemy (async)
 - **AI**: Mistral API (model: `mistral-large-latest`)
-- **Package management**: pip + requirements.txt
+- **Package management**: pip + requirements.txt (backend), npm (frontend)
 
 ## Architecture
 
 The application follows a clean separation of concerns with the following layers:
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                      Frontend (Static)                      │
-│  index.html + app.js + style.css                            │
-│  - Scenario selection, chat UI, feedback display            │
-└─────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│                      Frontend (React SPA)                    │
+│  React 19 + TypeScript + Vite + React Router v6              │
+│  ┌───────────────┐  ┌────────────────┐  ┌──────────────┐     │
+│  │   pages/      │  │  components/   │  │   hooks/     │     │
+│  │  HomePage     │  │  Scenario      │  │  useSessions │     │
+│  │  ChatPage     │  │  Selector      │  │  useApi      │     │
+│  │  FeedbackPage │  │  ChatInterface │  │              │     │
+│  │               │  │  FeedbackView  │  │              │     │
+│  └───────────────┘  └────────────────┘  └──────────────┘     │
+│  ┌──────────────┐  ┌──────────────┐                          │
+│  │   utils/     │  │   types/     │                          │
+│  │   api.ts     │  │   index.ts   │                          │
+│  └──────────────┘  └──────────────┘                          │
+└──────────────────────────────────────────────────────────────┘
                             │
                             ▼
 ┌─────────────────────────────────────────────────────────────┐
@@ -36,14 +46,14 @@ The application follows a clean separation of concerns with the following layers
 │  └──────────────┘   └──────────────┘   └──────────────┘     │
 │  ┌──────────────┐  ┌──────────────┐                         │
 │  │   schemas/   │  │ scenarios.py │                         │
-│  │   session.py │  | (static data)│                         │
+│  │   session.py │  │ (static data)│                         │
 │  └──────────────┘  └──────────────┘                         │
 └─────────────────────────────────────────────────────────────┘
               │                             │
               ▼                             ▼
-┌────────────────────────-─┐    ┌─────────────────────────────┐
-│    SQLite Database       │    │    Mistral API (External)   | 
-│                          |    |                             |
+┌──────────────────────────┐    ┌─────────────────────────────┐
+│    SQLite Database       │    │    Mistral API (External)   │ 
+│                          │    │                             │
 │  sessions table: id,     │    │  - Chat completions for     │
 │  scenario_id, created_at,│    │    immersive French conv.   │
 │  ended_at, messages      │    │  - JSON-structured feedback │
@@ -132,10 +142,37 @@ french-language-coach/
 │   ├── messages.py          # POST /sessions/{id}/messages (send a message, get AI reply)
 │   └── feedback.py          # POST /sessions/{id}/feedback (generate end-of-session report)
 ├── scenarios.py             # Static list of 10 built-in conversation scenarios with system prompts
-├── static/
-│   ├── index.html           # Single-page app: scenario selector + chat interface + feedback view
-│   ├── style.css            # Clean, minimal styling
-│   └── app.js               # Frontend logic: API calls, chat rendering, feedback display
+├── frontend/                # React SPA frontend (Vite + TypeScript)
+│   ├── src/
+│   │   ├── components/      # Reusable UI components
+│   │   │   ├── ChatInterface.tsx
+│   │   │   ├── FeedbackView.tsx
+│   │   │   ├── ScenarioSelector.tsx
+│   │   │   └── index.ts
+│   │   ├── pages/           # Page-level components (React Router routes)
+│   │   │   ├── HomePage.tsx
+│   │   │   ├── ChatPage.tsx
+│   │   │   └── FeedbackPage.tsx
+│   │   ├── hooks/           # Custom React hooks
+│   │   │   ├── useSessions.tsx
+│   │   │   └── index.ts
+│   │   ├── utils/           # Utility functions
+│   │   │   └── api.ts
+│   │   ├── types/           # TypeScript type definitions
+│   │   │   └── index.ts
+│   │   ├── styles/          # CSS files
+│   │   │   └── global.css
+│   │   ├── App.tsx          # Main app with React Router
+│   │   └── main.tsx        # App entry point
+│   ├── public/             # Static assets
+│   ├── vite.config.ts      # Vite configuration
+│   ├── package.json       # Frontend dependencies
+│   ├── tsconfig.json       # TypeScript configuration
+│   └── README.md           # Frontend setup documentation
+├── static/                 # Static files for development (will be replaced by React build in production)
+│   ├── index.html          # Legacy single-page app (development fallback)
+│   ├── style.css           # Legacy styles
+│   └── app.js              # Legacy frontend logic
 ├── .env.example             # Template: MISTRAL_API_KEY=, DATABASE_URL=
 ├── .gitignore               # Python, .env, __pycache__, *.db
 ├── requirements.txt         # fastapi, uvicorn, sqlalchemy, aiosqlite, mistralai, python-dotenv, pydantic
@@ -160,12 +197,19 @@ french-language-coach/
    source .venv/bin/activate  # On Windows: .venv\Scripts\activate
    ```
 
-3. Install dependencies:
+3. Install backend dependencies:
    ```bash
    pip install -r requirements.txt
    ```
 
-4. Create a `.env` file from the template:
+4. Set up the frontend (React SPA):
+   ```bash
+   cd frontend
+   npm install
+   cd ..
+   ```
+
+5. Create a `.env` file from the template:
    ```bash
    cp .env.example .env
    ```
@@ -175,11 +219,31 @@ french-language-coach/
    MISTRAL_API_KEY=your_api_key_here
    ```
 
-6. Run the application:
-   ```bash uvicorn main:app --reload
+6. Run the backend server:
+   ```bash
+   uvicorn main:app --reload
    ```
 
-7. Open your browser to [http://localhost:8000/](http://localhost:8000/) (redirects to /static/index.html)
+7. In a separate terminal, start the frontend development server:
+   ```bash
+   cd frontend
+   npm run dev
+   ```
+
+8. Open your browser to [http://localhost:5173](http://localhost:5173) (Vite dev server with HMR)
+
+**Alternative (Production Mode):**
+
+1. Build the frontend:
+   ```bash
+   cd frontend
+   npm run build
+   ```
+2. Run the backend server (serves the built React app from /static):
+   ```bash
+   uvicorn main:app
+   ```
+3. Open your browser to [http://localhost:8000](http://localhost:8000)
 
 ## Usage
 
@@ -187,6 +251,7 @@ french-language-coach/
 2. **Start Chatting**: Type messages in French and get responses from the AI tutor
 3. **End Session**: Click "End Session" to receive detailed feedback
 4. **Review Feedback**: See scores for grammar, vocabulary, fluency, and overall performance with specific corrections
+5. **Navigate**: Use the Back button to return to scenario selection or start a new session
 5. **Start Again**: Begin a new session with any scenario
 
 ## API Endpoints
