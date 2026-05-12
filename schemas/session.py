@@ -27,8 +27,29 @@ class SessionResponse(BaseModel):
     feedback: Optional[dict[str, Any]] = None
 
 
+class SessionSummary(BaseModel):
+    """Summary of a session for listing purposes (excludes full messages and feedback)."""
+    id: int
+    scenario_id: str
+    scenario_name: str
+    difficulty: str
+    created_at: datetime
+    ended_at: Optional[datetime] = None
+    overall_score: Optional[int] = None
+
+
+class PaginationInfo(BaseModel):
+    """Pagination metadata for list endpoints."""
+    total: int
+    page: int
+    per_page: int
+    total_pages: int
+
+
 class SessionListResponse(BaseModel):
-    sessions: list[SessionResponse]
+    """Response for GET /sessions/ endpoint with pagination."""
+    sessions: list[SessionSummary]
+    pagination: PaginationInfo
 
 
 class MessageRequest(BaseModel):
