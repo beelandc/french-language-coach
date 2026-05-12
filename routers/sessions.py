@@ -1,11 +1,15 @@
 from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException
+from math import ceil
+from typing import Optional
+
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
 from models.session import Session as SessionModel
-from schemas.session import SessionCreate, SessionResponse
-from scenarios import get_scenario, VALID_DIFFICULTIES
+from schemas.session import SessionCreate, SessionResponse, SessionListResponse, SessionSummary, PaginationInfo
+from scenarios import get_scenario, VALID_DIFFICULTIES, SCENARIOS
 
 router = APIRouter(prefix="/sessions", tags=["sessions"])
 
@@ -46,6 +50,83 @@ async def create_session(
         ended_at=new_session.ended_at,
         messages=[],
         feedback=None,
+    )
+
+
+@router.get("/", response_model=SessionListResponse)
+async def list_sessions(
+    page: int = Query(1, ge=1, description="Page number, starting at 1"),
+    per_page: int = Query(10, ge=1, le=100, description="Items per page, maximum 100"),
+    db: AsyncSession = Depends(get_db)
+) -> SessionListResponse:
+    """
+    List all sessions with pagination.
+    
+    Returns a paginated list of session summaries (without full message content).
+    Use GET /sessions/{id} to retrieve full session details including messages.
+    """
+    # Count total sessions
+    total_result = await db.execute(select(func.count()).select_from(SessionModel))
+    total: int = total_result.scalar()
+    
+    # Calculate total pages
+    total_pages = max(1, ceil(total / per_page)) if total > 0 else 0
+    
+    # Ensure page is within valid range
+    if page > total_pages and total_pages > 0:
+        raise HTTPException(status_code=404, detail=f"Page {page} does not exist. Maximum page is {total_pages}.")
+    
+    # Calculate offset
+    offset = (page - 1) * per_page
+    
+    # Query sessions with pagination
+    result = await db.execute(
+        select(SessionModel)
+        .order_by(SessionModel.created_at.desc())
+        .offset(offset)
+        .limit(per_page)
+    )
+    sessions = result.scalars().all()
+    
+    # Build scenario lookup for efficiency
+    scenario_lookup = {s["id"]: s["name"] for s in SCENARIOS}
+    
+    # Build session summaries
+    session_summaries = []
+    for session in sessions:
+        # Get scenario name
+        scenario_name = scenario_lookup.get(session.scenario_id, session.scenario_id)
+        
+        # Extract overall_score from feedback if available
+        overall_score = None
+        if session.feedback:
+            try:
+                feedback_dict = session.feedback_dict
+                if feedback_dict and isinstance(feedback_dict, dict):
+                    overall_score = feedback_dict.get("overall_score")
+            except Exception:
+                overall_score = None
+        
+        session_summaries.append(
+            SessionSummary(
+                id=session.id,
+                scenario_id=session.scenario_id,
+                scenario_name=scenario_name,
+                difficulty=getattr(session, 'difficulty', None) or "intermediate",
+                created_at=session.created_at,
+                ended_at=session.ended_at,
+                overall_score=overall_score
+            )
+        )
+    
+    return SessionListResponse(
+        sessions=session_summaries,
+        pagination=PaginationInfo(
+            total=total,
+            page=page,
+            per_page=per_page,
+            total_pages=total_pages
+        )
     )
 
 

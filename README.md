@@ -193,6 +193,7 @@ french-language-coach/
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
+| GET | `/sessions/` | List all sessions with pagination. Returns summary: id, scenario_id, scenario_name, difficulty, created_at, ended_at, overall_score |
 | POST | `/sessions/` | Create a new conversation session. Optional `difficulty` parameter: beginner, intermediate (default), or advanced |
 | GET | `/sessions/{id}` | Get session details and messages. Returns `difficulty` field |
 | POST | `/sessions/{id}/messages` | Send a message, get AI reply. Uses session's difficulty level for system prompt |
