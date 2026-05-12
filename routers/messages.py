@@ -23,7 +23,9 @@ async def send_message(
     if session.ended_at:
         raise HTTPException(status_code=400, detail="Session has ended")
 
-    scenario = get_scenario(session.scenario_id)
+    # Get scenario with the session's difficulty level (default to intermediate for backward compatibility)
+    difficulty = getattr(session, 'difficulty', None) or "intermediate"
+    scenario = get_scenario(session.scenario_id, difficulty=difficulty)
     if not scenario:
         raise HTTPException(status_code=404, detail="Scenario not found")
 

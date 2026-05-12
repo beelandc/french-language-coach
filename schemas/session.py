@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class Message(BaseModel):
@@ -11,11 +11,16 @@ class Message(BaseModel):
 
 class SessionCreate(BaseModel):
     scenario_id: str
+    difficulty: Optional[str] = Field(
+        default="intermediate",
+        description="Difficulty level for the scenario: beginner, intermediate, or advanced"
+    )
 
 
 class SessionResponse(BaseModel):
     id: int
     scenario_id: str
+    difficulty: str
     created_at: datetime
     ended_at: Optional[datetime] = None
     messages: list[Message]

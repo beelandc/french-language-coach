@@ -11,6 +11,7 @@ class Session(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     scenario_id = Column(String(50), nullable=False)
+    difficulty = Column(String(20), default="intermediate")
     created_at = Column(DateTime, default=datetime.utcnow)
     ended_at = Column(DateTime, nullable=True)
     messages = Column(Text, default="[]")
