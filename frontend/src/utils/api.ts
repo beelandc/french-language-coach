@@ -1,7 +1,9 @@
 // API Client for French Language Coach
 import type { Feedback } from '../types/index'
 
-const API_BASE = import.meta.env.PROD ? window.location.origin : 'http://localhost:8000'
+// Use relative paths for development (Vite proxy handles routing)
+// Use same-origin for production
+const API_BASE = '' // Empty string = relative to current origin
 
 interface ApiOptions extends RequestInit {
   data?: unknown
@@ -9,6 +11,9 @@ interface ApiOptions extends RequestInit {
 
 /**
  * Generic API client for making requests to the FastAPI backend
+ * 
+ * In development: Vite proxy forwards /sessions/* to http://localhost:8000
+ * In production: Same-origin requests go directly to FastAPI
  */
 export async function api<T>(endpoint: string, options: ApiOptions = {}): Promise<T> {
   const { data, ...rest } = options
@@ -25,7 +30,9 @@ export async function api<T>(endpoint: string, options: ApiOptions = {}): Promis
     config.body = JSON.stringify(data)
   }
 
-  const response = await fetch(`${API_BASE}${endpoint}`, config)
+  // Use relative URL - Vite proxy will handle it in dev, same-origin in prod
+  const url = `${API_BASE}${endpoint}`
+  const response = await fetch(url, config)
   
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}))
