@@ -79,13 +79,15 @@ For every development request:
 
 **This project uses GitHub Flow with Issue-Based Branching.**
 
+**Note**: You have access to the `gh` GitHub CLI tool for all GitHub operations including creating, reading, updating, and commenting on issues and pull requests.
+
 ### ✅ DO:
 - **Always create a dedicated branch** from `main` for each GitHub issue
 - **Follow the naming convention**: `{type}/issue-{number}-{description}`
   - Examples: `feature/issue-42-grammar`, `fix/issue-21-filtering`, `refactor/issue-12-module`
 - **Push your branch** to remote and create a PR to `main`
 - **Reference the issue** in branch name, commit messages, and PR description
-- **Use gh CLI** for GitHub operations when possible
+- **Use gh CLI** for GitHub operations (including creating/updating issues, PRs, comments) when possible
 - **Clean up** merged branches (local and remote)
 
 ### ❌ DON'T:
