@@ -18,7 +18,9 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: '../dist',
+    // For production: output to static/ directory where FastAPI serves files
+    // Note: This will replace existing static files during production build
+    outDir: '../static',
     emptyOutDir: true,
     rollupOptions: {
       input: {
