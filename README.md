@@ -23,17 +23,17 @@ The application follows a clean separation of concerns with the following layers
 ┌──────────────────────────────────────────────────────────────┐
 │                      Frontend (React SPA)                    │
 │  React 19 + TypeScript + Vite + React Router v6              │
-│  Storybook for component documentation                        │
+│  Storybook for component documentation                       │
 │  ┌───────────────┐  ┌────────────────┐  ┌──────────────┐     │
 │  │   pages/      │  │  components/   │  │   hooks/     │     │
 │  │  - Route comps│  │  - UI comps    │  │  - Custom    │     │
 │  │               │  │  - Stories     │  │    hooks     │     │
 │  └───────────────┘  └────────────────┘  └──────────────┘     │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────────┐   │
-│  │   utils/     │  │   types/     │  │   .storybook/   │   │
-│  │  - API client │  │  - TS types  │  │  - Config       │   │
-│  │  - Mocks     │  │              │  │                  │   │
-│  └──────────────┘  └──────────────┘  └──────────────────┘   │
+│  ┌───────────────┐  ┌──────────────┐  ┌──────────────────┐   │
+│  │   utils/      │  │   types/     │  │   .storybook/    │   │
+│  │  - API client │  │  - TS types  │  │  - Config        │   │
+│  │  - Mocks      │  │              │  │                  │   │
+│  └───────────────┘  └──────────────┘  └──────────────────┘   │
 └──────────────────────────────────────────────────────────────┘
                             │
                             ▼
@@ -42,7 +42,7 @@ The application follows a clean separation of concerns with the following layers
 │  ┌──────────────┐   ┌──────────────┐   ┌──────────────┐     │
 │  │  routers/    │   │   services/  │   │   models/    │     │
 │  │  - REST API  │──▶│  - Mistral   │──▶│  - Sessions  │     │
-│  │  - 3 endpoints│   │  - Chat     │   │  - Messages  │     │
+│  │  - Endpoints │   │  - Chat      │   │  - Messages  │     │
 │  └──────────────┘   └──────────────┘   └──────────────┘     │
 │  ┌──────────────┐  ┌──────────────┐                         │
 │  │   schemas/   │  │ scenarios.py │                         │
@@ -53,8 +53,8 @@ The application follows a clean separation of concerns with the following layers
               ▼                             ▼
 ┌──────────────────────────┐    ┌─────────────────────────────┐
 │    SQLite Database       │    │    Mistral API (External)   │ 
-│  - Session storage        │    │  - Chat completions        │
-│  - JSON fields            │    │  - Feedback generation     │
+│  - Session storage       │    │  - Chat completions         │
+│  - JSON fields           │    │  - Feedback generation      │
 │                          │    │                             │
 └─────────────────────────-┘    └─────────────────────────────┘
 ```
