@@ -10,6 +10,7 @@ Users select a conversation scenario (e.g., ordering at a café, asking for dire
 
 - **Backend**: Python + FastAPI
 - **Frontend**: React 19 + TypeScript + Vite, React Router v6
+- **Storybook**: Component documentation at http://localhost:6006
 - **Database**: SQLite via SQLAlchemy (async)
 - **AI**: Mistral API (model: `mistral-large-latest`)
 - **Package management**: pip + requirements.txt (backend), npm (frontend)
@@ -22,17 +23,17 @@ The application follows a clean separation of concerns with the following layers
 ┌──────────────────────────────────────────────────────────────┐
 │                      Frontend (React SPA)                    │
 │  React 19 + TypeScript + Vite + React Router v6              │
+│  Storybook for component documentation                        │
 │  ┌───────────────┐  ┌────────────────┐  ┌──────────────┐     │
 │  │   pages/      │  │  components/   │  │   hooks/     │     │
-│  │  HomePage     │  │  Scenario      │  │  useSessions │     │
-│  │  ChatPage     │  │  Selector      │  │  useApi      │     │
-│  │  FeedbackPage │  │  ChatInterface │  │              │     │
-│  │               │  │  FeedbackView  │  │              │     │
+│  │  - Route comps│  │  - UI comps    │  │  - Custom    │     │
+│  │               │  │  - Stories     │  │    hooks     │     │
 │  └───────────────┘  └────────────────┘  └──────────────┘     │
-│  ┌──────────────┐  ┌──────────────┐                          │
-│  │   utils/     │  │   types/     │                          │
-│  │   api.ts     │  │   index.ts   │                          │
-│  └──────────────┘  └──────────────┘                          │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────────┐   │
+│  │   utils/     │  │   types/     │  │   .storybook/   │   │
+│  │  - API client │  │  - TS types  │  │  - Config       │   │
+│  │  - Mocks     │  │              │  │                  │   │
+│  └──────────────┘  └──────────────┘  └──────────────────┘   │
 └──────────────────────────────────────────────────────────────┘
                             │
                             ▼
@@ -40,24 +41,21 @@ The application follows a clean separation of concerns with the following layers
 │                      FastAPI Backend                        │
 │  ┌──────────────┐   ┌──────────────┐   ┌──────────────┐     │
 │  │  routers/    │   │   services/  │   │   models/    │     │
-│  │  sessions    │──▶│   mistral.py │──▶│   session.py │     │
-│  │  messages    │   │              │   │              │     │
-│  │  feedback    │   │              │   │              │     │
+│  │  - REST API  │──▶│  - Mistral   │──▶│  - Sessions  │     │
+│  │  - 3 endpoints│   │  - Chat     │   │  - Messages  │     │
 │  └──────────────┘   └──────────────┘   └──────────────┘     │
 │  ┌──────────────┐  ┌──────────────┐                         │
 │  │   schemas/   │  │ scenarios.py │                         │
-│  │   session.py │  │ (static data)│                         │
+│  │  - Pydantic  │  │ - Prompts    │                         │
 │  └──────────────┘  └──────────────┘                         │
 └─────────────────────────────────────────────────────────────┘
               │                             │
               ▼                             ▼
 ┌──────────────────────────┐    ┌─────────────────────────────┐
 │    SQLite Database       │    │    Mistral API (External)   │ 
+│  - Session storage        │    │  - Chat completions        │
+│  - JSON fields            │    │  - Feedback generation     │
 │                          │    │                             │
-│  sessions table: id,     │    │  - Chat completions for     │
-│  scenario_id, created_at,│    │    immersive French conv.   │
-│  ended_at, messages      │    │  - JSON-structured feedback │
-│  (JSON), feedback (JSON) │    │    generation               │
 └─────────────────────────-┘    └─────────────────────────────┘
 ```
 
@@ -144,10 +142,23 @@ french-language-coach/
 ├── scenarios.py             # Static list of 10 built-in conversation scenarios with system prompts
 ├── frontend/                # React SPA frontend (Vite + TypeScript)
 │   ├── src/
-│   │   ├── components/      # Reusable UI components
+│   │   ├── components/      # Reusable UI components + Storybook stories
 │   │   │   ├── ChatInterface.tsx
+│   │   │   ├── ChatInterface.stories.tsx
 │   │   │   ├── FeedbackView.tsx
+│   │   │   ├── FeedbackView.stories.tsx
 │   │   │   ├── ScenarioSelector.tsx
+│   │   │   ├── ScenarioSelector.stories.tsx
+│   │   │   ├── ChatHeader.tsx
+│   │   │   ├── ChatHeader.stories.tsx
+│   │   │   ├── MessageBubble.tsx
+│   │   │   ├── MessageBubble.stories.tsx
+│   │   │   ├── ScoreCard.tsx
+│   │   │   ├── ScoreCard.stories.tsx
+│   │   │   ├── CorrectionItem.tsx
+│   │   │   ├── CorrectionItem.stories.tsx
+│   │   │   ├── ScenarioCard.tsx
+│   │   │   ├── ScenarioCard.stories.tsx
 │   │   │   └── index.ts
 │   │   ├── pages/           # Page-level components (React Router routes)
 │   │   │   ├── HomePage.tsx
@@ -157,11 +168,15 @@ french-language-coach/
 │   │   │   ├── useSessions.tsx
 │   │   │   └── index.ts
 │   │   ├── utils/           # Utility functions
-│   │   │   └── api.ts
+│   │   │   ├── api.ts
+│   │   │   └── storybookMocks.tsx
 │   │   ├── types/           # TypeScript type definitions
 │   │   │   └── index.ts
 │   │   ├── styles/          # CSS files
 │   │   │   └── global.css
+│   │   ├── .storybook/      # Storybook configuration
+│   │   │   ├── main.ts
+│   │   │   └── preview.tsx
 │   │   ├── App.tsx          # Main app with React Router
 │   │   └── main.tsx        # App entry point
 │   ├── public/             # Static assets
@@ -231,6 +246,16 @@ french-language-coach/
    ```
 
 8. Open your browser to [http://localhost:5173](http://localhost:5173) (Vite dev server with HMR)
+
+**To run Storybook for component development:**
+
+1. In a separate terminal, start Storybook:
+   ```bash
+   cd frontend
+   npm run storybook
+   ```
+
+2. Open your browser to [http://localhost:6006](http://localhost:6006) to view component documentation
 
 **Alternative (Production Mode):**
 
@@ -367,11 +392,6 @@ This project uses **GitHub Flow with Issue-Based Branching**: one dedicated bran
 - No user authentication
 - Single-user only (all sessions stored in one database)
 - Requires Mistral API key (paid service)
-
-## License
-
-MIT License
-aid service)
 
 ## License
 

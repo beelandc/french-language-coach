@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSessions } from '../hooks/useSessions'
 import type { Scenario } from '../types'
+import ScenarioCard from './ScenarioCard'
 
 // Hardcoded scenarios matching backend - will fetch from API in future
 const SCENARIOS: Scenario[] = [
@@ -16,20 +17,6 @@ const SCENARIOS: Scenario[] = [
   { id: 'apartment_rental', name: 'Apartment Rental', description: 'Practice negotiating and asking about details for renting an apartment in France.' },
   { id: 'museum_visit', name: 'Museum Visit', description: 'Practice asking about exhibits, tickets, and audio guides at a French museum.' },
 ]
-
-interface ScenarioCardProps {
-  scenario: Scenario
-  onClick: () => void
-}
-
-function ScenarioCard({ scenario, onClick }: ScenarioCardProps) {
-  return (
-    <div className="scenario-card" onClick={onClick}>
-      <h3>{scenario.name}</h3>
-      <p>{scenario.description}</p>
-    </div>
-  )
-}
 
 export default function ScenarioSelector() {
   const [isLoading, setIsLoading] = useState(true)
