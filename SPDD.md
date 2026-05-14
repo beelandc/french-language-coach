@@ -83,6 +83,7 @@ The REASONS canvas is the foundation of our SPDD approach. Every development tas
 3. **Check VISION.md** - Verify alignment with project vision
 4. **Review tests** - Understand existing test patterns and coverage
 5. **Create Analysis Artifact** - Document your understanding in `spdd/analysis/` using the ANALYSIS-TEMPLATE.md. This captures the REASONS canvas and ensures clarity before prompting the AI.
+6. **Update Github Issue** - Refine the github issue description to include the generated REASONS canvas. Use the github cli (gh) to apply updates to the issue.
 
 ### Phase 3: Prompt Engineering
 
