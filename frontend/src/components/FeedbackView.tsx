@@ -1,35 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSessions } from '../hooks/useSessions'
-import type { FeedbackViewProps, Feedback, Correction } from '../types'
-
-interface ScoreCardProps {
-  label: string
-  value: number
-}
-
-function ScoreCard({ label, value }: ScoreCardProps) {
-  return (
-    <div className="score-card">
-      <div className="label">{label}</div>
-      <div className="value">{value}</div>
-    </div>
-  )
-}
-
-interface CorrectionItemProps {
-  correction: Correction
-}
-
-function CorrectionItem({ correction }: CorrectionItemProps) {
-  return (
-    <div className="correction-item">
-      <div className="original">{correction.original}</div>
-      <div className="corrected">{correction.corrected}</div>
-      <div className="explanation">{correction.explanation}</div>
-    </div>
-  )
-}
+import type { FeedbackViewProps, Feedback } from '../types'
+import ScoreCard from './ScoreCard'
+import CorrectionItem from './CorrectionItem'
 
 export default function FeedbackView({ sessionId }: FeedbackViewProps) {
   const { getFeedback, isLoading: isSessionsLoading } = useSessions()

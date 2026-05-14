@@ -1,45 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSessions } from '../hooks/useSessions'
-import type { ChatInterfaceProps, Message } from '../types'
-
-interface MessageBubbleProps {
-  message: Message
-}
-
-function MessageBubble({ message }: MessageBubbleProps) {
-  return (
-    <div className={`message ${message.role}`}>
-      <div className="role">{message.role === 'user' ? 'You' : 'AI'}</div>
-      <div className="content">{message.content}</div>
-    </div>
-  )
-}
-
-interface ChatHeaderProps {
-  scenarioName: string
-  onBack: () => void
-  onEndSession: () => void
-  disabled: boolean
-}
-
-function ChatHeader({ scenarioName, onBack, onEndSession, disabled }: ChatHeaderProps) {
-  return (
-    <div className="chat-header">
-      <button className="btn-secondary" onClick={onBack}>
-        Back
-      </button>
-      <h2>{scenarioName}</h2>
-      <button 
-        className="btn-danger" 
-        onClick={onEndSession}
-        disabled={disabled}
-      >
-        End Session
-      </button>
-    </div>
-  )
-}
+import type { ChatInterfaceProps } from '../types'
+import ChatHeader from './ChatHeader'
+import MessageBubble from './MessageBubble'
 
 export default function ChatInterface({ sessionId }: ChatInterfaceProps) {
   const {

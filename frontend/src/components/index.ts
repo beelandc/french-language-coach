@@ -2,3 +2,8 @@
 export { default as ScenarioSelector } from './ScenarioSelector'
 export { default as ChatInterface } from './ChatInterface'
 export { default as FeedbackView } from './FeedbackView'
+export { default as ScenarioCard } from './ScenarioCard'
+export { default as MessageBubble } from './MessageBubble'
+export { default as ChatHeader } from './ChatHeader'
+export { default as ScoreCard } from './ScoreCard'
+export { default as CorrectionItem } from './CorrectionItem'

@@ -76,8 +76,24 @@ export interface ScenarioCardProps {
   onClick: () => void
 }
 
-export interface MessageProps {
+export interface MessageBubbleProps {
   message: Message
+}
+
+export interface ChatHeaderProps {
+  scenarioName: string
+  onBack: () => void
+  onEndSession: () => void
+  disabled: boolean
+}
+
+export interface ScoreCardProps {
+  label: string
+  value: number
+}
+
+export interface CorrectionItemProps {
+  correction: Correction
 }
 
 export interface ChatInterfaceProps {
@@ -86,4 +102,25 @@ export interface ChatInterfaceProps {
 
 export interface FeedbackViewProps {
   sessionId: string
+}
+
+// Deprecated: Use MessageBubbleProps instead
+export interface MessageProps {
+  message: Message
+}
+
+// Context types (re-exported from hooks for convenience)
+export interface SessionsContextType {
+  sessions: Session[]
+  currentSessionId: string | null
+  currentScenarioId: string | null
+  sessionEnded: boolean
+  isLoading: boolean
+  error: string | null
+  createSession: (scenarioId: string) => Promise<string>
+  sendMessage: (sessionId: string, content: string) => Promise<Message>
+  getFeedback: (sessionId: string, forceRefresh?: boolean) => Promise<Feedback | null>
+  endSession: () => void
+  setCurrentSessionId: (id: string | null) => void
+  clearError: () => void
 }
