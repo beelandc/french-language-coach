@@ -4,7 +4,7 @@ This directory contains **Structured Prompt Driven Development (SPDD) artifacts*
 
 ## Purpose
 
-Following the SPDD methodology as described in [Martin Fowler's article](https://martinfowler.com/articles/structured-prompt-driven.html), this directory captures:
+Following the SPDD methodology as described in [this article](https://martinfowler.com/articles/structured-prompt-driven.html)on martinfowler.com, this directory captures:
 
 1. **Analysis Documents** (`analysis/`): Structured analysis using the REASONS canvas for each development task
 2. **Prompt Documents** (`prompt/`): The actual prompts sent to AI assistants (Mistral Vibe) to generate code
