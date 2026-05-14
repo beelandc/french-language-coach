@@ -6,6 +6,114 @@ An immersive French conversation practice web application with AI-powered feedba
 
 Users select a conversation scenario (e.g., ordering at a café, asking for directions, job interview in French), then conduct an immersive conversation entirely in French with an AI tutor. At the end of the session, they receive a structured feedback report scoring their grammar, vocabulary, and fluency, with one prioritized focus area for improvement.
 
+## Usage
+
+1. **Select a Scenario**: Choose from 10 built-in conversation scenarios
+2. **Start Chatting**: Type messages in French and get responses from the AI tutor
+3. **End Session**: Click "End Session" to receive detailed feedback
+4. **Review Feedback**: See scores for grammar, vocabulary, fluency, and overall performance with specific corrections
+5. **Navigate**: Use the Back button to return to scenario selection or start a new session
+5. **Start Again**: Begin a new session with any scenario
+
+### Difficulty Levels
+
+Each scenario supports three difficulty levels that affect the AI's system prompt:
+- **Beginner**: Simpler vocabulary, slower pace, more helpful hints
+- **Intermediate**: Standard prompts (default, backward compatible)
+- **Advanced**: More complex vocabulary, faster pace, native idioms and expressions
+
+## Scenarios
+
+- **Ordering at a Café** - Practice ordering coffee and pastries
+- **Asking for Directions** - Navigate Parisian landmarks
+- **Job Interview** - Software engineering interview simulation
+- **Hotel Check-in** - Check into a hotel and ask about amenities
+- **Shopping for Clothes** - Shop and try on clothes
+- **Doctor's Visit** - Describe symptoms and get medical advice
+- **Train Travel** - Buy tickets and check schedules
+- **Dining at a Restaurant** - Order a full meal
+- **Apartment Rental** - Negotiate and ask about rentals
+- **Museum Visit** - Ask about exhibits and tickets
+
+## Features
+
+- AI stays strictly in character and responds only in French
+- Conversation history stored in SQLite
+- Structured feedback with grammar, vocabulary, fluency scores
+- Example corrections with explanations
+- Clean, responsive single-page interface
+
+## Setup & Installation
+
+1. Clone the repository and navigate to the project directory:
+   ```bash
+   cd french-language-coach
+   ```
+
+2. Create a virtual environment (recommended):
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+   ```
+
+3. Install backend dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. Set up the frontend (React SPA):
+   ```bash
+   cd frontend
+   npm install
+   cd ..
+   ```
+
+5. Create a `.env` file from the template:
+   ```bash
+   cp .env.example .env
+   ```
+
+5. Get a Mistral API key from [https://console.mistral.ai/](https://console.mistral.ai/) and add it to `.env`:
+   ```
+   MISTRAL_API_KEY=your_api_key_here
+   ```
+
+6. Run the backend server:
+   ```bash
+   uvicorn main:app --reload
+   ```
+
+7. In a separate terminal, start the frontend development server:
+   ```bash
+   cd frontend
+   npm run dev
+   ```
+
+8. Open your browser to [http://localhost:5173](http://localhost:5173) (Vite dev server with HMR)
+
+**To run Storybook for component development:**
+
+1. In a separate terminal, start Storybook:
+   ```bash
+   cd frontend
+   npm run storybook
+   ```
+
+2. Open your browser to [http://localhost:6006](http://localhost:6006) to view component documentation
+
+**Alternative (Production Mode):**
+
+1. Build the frontend:
+   ```bash
+   cd frontend
+   npm run build
+   ```
+2. Run the backend server (serves the built React app from /static):
+   ```bash
+   uvicorn main:app
+   ```
+3. Open your browser to [http://localhost:8000](http://localhost:8000)
+
 ## Tech Stack
 
 - **Backend**: Python + FastAPI
@@ -58,68 +166,6 @@ The application follows a clean separation of concerns with the following layers
 │                          │    │                             │
 └─────────────────────────-┘    └─────────────────────────────┘
 ```
-
-### Data Flow
-
-1. **User selects scenario** → POST /sessions/ creates session record
-2. **User sends message** → POST /sessions/{id}/messages/ → Mistral chat API → AI response stored in session
-3. **User requests feedback** → POST /sessions/{id}/feedback/ → Mistral chat API with feedback prompt → structured JSON feedback stored in session
-4. **Frontend displays** conversation history and feedback report
-
-## Mistral LLM Integration
-
-The application integrates with the Mistral API in two key ways:
-
-### 1. Conversation Mode (`services/mistral.py:get_chat_response`)
-
-For each scenario, a system prompt instructs the model to:
-- Respond **only in French** (never break into English)
-- Stay in character as a native French speaker
-- Use natural, authentic language
-
-Example scenario prompt (from `scenarios.py`):
-```
-"Tu es un serveur/une serveuse natif(ve) dans un café parisien. 
-Réponds UNIQUEMENT en français. Reste absolument dans ton rôle..."
-```
-
-The conversation history (user + assistant messages) is sent to `mistral-large-latest` via the chat API, and the assistant's response is returned and stored.
-
-### 2. Feedback Mode (`services/mistral.py:get_feedback`)
-
-When a user ends a session, the full conversation history is sent with a separate system prompt that instructs Mistral to analyze the conversation and return a **strictly JSON** response with this structure:
-
-```json
-{
-    "grammar_score": 0-100,
-    "vocabulary_score": 0-100,
-    "fluency_score": 0-100,
-    "overall_score": 0-100,
-    "strengths": ["string", ...],
-    "focus_area": "string",
-    "example_corrections": [
-        {"original": "string", "corrected": "string", "explanation": "string"}
-    ]
-}
-```
-
-The `response_format={"type": "json_object"}` parameter ensures Mistral returns valid JSON that can be directly parsed and stored in the database.
-
-## Why Mistral
-
-Mistral's models have demonstrably stronger French language quality than most alternatives. Mistral trains its models with native French fluency — giving Mistral Large demonstrated benchmark advantages in French language comprehension and generation compared to models trained primarily on English. For a French language coaching application, this is not a minor detail: it means more natural phrasing, better idiomatic corrections, and more culturally authentic conversation scenarios.
-
-This project is also built entirely using Mistral Vibe, Mistral's AI-assisted coding environment, making it an end-to-end demonstration of the Mistral developer ecosystem.
-
-### References
-
-| # | Source | Link | What It Indicates |
-|---|--------|------|-------------------|
-| 1 | **Mistral AI Official Blog** – *"Au Large"* | https://mistral.ai/news/mistral-large | Primary source from Mistral AI documenting native multilingual capacities and benchmark comparisons (HellaSwag, Arc Challenge, MMLU) vs. LLaMA 2 70B, Mixtral 8x7B in French, German, Spanish, and Italian. |
-| 2 | **Prompt Engineering Guide** – *Mistral Large* | https://www.promptingguide.ai/models/mistral-large | Independent summary confirming Mistral Large outperforms Mixtral 8x7B and LLaMA 2 70B across all tested languages including French. Notes it falls behind GPT-4 on some tasks but leads comparable-tier models. |
-| 3 | **Built In** – *Mistral AI: Models, Capabilities and Latest Developments* | https://builtin.com/articles/mistral-ai | Third-party technology publication confirming Mistral's native fluency in French, Spanish, German, and Italian, with a nuanced understanding of grammar and cultural context — contrasted with models that are only proficient in a single language. |
-| 4 | **Anthem Creation** – *Mistral Large vs. ChatGPT* (Oct 2024) | https://anthemcreation.com/en/artificial-intelligence/mistral-large-cat-gpt-functioning-benefits-modele-francais/ | Documents Mistral Large's GLUE French reading comprehension score of 89.4 (top of evaluated French language models at time of publication) and notes it outperforms ChatGPT on French NLP tasks specifically. |
-| 5 | **Cocondesnèiges.fr** – *Mistral AI Review* (Apr 2026) | https://cocondesneiges.fr/en/ai/mistral-ai-review/ | Recent (April 2026) independent review confirming superior French language quality vs. American competitors, noting more natural text with fewer anglicised phrasings. Also notes GPT-4o retains a slight edge on complex reasoning. |
 
 ## Project Structure
 
@@ -199,86 +245,6 @@ french-language-coach/
 └── README.md
 ```
 
-## Setup & Installation
-
-1. Clone the repository and navigate to the project directory:
-   ```bash
-   cd french-language-coach
-   ```
-
-2. Create a virtual environment (recommended):
-   ```bash
-   python -m venv .venv
-   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-   ```
-
-3. Install backend dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. Set up the frontend (React SPA):
-   ```bash
-   cd frontend
-   npm install
-   cd ..
-   ```
-
-5. Create a `.env` file from the template:
-   ```bash
-   cp .env.example .env
-   ```
-
-5. Get a Mistral API key from [https://console.mistral.ai/](https://console.mistral.ai/) and add it to `.env`:
-   ```
-   MISTRAL_API_KEY=your_api_key_here
-   ```
-
-6. Run the backend server:
-   ```bash
-   uvicorn main:app --reload
-   ```
-
-7. In a separate terminal, start the frontend development server:
-   ```bash
-   cd frontend
-   npm run dev
-   ```
-
-8. Open your browser to [http://localhost:5173](http://localhost:5173) (Vite dev server with HMR)
-
-**To run Storybook for component development:**
-
-1. In a separate terminal, start Storybook:
-   ```bash
-   cd frontend
-   npm run storybook
-   ```
-
-2. Open your browser to [http://localhost:6006](http://localhost:6006) to view component documentation
-
-**Alternative (Production Mode):**
-
-1. Build the frontend:
-   ```bash
-   cd frontend
-   npm run build
-   ```
-2. Run the backend server (serves the built React app from /static):
-   ```bash
-   uvicorn main:app
-   ```
-3. Open your browser to [http://localhost:8000](http://localhost:8000)
-
-## Usage
-
-1. **Select a Scenario**: Choose from 10 built-in conversation scenarios
-2. **Start Chatting**: Type messages in French and get responses from the AI tutor
-3. **End Session**: Click "End Session" to receive detailed feedback
-4. **Review Feedback**: See scores for grammar, vocabulary, fluency, and overall performance with specific corrections
-5. **Navigate**: Use the Back button to return to scenario selection or start a new session
-5. **Start Again**: Begin a new session with any scenario
-
 ## API Endpoints
 
 | Method | Endpoint | Description |
@@ -289,33 +255,67 @@ french-language-coach/
 | POST | `/sessions/{id}/messages` | Send a message, get AI reply. Uses session's difficulty level for system prompt |
 | POST | `/sessions/{id}/feedback` | Generate end-of-session feedback |
 
-### Difficulty Levels
+### Data Flow
 
-Each scenario supports three difficulty levels that affect the AI's system prompt:
-- **Beginner**: Simpler vocabulary, slower pace, more helpful hints
-- **Intermediate**: Standard prompts (default, backward compatible)
-- **Advanced**: More complex vocabulary, faster pace, native idioms and expressions
+1. **User selects scenario** → POST /sessions/ creates session record
+2. **User sends message** → POST /sessions/{id}/messages/ → Mistral chat API → AI response stored in session
+3. **User requests feedback** → POST /sessions/{id}/feedback/ → Mistral chat API with feedback prompt → structured JSON feedback stored in session
+4. **Frontend displays** conversation history and feedback report
 
-## Scenarios
+## Mistral LLM Integration
 
-- **Ordering at a Café** - Practice ordering coffee and pastries
-- **Asking for Directions** - Navigate Parisian landmarks
-- **Job Interview** - Software engineering interview simulation
-- **Hotel Check-in** - Check into a hotel and ask about amenities
-- **Shopping for Clothes** - Shop and try on clothes
-- **Doctor's Visit** - Describe symptoms and get medical advice
-- **Train Travel** - Buy tickets and check schedules
-- **Dining at a Restaurant** - Order a full meal
-- **Apartment Rental** - Negotiate and ask about rentals
-- **Museum Visit** - Ask about exhibits and tickets
+The application integrates with the Mistral API in two key ways:
 
-## Features
+### 1. Conversation Mode (`services/mistral.py:get_chat_response`)
 
-- AI stays strictly in character and responds only in French
-- Conversation history stored in SQLite
-- Structured feedback with grammar, vocabulary, fluency scores
-- Example corrections with explanations
-- Clean, responsive single-page interface
+For each scenario, a system prompt instructs the model to:
+- Respond **only in French** (never break into English)
+- Stay in character as a native French speaker
+- Use natural, authentic language
+
+Example scenario prompt (from `scenarios.py`):
+```
+"Tu es un serveur/une serveuse natif(ve) dans un café parisien. 
+Réponds UNIQUEMENT en français. Reste absolument dans ton rôle..."
+```
+
+The conversation history (user + assistant messages) is sent to `mistral-large-latest` via the chat API, and the assistant's response is returned and stored.
+
+### 2. Feedback Mode (`services/mistral.py:get_feedback`)
+
+When a user ends a session, the full conversation history is sent with a separate system prompt that instructs Mistral to analyze the conversation and return a **strictly JSON** response with this structure:
+
+```json
+{
+    "grammar_score": 0-100,
+    "vocabulary_score": 0-100,
+    "fluency_score": 0-100,
+    "overall_score": 0-100,
+    "strengths": ["string", ...],
+    "focus_area": "string",
+    "example_corrections": [
+        {"original": "string", "corrected": "string", "explanation": "string"}
+    ]
+}
+```
+
+The `response_format={"type": "json_object"}` parameter ensures Mistral returns valid JSON that can be directly parsed and stored in the database.
+
+## Why Mistral
+
+Mistral's models have demonstrably stronger French language quality than most alternatives. Mistral trains its models with native French fluency — giving Mistral Large demonstrated benchmark advantages in French language comprehension and generation compared to models trained primarily on English. For a French language coaching application, this is not a minor detail: it means more natural phrasing, better idiomatic corrections, and more culturally authentic conversation scenarios.
+
+This project is also built entirely using Mistral Vibe, Mistral's AI-assisted coding environment, making it an end-to-end demonstration of the Mistral developer ecosystem.
+
+### References
+
+| # | Source | Link | What It Indicates |
+|---|--------|------|-------------------|
+| 1 | **Mistral AI Official Blog** – *"Au Large"* | https://mistral.ai/news/mistral-large | Primary source from Mistral AI documenting native multilingual capacities and benchmark comparisons (HellaSwag, Arc Challenge, MMLU) vs. LLaMA 2 70B, Mixtral 8x7B in French, German, Spanish, and Italian. |
+| 2 | **Prompt Engineering Guide** – *Mistral Large* | https://www.promptingguide.ai/models/mistral-large | Independent summary confirming Mistral Large outperforms Mixtral 8x7B and LLaMA 2 70B across all tested languages including French. Notes it falls behind GPT-4 on some tasks but leads comparable-tier models. |
+| 3 | **Built In** – *Mistral AI: Models, Capabilities and Latest Developments* | https://builtin.com/articles/mistral-ai | Third-party technology publication confirming Mistral's native fluency in French, Spanish, German, and Italian, with a nuanced understanding of grammar and cultural context — contrasted with models that are only proficient in a single language. |
+| 4 | **Anthem Creation** – *Mistral Large vs. ChatGPT* (Oct 2024) | https://anthemcreation.com/en/artificial-intelligence/mistral-large-cat-gpt-functioning-benefits-modele-francais/ | Documents Mistral Large's GLUE French reading comprehension score of 89.4 (top of evaluated French language models at time of publication) and notes it outperforms ChatGPT on French NLP tasks specifically. |
+| 5 | **Cocondesnèiges.fr** – *Mistral AI Review* (Apr 2026) | https://cocondesneiges.fr/en/ai/mistral-ai-review/ | Recent (April 2026) independent review confirming superior French language quality vs. American competitors, noting more natural text with fewer anglicised phrasings. Also notes GPT-4o retains a slight edge on complex reasoning. |
 
 ## Development
 
