@@ -249,7 +249,7 @@ french-language-coach/
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/sessions/` | List all sessions with pagination. Returns summary: id, scenario_id, scenario_name, difficulty, created_at, ended_at, overall_score |
+| GET | `/sessions/` | List all sessions with pagination. Query parameters: `page` (default 1), `per_page` (default 10, max 100), `scenario_id` (filter by scenario), `date_from` (filter by start date), `date_to` (filter by end date), `min_score` (filter by minimum overall score). Returns summary: id, scenario_id, scenario_name, difficulty, created_at, ended_at, overall_score |
 | POST | `/sessions/` | Create a new conversation session. Optional `difficulty` parameter: beginner, intermediate (default), or advanced |
 | GET | `/sessions/{id}` | Get session details and messages. Returns `difficulty` field |
 | DELETE | `/sessions/{id}` | Delete a session. Returns 204 on success, 404 if not found |
