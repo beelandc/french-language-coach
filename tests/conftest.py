@@ -4,6 +4,7 @@ Pytest configuration and fixtures for French Language Coach.
 import asyncio
 import os
 import pytest
+import pytest_asyncio
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -41,7 +42,7 @@ def event_loop():
     loop.close()
 
 
-@pytest.fixture(scope="function")
+@pytest_asyncio.fixture(scope="function")
 async def test_db():
     """Create a fresh database for each test function."""
     await create_test_db()
@@ -52,7 +53,7 @@ async def test_db():
         await drop_test_db()
 
 
-@pytest.fixture(scope="function")
+@pytest_asyncio.fixture(scope="function")
 async def client(test_db):
     """Create a test client for the FastAPI app."""
     from fastapi.testclient import TestClient
