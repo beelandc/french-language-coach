@@ -57,16 +57,47 @@ async def create_session(
 async def list_sessions(
     page: int = Query(1, ge=1, description="Page number, starting at 1"),
     per_page: int = Query(10, ge=1, le=100, description="Items per page, maximum 100"),
+    scenario_id: Optional[str] = Query(None, description="Filter by scenario ID"),
+    date_from: Optional[datetime] = Query(None, description="Filter by start date (inclusive)"),
+    date_to: Optional[datetime] = Query(None, description="Filter by end date (inclusive)"),
     db: AsyncSession = Depends(get_db)
 ) -> SessionListResponse:
     """
-    List all sessions with pagination.
+    List all sessions with pagination and optional filtering.
+    
+    Supports filtering by:
+    - scenario_id: Return only sessions for a specific scenario
+    - date_from: Return only sessions created on or after this date
+    - date_to: Return only sessions created on or before this date
+    
+    All filters are optional and can be combined (AND logic).
     
     Returns a paginated list of session summaries (without full message content).
     Use GET /sessions/{id} to retrieve full session details including messages.
     """
-    # Count total sessions
-    total_result = await db.execute(select(func.count()).select_from(SessionModel))
+    # Validate date range
+    if date_from and date_to and date_from > date_to:
+        raise HTTPException(
+            status_code=400,
+            detail="date_from must be less than or equal to date_to"
+        )
+    
+    # Build filter conditions
+    filters = []
+    if scenario_id:
+        filters.append(SessionModel.scenario_id == scenario_id)
+    if date_from:
+        filters.append(SessionModel.created_at >= date_from)
+    if date_to:
+        filters.append(SessionModel.created_at <= date_to)
+    
+    # Build base query with filters
+    base_query = select(SessionModel)
+    if filters:
+        base_query = base_query.where(*filters)
+    
+    # Count total sessions with filters applied
+    total_result = await db.execute(select(func.count()).select_from(base_query.subquery()))
     total: int = total_result.scalar()
     
     # Calculate total pages
@@ -79,9 +110,9 @@ async def list_sessions(
     # Calculate offset
     offset = (page - 1) * per_page
     
-    # Query sessions with pagination
+    # Query sessions with pagination and filters
     result = await db.execute(
-        select(SessionModel)
+        base_query
         .order_by(SessionModel.created_at.desc())
         .offset(offset)
         .limit(per_page)
