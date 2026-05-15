@@ -211,10 +211,14 @@ async def delete_session(
     Delete a session by ID.
     
     Returns 204 on success, 404 if session not found.
+    Active sessions (where ended_at is NULL) cannot be deleted.
     """
     session = await db.get(SessionModel, session_id)
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
+    
+    if session.ended_at is None:
+        raise HTTPException(status_code=400, detail="Cannot delete active session")
     
     await db.delete(session)
     await db.commit()
