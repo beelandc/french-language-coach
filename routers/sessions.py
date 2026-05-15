@@ -2,7 +2,7 @@ from datetime import datetime
 from math import ceil
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Response
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -179,3 +179,22 @@ async def get_session(
         messages=session.messages_list,
         feedback=session.feedback_dict,
     )
+
+
+@router.delete("/{session_id}", status_code=204)
+async def delete_session(
+    session_id: int,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Delete a session by ID.
+    
+    Returns 204 on success, 404 if session not found.
+    """
+    session = await db.get(SessionModel, session_id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    await db.delete(session)
+    await db.commit()
+    return Response(status_code=204)

@@ -182,7 +182,7 @@ french-language-coach/
 │   └── mistral.py           # Mistral API client: chat completion + feedback generation
 ├── routers/
 │   ├── __init__.py
-│   ├── sessions.py          # POST /sessions (start), GET /sessions/{id}
+│   ├── sessions.py          # POST /sessions (start), GET /sessions/{id}, DELETE /sessions/{id}
 │   ├── messages.py          # POST /sessions/{id}/messages (send a message, get AI reply)
 │   └── feedback.py          # POST /sessions/{id}/feedback (generate end-of-session report)
 ├── scenarios.py             # Static list of 10 built-in conversation scenarios with system prompts
@@ -252,6 +252,7 @@ french-language-coach/
 | GET | `/sessions/` | List all sessions with pagination. Returns summary: id, scenario_id, scenario_name, difficulty, created_at, ended_at, overall_score |
 | POST | `/sessions/` | Create a new conversation session. Optional `difficulty` parameter: beginner, intermediate (default), or advanced |
 | GET | `/sessions/{id}` | Get session details and messages. Returns `difficulty` field |
+| DELETE | `/sessions/{id}` | Delete a session. Returns 204 on success, 404 if not found |
 | POST | `/sessions/{id}/messages` | Send a message, get AI reply. Uses session's difficulty level for system prompt |
 | POST | `/sessions/{id}/feedback` | Generate end-of-session feedback |
 
