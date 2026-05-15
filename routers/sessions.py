@@ -60,6 +60,7 @@ async def list_sessions(
     scenario_id: Optional[str] = Query(None, description="Filter by scenario ID"),
     date_from: Optional[datetime] = Query(None, description="Filter by start date (inclusive)"),
     date_to: Optional[datetime] = Query(None, description="Filter by end date (inclusive)"),
+    min_score: Optional[int] = Query(None, description="Filter by minimum overall score (inclusive)"),
     db: AsyncSession = Depends(get_db)
 ) -> SessionListResponse:
     """
@@ -69,8 +70,10 @@ async def list_sessions(
     - scenario_id: Return only sessions for a specific scenario
     - date_from: Return only sessions created on or after this date
     - date_to: Return only sessions created on or before this date
+    - min_score: Return only sessions with overall_score >= this value
     
     All filters are optional and can be combined (AND logic).
+    Sessions without feedback (null overall_score) are excluded when min_score filter is applied.
     
     Returns a paginated list of session summaries (without full message content).
     Use GET /sessions/{id} to retrieve full session details including messages.
@@ -82,23 +85,47 @@ async def list_sessions(
             detail="date_from must be less than or equal to date_to"
         )
     
-    # Build filter conditions
-    filters = []
+    # Build filter conditions for database-level filtering
+    db_filters = []
     if scenario_id:
-        filters.append(SessionModel.scenario_id == scenario_id)
+        db_filters.append(SessionModel.scenario_id == scenario_id)
     if date_from:
-        filters.append(SessionModel.created_at >= date_from)
+        db_filters.append(SessionModel.created_at >= date_from)
     if date_to:
-        filters.append(SessionModel.created_at <= date_to)
+        db_filters.append(SessionModel.created_at <= date_to)
     
-    # Build base query with filters
+    # Build base query with database-level filters
     base_query = select(SessionModel)
-    if filters:
-        base_query = base_query.where(*filters)
+    if db_filters:
+        base_query = base_query.where(*db_filters)
     
-    # Count total sessions with filters applied
-    total_result = await db.execute(select(func.count()).select_from(base_query.subquery()))
-    total: int = total_result.scalar()
+    # Query ALL matching sessions (without pagination yet) to apply Python-level filters
+    result = await db.execute(
+        base_query
+        .order_by(SessionModel.created_at.desc())
+    )
+    all_sessions = result.scalars().all()
+    
+    # Apply min_score filter in Python (since overall_score is in JSON feedback field)
+    if min_score is not None:
+        filtered_sessions = []
+        for session in all_sessions:
+            overall_score = None
+            if session.feedback:
+                try:
+                    feedback_dict = session.feedback_dict
+                    if feedback_dict and isinstance(feedback_dict, dict):
+                        overall_score = feedback_dict.get("overall_score")
+                except Exception:
+                    overall_score = None
+            
+            # Include session if it has a score >= min_score
+            if overall_score is not None and overall_score >= min_score:
+                filtered_sessions.append(session)
+        all_sessions = filtered_sessions
+    
+    # Count total sessions after ALL filters applied
+    total = len(all_sessions)
     
     # Calculate total pages
     total_pages = max(1, ceil(total / per_page)) if total > 0 else 0
@@ -110,21 +137,15 @@ async def list_sessions(
     # Calculate offset
     offset = (page - 1) * per_page
     
-    # Query sessions with pagination and filters
-    result = await db.execute(
-        base_query
-        .order_by(SessionModel.created_at.desc())
-        .offset(offset)
-        .limit(per_page)
-    )
-    sessions = result.scalars().all()
+    # Apply pagination to filtered results
+    paginated_sessions = all_sessions[offset:offset + per_page]
     
     # Build scenario lookup for efficiency
     scenario_lookup = {s["id"]: s["name"] for s in SCENARIOS}
     
     # Build session summaries
     session_summaries = []
-    for session in sessions:
+    for session in paginated_sessions:
         # Get scenario name
         scenario_name = scenario_lookup.get(session.scenario_id, session.scenario_id)
         

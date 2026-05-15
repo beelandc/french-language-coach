@@ -1,5 +1,5 @@
 """
-Tests for session listing endpoint schemas and integration (Issue #6 and Issue #7).
+Tests for session listing endpoint schemas and integration (Issue #6, Issue #7, and Issue #10).
 
 Schema tests verify the data structures for the session listing endpoint.
 Integration tests verify the actual endpoint behavior including pagination, filtering, and schema.
@@ -19,6 +19,12 @@ Issue #7 Acceptance Criteria:
 - Tests for filtering by date range
 - Tests verify response schema
 - 80% coverage for listing logic
+
+Issue #10 Acceptance Criteria:
+- Filter by scenario_id
+- Filter by date range
+- Filter by minimum overall_score
+- Filters can be combined
 """
 from datetime import datetime, timedelta, date
 
@@ -589,3 +595,258 @@ class TestListSessionsEndpoint:
         assert "2024-01-02" in data["sessions"][1]["created_at"]
         # Then Jan 1
         assert "2024-01-01" in data["sessions"][2]["created_at"]
+
+    # -------------------------------------------------------------------------
+    # Filtering by min_score Tests (Issue #10 - AC3)
+    # -------------------------------------------------------------------------
+
+    async def test_filter_by_min_score_only(self, client, test_db):
+        """Test filtering by min_score returns only sessions with score >= value."""
+        import json
+        
+        # Create sessions with different scores via feedback
+        scores = [75, 85, 65, 90, 70]
+        for score in scores:
+            session = SessionModel(
+                scenario_id="cafe_order",
+                difficulty="intermediate",
+                created_at=datetime(2024, 1, 1, 10, 0, 0),
+                feedback=json.dumps({"overall_score": score, "grammar_score": score, 
+                                   "vocabulary_score": score, "fluency_score": score,
+                                   "strengths": [], "focus_area": "test", "example_corrections": []})
+            )
+            test_db.add(session)
+        await test_db.commit()
+        
+        # Filter by min_score=80 should return sessions with scores 85 and 90
+        response = client.get("/sessions/?min_score=80")
+        assert response.status_code == 200
+        data = response.json()
+        
+        assert len(data["sessions"]) == 2
+        assert all(s["overall_score"] >= 80 for s in data["sessions"])
+        assert data["pagination"]["total"] == 2
+
+    async def test_filter_by_min_score_no_feedback(self, client, test_db):
+        """Test filtering by min_score excludes sessions without feedback."""
+        import json
+        
+        # Create sessions: some with feedback, some without
+        # Session 1: has score 85
+        session1 = SessionModel(
+            scenario_id="cafe_order",
+            difficulty="intermediate",
+            created_at=datetime(2024, 1, 1, 10, 0, 0),
+            feedback=json.dumps({"overall_score": 85, "grammar_score": 85,
+                               "vocabulary_score": 85, "fluency_score": 85,
+                               "strengths": [], "focus_area": "test", "example_corrections": []})
+        )
+        test_db.add(session1)
+        
+        # Session 2: no feedback
+        session2 = SessionModel(
+            scenario_id="hotel_checkin",
+            difficulty="intermediate",
+            created_at=datetime(2024, 1, 1, 10, 0, 0)
+        )
+        test_db.add(session2)
+        
+        await test_db.commit()
+        
+        # Filter by min_score=80 should return only session1
+        response = client.get("/sessions/?min_score=80")
+        assert response.status_code == 200
+        data = response.json()
+        
+        assert len(data["sessions"]) == 1
+        assert data["sessions"][0]["overall_score"] == 85
+        assert data["pagination"]["total"] == 1
+
+    async def test_filter_by_min_score_no_matches(self, client, test_db):
+        """Test filtering by min_score with no matches returns empty list."""
+        import json
+        
+        # Create sessions with scores all below 90
+        scores = [75, 80, 85]
+        for score in scores:
+            session = SessionModel(
+                scenario_id="cafe_order",
+                difficulty="intermediate",
+                created_at=datetime(2024, 1, 1, 10, 0, 0),
+                feedback=json.dumps({"overall_score": score, "grammar_score": score,
+                                   "vocabulary_score": score, "fluency_score": score,
+                                   "strengths": [], "focus_area": "test", "example_corrections": []})
+            )
+            test_db.add(session)
+        await test_db.commit()
+        
+        # Filter by min_score=90 should return no sessions
+        response = client.get("/sessions/?min_score=90")
+        assert response.status_code == 200
+        data = response.json()
+        
+        assert data["sessions"] == []
+        assert data["pagination"]["total"] == 0
+
+    async def test_filter_by_min_score_all_sessions_no_feedback(self, client, test_db):
+        """Test filtering by min_score when all sessions have no feedback returns empty."""
+        # Create sessions without feedback
+        for i in range(5):
+            session = SessionModel(
+                scenario_id="cafe_order",
+                difficulty="intermediate",
+                created_at=datetime(2024, 1, i + 1, 10, 0, 0)
+            )
+            test_db.add(session)
+        await test_db.commit()
+        
+        # Filter by any min_score should return empty
+        response = client.get("/sessions/?min_score=50")
+        assert response.status_code == 200
+        data = response.json()
+        
+        assert data["sessions"] == []
+        assert data["pagination"]["total"] == 0
+
+    # -------------------------------------------------------------------------
+    # Combined Filtering with min_score Tests (Issue #10 - AC4)
+    # -------------------------------------------------------------------------
+
+    async def test_filter_combined_scenario_and_min_score(self, client, test_db):
+        """Test filtering by both scenario_id and min_score (AND logic)."""
+        import json
+        
+        # Create sessions with different scenarios and scores
+        sessions_data = [
+            ("cafe_order", 85, datetime(2024, 1, 1, 10, 0, 0)),   # Match both
+            ("cafe_order", 75, datetime(2024, 1, 2, 10, 0, 0)),   # Match scenario, low score
+            ("hotel_checkin", 90, datetime(2024, 1, 3, 10, 0, 0)),  # Match score, wrong scenario
+        ]
+        for scenario, score, dt in sessions_data:
+            session = SessionModel(
+                scenario_id=scenario,
+                difficulty="intermediate",
+                created_at=dt,
+                feedback=json.dumps({"overall_score": score, "grammar_score": score,
+                                   "vocabulary_score": score, "fluency_score": score,
+                                   "strengths": [], "focus_area": "test", "example_corrections": []})
+            )
+            test_db.add(session)
+        await test_db.commit()
+        
+        # Filter by cafe_order and min_score=80
+        response = client.get("/sessions/?scenario_id=cafe_order&min_score=80")
+        assert response.status_code == 200
+        data = response.json()
+        
+        assert len(data["sessions"]) == 1
+        assert data["sessions"][0]["scenario_id"] == "cafe_order"
+        assert data["sessions"][0]["overall_score"] == 85
+        assert data["pagination"]["total"] == 1
+
+    async def test_filter_combined_date_and_min_score(self, client, test_db):
+        """Test filtering by date range and min_score (AND logic)."""
+        import json
+        
+        # Create sessions with different dates and scores
+        sessions_data = [
+            (datetime(2024, 1, 1, 10, 0, 0), 85),   # Match both
+            (datetime(2024, 1, 2, 10, 0, 0), 75),   # Match date, low score
+            (datetime(2024, 2, 1, 10, 0, 0), 90),   # Match score, wrong date
+        ]
+        for dt, score in sessions_data:
+            session = SessionModel(
+                scenario_id="cafe_order",
+                difficulty="intermediate",
+                created_at=dt,
+                feedback=json.dumps({"overall_score": score, "grammar_score": score,
+                                   "vocabulary_score": score, "fluency_score": score,
+                                   "strengths": [], "focus_area": "test", "example_corrections": []})
+            )
+            test_db.add(session)
+        await test_db.commit()
+        
+        # Filter by January and min_score=80
+        response = client.get("/sessions/?date_from=2024-01-01&date_to=2024-01-31&min_score=80")
+        assert response.status_code == 200
+        data = response.json()
+        
+        assert len(data["sessions"]) == 1
+        assert data["sessions"][0]["overall_score"] == 85
+        assert data["pagination"]["total"] == 1
+
+    async def test_filter_combined_all_filters(self, client, test_db):
+        """Test filtering by scenario_id, date range, and min_score (AND logic)."""
+        import json
+        
+        # Create sessions with various attributes
+        sessions_data = [
+            ("cafe_order", datetime(2024, 1, 15, 10, 0, 0), 85),   # Match all
+            ("cafe_order", datetime(2024, 1, 15, 10, 0, 0), 75),   # Match scenario+date, low score
+            ("cafe_order", datetime(2024, 2, 1, 10, 0, 0), 90),    # Match scenario+score, wrong date
+            ("hotel_checkin", datetime(2024, 1, 15, 10, 0, 0), 90), # Match date+score, wrong scenario
+        ]
+        for scenario, dt, score in sessions_data:
+            session = SessionModel(
+                scenario_id=scenario,
+                difficulty="intermediate",
+                created_at=dt,
+                feedback=json.dumps({"overall_score": score, "grammar_score": score,
+                                   "vocabulary_score": score, "fluency_score": score,
+                                   "strengths": [], "focus_area": "test", "example_corrections": []})
+            )
+            test_db.add(session)
+        await test_db.commit()
+        
+        # Filter by cafe_order, January, and min_score=80
+        response = client.get("/sessions/?scenario_id=cafe_order&date_from=2024-01-01&date_to=2024-01-31&min_score=80")
+        assert response.status_code == 200
+        data = response.json()
+        
+        assert len(data["sessions"]) == 1
+        assert data["sessions"][0]["scenario_id"] == "cafe_order"
+        assert data["sessions"][0]["overall_score"] == 85
+        assert data["pagination"]["total"] == 1
+
+    async def test_filter_combined_with_pagination_and_min_score(self, client, test_db):
+        """Test filtering by min_score combined with pagination."""
+        import json
+        
+        # Create 15 sessions with scores
+        for i in range(15):
+            score = 60 + i  # Scores from 60 to 74
+            session = SessionModel(
+                scenario_id="cafe_order",
+                difficulty="intermediate",
+                created_at=datetime(2024, 1, 1, 10, 0, 0),
+                feedback=json.dumps({"overall_score": score, "grammar_score": score,
+                                   "vocabulary_score": score, "fluency_score": score,
+                                   "strengths": [], "focus_area": "test", "example_corrections": []})
+            )
+            test_db.add(session)
+        
+        # Add 5 sessions with score >= 75
+        for i in range(5):
+            score = 75 + i  # Scores from 75 to 79
+            session = SessionModel(
+                scenario_id="cafe_order",
+                difficulty="intermediate",
+                created_at=datetime(2024, 1, 2, 10, 0, 0),
+                feedback=json.dumps({"overall_score": score, "grammar_score": score,
+                                   "vocabulary_score": score, "fluency_score": score,
+                                   "strengths": [], "focus_area": "test", "example_corrections": []})
+            )
+            test_db.add(session)
+        await test_db.commit()
+        
+        # Filter by min_score=75 with pagination (5 results, page 1 with per_page=3)
+        response = client.get("/sessions/?min_score=75&page=1&per_page=3")
+        assert response.status_code == 200
+        data = response.json()
+        
+        assert len(data["sessions"]) == 3
+        assert all(s["overall_score"] >= 75 for s in data["sessions"])
+        assert data["pagination"]["page"] == 1
+        assert data["pagination"]["per_page"] == 3
+        assert data["pagination"]["total"] == 5
+        assert data["pagination"]["total_pages"] == 2
