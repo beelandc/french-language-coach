@@ -248,4 +248,215 @@ describe('SessionHistoryItem Component', () => {
       expect(scoreElement).toHaveClass('session-score', 'session-score-pending')
     })
   })
+
+  describe('Delete Functionality (AC-149.1, AC-149.3, AC-149.8, AC-149.9)', () => {
+    const mockOnDelete = vi.fn()
+
+    beforeEach(() => {
+      mockOnDelete.mockClear()
+    })
+
+    it('renders delete button when onDelete is provided and session is completed', () => {
+      render(
+        <SessionHistoryItem 
+          session={mockSessionWithScore} 
+          onClick={mockOnClick} 
+          onDelete={mockOnDelete}
+        />
+      )
+
+      expect(screen.getByTestId('session-delete-button')).toBeInTheDocument()
+      expect(screen.getByText('Delete')).toBeInTheDocument()
+    })
+
+    it('does not render delete button when onDelete is not provided', () => {
+      render(
+        <SessionHistoryItem 
+          session={mockSessionWithScore} 
+          onClick={mockOnClick}
+        />
+      )
+
+      expect(screen.queryByTestId('session-delete-button')).not.toBeInTheDocument()
+    })
+
+    it('disables delete button for active sessions (ended_at is null) (AC-149.8)', () => {
+      render(
+        <SessionHistoryItem 
+          session={mockSessionWithoutEndedAt} 
+          onClick={mockOnClick} 
+          onDelete={mockOnDelete}
+        />
+      )
+
+      const deleteButton = screen.getByTestId('session-delete-button')
+      expect(deleteButton).toBeDisabled()
+    })
+
+    it('enables delete button for completed sessions (ended_at is not null)', () => {
+      render(
+        <SessionHistoryItem 
+          session={mockSessionWithScore} 
+          onClick={mockOnClick} 
+          onDelete={mockOnDelete}
+        />
+      )
+
+      const deleteButton = screen.getByTestId('session-delete-button')
+      expect(deleteButton).not.toBeDisabled()
+    })
+
+    it('has tooltip for disabled delete button on active session', () => {
+      render(
+        <SessionHistoryItem 
+          session={mockSessionWithoutEndedAt} 
+          onClick={mockOnClick} 
+          onDelete={mockOnDelete}
+        />
+      )
+
+      const deleteButton = screen.getByTestId('session-delete-button')
+      expect(deleteButton).toHaveAttribute('title', 'Cannot delete active session')
+    })
+
+    it('opens confirmation modal when delete button is clicked (AC-149.3)', () => {
+      render(
+        <SessionHistoryItem 
+          session={mockSessionWithScore} 
+          onClick={mockOnClick} 
+          onDelete={mockOnDelete}
+        />
+      )
+
+      const deleteButton = screen.getByTestId('session-delete-button')
+      fireEvent.click(deleteButton)
+
+      // Modal should be opened
+      expect(screen.getByTestId('modal')).toBeInTheDocument()
+      expect(screen.getByText('Delete Session')).toBeInTheDocument()
+    })
+
+    it('does not trigger item click when delete button is clicked', () => {
+      render(
+        <SessionHistoryItem 
+          session={mockSessionWithScore} 
+          onClick={mockOnClick} 
+          onDelete={mockOnDelete}
+        />
+      )
+
+      const deleteButton = screen.getByTestId('session-delete-button')
+      fireEvent.click(deleteButton)
+
+      // onClick should not be called
+      expect(mockOnClick).not.toHaveBeenCalled()
+      // But modal should open
+      expect(screen.getByTestId('modal')).toBeInTheDocument()
+    })
+
+    it('displays loading state on delete button when deletion in progress (AC-149.9)', async () => {
+      // Mock onDelete to simulate loading
+      mockOnDelete.mockImplementation(() => new Promise(() => {}))
+
+      render(
+        <SessionHistoryItem 
+          session={mockSessionWithScore} 
+          onClick={mockOnClick} 
+          onDelete={mockOnDelete}
+        />
+      )
+
+      const deleteButton = screen.getByTestId('session-delete-button')
+      fireEvent.click(deleteButton)
+
+      // Click confirm in modal
+      fireEvent.click(screen.getByTestId('modal-confirm'))
+
+      // Button should show loading text
+      expect(screen.getByText('Deleting...')).toBeInTheDocument()
+    })
+
+    it('calls onDelete with session id when confirmed', async () => {
+      render(
+        <SessionHistoryItem 
+          session={mockSessionWithScore} 
+          onClick={mockOnClick} 
+          onDelete={mockOnDelete}
+        />
+      )
+
+      const deleteButton = screen.getByTestId('session-delete-button')
+      fireEvent.click(deleteButton)
+
+      // Click confirm in modal
+      fireEvent.click(screen.getByTestId('modal-confirm'))
+
+      // Wait for the async call
+      await vi.waitFor(() => {
+        expect(mockOnDelete).toHaveBeenCalledWith('123')
+      })
+    })
+
+    it('closes modal when delete is cancelled', () => {
+      render(
+        <SessionHistoryItem 
+          session={mockSessionWithScore} 
+          onClick={mockOnClick} 
+          onDelete={mockOnDelete}
+        />
+      )
+
+      const deleteButton = screen.getByTestId('session-delete-button')
+      fireEvent.click(deleteButton)
+
+      // Modal should be open
+      expect(screen.getByTestId('modal')).toBeInTheDocument()
+
+      // Click cancel
+      fireEvent.click(screen.getByTestId('modal-cancel'))
+
+      // Modal should be closed
+      expect(screen.queryByTestId('modal')).not.toBeInTheDocument()
+    })
+
+    it('displays error message when delete fails', async () => {
+      mockOnDelete.mockRejectedValue(new Error('Session not found'))
+
+      render(
+        <SessionHistoryItem 
+          session={mockSessionWithScore} 
+          onClick={mockOnClick} 
+          onDelete={mockOnDelete}
+        />
+      )
+
+      const deleteButton = screen.getByTestId('session-delete-button')
+      fireEvent.click(deleteButton)
+
+      // Click confirm in modal
+      fireEvent.click(screen.getByTestId('modal-confirm'))
+
+      // Wait for error to be displayed
+      await vi.waitFor(() => {
+        expect(screen.getByText('Session not found')).toBeInTheDocument()
+      })
+    })
+
+    it('includes session info in confirmation message (AC-149.3)', () => {
+      render(
+        <SessionHistoryItem 
+          session={mockSessionWithScore} 
+          onClick={mockOnClick} 
+          onDelete={mockOnDelete}
+        />
+      )
+
+      const deleteButton = screen.getByTestId('session-delete-button')
+      fireEvent.click(deleteButton)
+
+      // Should include scenario name and date
+      expect(screen.getByText(/Ordering at a Café/)).toBeInTheDocument()
+      expect(screen.getByText(/This action cannot be undone/)).toBeInTheDocument()
+    })
+  })
 })

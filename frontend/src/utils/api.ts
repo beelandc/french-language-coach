@@ -40,6 +40,11 @@ export async function api<T>(endpoint: string, options: ApiOptions = {}): Promis
     throw new Error(errorMessage)
   }
 
+  // Handle 204 No Content responses (e.g., DELETE requests)
+  if (response.status === 204) {
+    return undefined as unknown as T
+  }
+
   return response.json() as Promise<T>
 }
 
@@ -74,6 +79,11 @@ export const sessionApi = {
   listSessions: (page: number = 1, perPage: number = 10) =>
     api<SessionListResponse>(`/sessions/?page=${page}&per_page=${perPage}`,
       { method: 'GET' }
+    ),
+
+  deleteSession: (sessionId: string) =>
+    api<void>(`/sessions/${sessionId}`,
+      { method: 'DELETE' }
     ),
 }
 
