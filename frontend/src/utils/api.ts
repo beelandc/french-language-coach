@@ -65,6 +65,11 @@ export const sessionApi = {
     api<Feedback>(`/sessions/${sessionId}/feedback/`,
       { method: 'POST' }
     ),
+
+  getSession: (sessionId: string) =>
+    api<Session>(`/sessions/${sessionId}`,
+      { method: 'GET' }
+    ),
 }
 
 // Re-export types for convenience
