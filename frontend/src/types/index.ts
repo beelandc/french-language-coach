@@ -128,3 +128,36 @@ export interface SessionsContextType {
   setCurrentSessionId: (id: string | null) => void
   clearError: () => void
 }
+
+// Session History types
+export interface SessionSummary {
+  id: string
+  scenario_id: string
+  scenario_name: string
+  difficulty: string
+  created_at: string
+  ended_at: string | null
+  overall_score: number | null
+}
+
+export interface PaginationInfo {
+  total: number
+  page: number
+  per_page: number
+  total_pages: number
+}
+
+export interface SessionListResponse {
+  sessions: SessionSummary[]
+  pagination: PaginationInfo
+}
+
+// Session History component prop types
+export interface SessionHistoryProps {
+  onSessionClick: (sessionId: string) => void
+}
+
+export interface SessionHistoryItemProps {
+  session: SessionSummary
+  onClick: (sessionId: string) => void
+}

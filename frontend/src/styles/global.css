@@ -379,3 +379,135 @@ header h1 {
         align-self: flex-start;
     }
 }
+
+/* Session History */
+.section-divider {
+    border: 0;
+    border-top: 1px solid #e0e0e0;
+    margin: 40px 0;
+}
+
+.session-history {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    margin-top: 20px;
+}
+
+.session-history h3 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+/* Loading, error, and empty states */
+.loading-state,
+.error-state,
+.empty-state {
+    padding: 20px;
+    text-align: center;
+    color: #666;
+}
+
+.error-message {
+    color: #d32f2f;
+    margin-bottom: 15px;
+}
+
+/* Session list */
+.sessions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Session item */
+.session-item {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+    border-left: 4px solid #4a90e2;
+}
+
+.session-item:hover {
+    transform: translateX(4px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background: #f0f1f5;
+}
+
+.session-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.session-item-header h4 {
+    color: #2c3e50;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.session-difficulty {
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.session-item-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.session-date {
+    font-weight: 500;
+}
+
+.session-ended {
+    color: #888;
+    font-size: 0.8rem;
+}
+
+.session-item-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+}
+
+.session-score {
+    color: #333;
+}
+
+.session-score strong {
+    color: #2c3e50;
+    font-size: 1rem;
+}
+
+.session-score-pending {
+    color: #888;
+    font-style: italic;
+}
+
+.view-detail {
+    color: #4a90e2;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.view-detail:hover {
+    text-decoration: underline;
+}
