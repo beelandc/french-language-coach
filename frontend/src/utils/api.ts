@@ -75,6 +75,11 @@ export const sessionApi = {
     api<SessionListResponse>(`/sessions/?page=${page}&per_page=${perPage}`,
       { method: 'GET' }
     ),
+
+  deleteSession: (sessionId: string) =>
+    api<void>(`/sessions/${sessionId}`,
+      { method: 'DELETE' }
+    ),
 }
 
 // Re-export types for convenience

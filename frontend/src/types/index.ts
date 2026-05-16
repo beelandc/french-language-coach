@@ -160,4 +160,17 @@ export interface SessionHistoryProps {
 export interface SessionHistoryItemProps {
   session: SessionSummary
   onClick: (sessionId: string) => void
+  onDelete?: (sessionId: string) => void
+}
+
+// Confirmation Modal types
+export interface ConfirmationModalProps {
+  isOpen: boolean
+  onCancel: () => void
+  onConfirm: () => void
+  title: string
+  message: string
+  confirmText?: string
+  cancelText?: string
+  isLoading?: boolean
 }

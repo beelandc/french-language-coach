@@ -6,11 +6,13 @@ import SessionHistoryItem from './SessionHistoryItem'
 /**
  * SessionHistory component displays a list of past user sessions.
  * It handles loading, error, and empty states gracefully.
+ * Supports session deletion with success messages.
  */
 export default function SessionHistory({ onSessionClick }: SessionHistoryProps) {
   const [sessions, setSessions] = useState<SessionSummary[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   // Fetch session list on mount
   useEffect(() => {
@@ -69,6 +71,25 @@ export default function SessionHistory({ onSessionClick }: SessionHistoryProps) 
       })
   }, [])
 
+  // Handle session deletion
+  const handleDeleteSession = useCallback(async (sessionId: string) => {
+    try {
+      await sessionApi.deleteSession(sessionId)
+      
+      // Optimistically remove from UI (backend already returned 204)
+      setSessions(prev => prev.filter(s => s.id !== sessionId))
+      setSuccessMessage('Session deleted successfully')
+      
+      // Clear success message after 3 seconds
+      setTimeout(() => {
+        setSuccessMessage(null)
+      }, 3000)
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to delete session'
+      throw new Error(errorMessage)
+    }
+  }, [])
+
   if (isLoading) {
     return (
       <div className="session-history">
@@ -108,12 +129,21 @@ export default function SessionHistory({ onSessionClick }: SessionHistoryProps) 
   return (
     <div className="session-history">
       <h3>Session History</h3>
+      
+      {/* Success message for delete operations */}
+      {successMessage && (
+        <div className="session-message success" role="alert">
+          {successMessage}
+        </div>
+      )}
+      
       <div className="sessions-list">
         {sessions.map((session) => (
           <SessionHistoryItem
             key={session.id}
             session={session}
             onClick={onSessionClick}
+            onDelete={handleDeleteSession}
           />
         ))}
       </div>

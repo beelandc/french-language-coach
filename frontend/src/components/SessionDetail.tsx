@@ -5,6 +5,7 @@ import type { SessionDetailProps, Session, Message, Feedback } from '../types'
 import MessageBubble from './MessageBubble'
 import ScoreCard from './ScoreCard'
 import CorrectionItem from './CorrectionItem'
+import ConfirmationModal from './ConfirmationModal'
 
 /**
  * SessionDetail component displays the full conversation transcript and feedback report
@@ -14,7 +15,13 @@ export default function SessionDetail({ sessionId }: SessionDetailProps) {
   const [session, setSession] = useState<Session | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
   const navigate = useNavigate()
+
+  // Check if session is active (cannot be deleted)
+  const isActiveSession = session ? session.ended_at === null : true
 
   // Map scenario IDs to human-readable names
   const getScenarioName = useCallback((scenarioId: string): string => {
@@ -97,6 +104,54 @@ export default function SessionDetail({ sessionId }: SessionDetailProps) {
   const handleBack = () => {
     navigate('/')
   }
+
+  // Handle delete button click - open confirmation modal
+  const handleDeleteClick = useCallback(() => {
+    setDeleteError(null)
+    setShowDeleteModal(true)
+  }, [])
+
+  // Handle delete confirmation
+  const handleConfirmDelete = useCallback(async () => {
+    if (!sessionId) return
+
+    setIsDeleting(true)
+    setDeleteError(null)
+
+    try {
+      await sessionApi.deleteSession(sessionId)
+      // On success, redirect to home page
+      navigate('/')
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to delete session'
+      setDeleteError(errorMessage)
+      setShowDeleteModal(false)
+    } finally {
+      setIsDeleting(false)
+    }
+  }, [sessionId, navigate])
+
+  // Handle delete cancellation
+  const handleCancelDelete = useCallback(() => {
+    setShowDeleteModal(false)
+    setDeleteError(null)
+  }, [])
+
+  // Format date for display in modal
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    })
+  }
+
+  // Get scenario name for display
+  const getScenarioDisplayName = useCallback((): string => {
+    if (!session) return ''
+    return getScenarioName(session.scenario_id)
+  }, [session, getScenarioName])
 
   if (isLoading) {
     return (
@@ -245,12 +300,46 @@ export default function SessionDetail({ sessionId }: SessionDetailProps) {
         </div>
       )}
 
-      {/* Back button at bottom */}
+      {/* Delete error message */}
+      {deleteError && (
+        <div className="session-message error" role="alert">
+          {deleteError}
+        </div>
+      )}
+
+      {/* Actions at bottom */}
       <div className="session-actions">
         <button className="btn-secondary" onClick={handleBack}>
           Back to Home
         </button>
+        
+        {/* Delete button - only show for completed sessions */}
+        {!isActiveSession && (
+          <button
+            className="btn-danger session-delete-button"
+            onClick={handleDeleteClick}
+            disabled={isDeleting}
+            data-testid="session-detail-delete-button"
+            aria-label={`Delete session ${getScenarioDisplayName()}`}
+          >
+            {isDeleting ? 'Deleting...' : 'Delete Session'}
+          </button>
+        )}
       </div>
+
+      {/* Confirmation Modal for delete */}
+      {showDeleteModal && session && (
+        <ConfirmationModal
+          isOpen={showDeleteModal}
+          onCancel={handleCancelDelete}
+          onConfirm={handleConfirmDelete}
+          title="Delete Session"
+          message={`Are you sure you want to delete "${getScenarioDisplayName()}" from ${formatDate(session.created_at)}? This action cannot be undone.`}
+          confirmText="Delete"
+          cancelText="Cancel"
+          isLoading={isDeleting}
+        />
+      )}
     </div>
   )
 }

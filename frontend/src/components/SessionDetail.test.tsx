@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import SessionDetail from './SessionDetail'
 import type { Session, Message, Feedback } from '../types'
@@ -8,6 +8,7 @@ import type { Session, Message, Feedback } from '../types'
 vi.mock('../utils/api', () => ({
   sessionApi: {
     getSession: vi.fn(),
+    deleteSession: vi.fn(),
   },
 }))
 
@@ -490,6 +491,184 @@ describe('SessionDetail Component', () => {
       await waitFor(() => {
         expect(screen.getByText('No session ID provided')).toBeInTheDocument()
       })
+    })
+  })
+
+  describe('Delete Functionality (AC-149.2, AC-149.4, AC-149.6, AC-149.7, AC-149.8, AC-149.9)', () => {
+    beforeEach(() => {
+      ;(sessionApi.getSession as jest.Mock).mockResolvedValue({
+        id: 123,
+        scenario_id: 'cafe_order',
+        difficulty: 'intermediate',
+        created_at: '2026-05-15T10:00:00Z',
+        ended_at: '2026-05-15T10:15:00Z',
+        messages: [],
+        feedback: null,
+      })
+      ;(sessionApi.deleteSession as jest.Mock).mockResolvedValue(undefined)
+    })
+
+    it('renders delete button for completed session (AC-149.2)', async () => {
+      renderWithRouter('123')
+
+      await waitFor(() => {
+        expect(screen.getByTestId('session-detail-delete-button')).toBeInTheDocument()
+        expect(screen.getByText('Delete Session')).toBeInTheDocument()
+      })
+    })
+
+    it('does not render delete button for active session (AC-149.8)', async () => {
+      ;(sessionApi.getSession as jest.Mock).mockResolvedValue({
+        id: 456,
+        scenario_id: 'ask_directions',
+        difficulty: 'beginner',
+        created_at: '2026-05-15T11:00:00Z',
+        ended_at: null, // Active session
+        messages: [],
+        feedback: null,
+      })
+
+      renderWithRouter('456')
+
+      await waitFor(() => {
+        expect(screen.queryByTestId('session-detail-delete-button')).not.toBeInTheDocument()
+      })
+    })
+
+    it('opens confirmation modal when delete button is clicked (AC-149.3)', async () => {
+      renderWithRouter('123')
+
+      await waitFor(() => {
+        const deleteButton = screen.getByTestId('session-detail-delete-button')
+        fireEvent.click(deleteButton)
+      })
+
+      // Modal should be opened
+      expect(screen.getByTestId('modal')).toBeInTheDocument()
+      expect(screen.getByText('Delete Session')).toBeInTheDocument()
+    })
+
+    it('calls deleteSession API when confirmed (AC-149.4)', async () => {
+      renderWithRouter('123')
+
+      await waitFor(() => {
+        const deleteButton = screen.getByTestId('session-detail-delete-button')
+        fireEvent.click(deleteButton)
+      })
+
+      // Click confirm in modal
+      fireEvent.click(screen.getByTestId('modal-confirm'))
+
+      await waitFor(() => {
+        expect(sessionApi.deleteSession).toHaveBeenCalledWith('123')
+      })
+    })
+
+    it('redirects to home page on successful deletion (AC-149.6)', async () => {
+      renderWithRouter('123')
+
+      await waitFor(() => {
+        const deleteButton = screen.getByTestId('session-detail-delete-button')
+        fireEvent.click(deleteButton)
+      })
+
+      // Click confirm in modal
+      fireEvent.click(screen.getByTestId('modal-confirm'))
+
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith('/')
+      })
+    })
+
+    it('displays error message when deletion fails (AC-149.7)', async () => {
+      ;(sessionApi.deleteSession as jest.Mock).mockRejectedValue(
+        new Error('Cannot delete active session')
+      )
+
+      renderWithRouter('123')
+
+      await waitFor(() => {
+        const deleteButton = screen.getByTestId('session-detail-delete-button')
+        fireEvent.click(deleteButton)
+      })
+
+      // Click confirm in modal
+      fireEvent.click(screen.getByTestId('modal-confirm'))
+
+      await waitFor(() => {
+        expect(screen.getByText('Cannot delete active session')).toBeInTheDocument()
+      })
+    })
+
+    it('includes session info in confirmation message (AC-149.3)', async () => {
+      renderWithRouter('123')
+
+      await waitFor(() => {
+        const deleteButton = screen.getByTestId('session-detail-delete-button')
+        fireEvent.click(deleteButton)
+      })
+
+      // Should include scenario name and date
+      expect(screen.getByText(/Ordering at a Café/)).toBeInTheDocument()
+      expect(screen.getByText(/This action cannot be undone/)).toBeInTheDocument()
+    })
+
+    it('shows loading state during deletion (AC-149.9)', async () => {
+      // Mock deleteSession to simulate loading
+      ;(sessionApi.deleteSession as jest.Mock).mockImplementation(
+        () => new Promise(() => {})
+      )
+
+      renderWithRouter('123')
+
+      await waitFor(() => {
+        const deleteButton = screen.getByTestId('session-detail-delete-button')
+        fireEvent.click(deleteButton)
+      })
+
+      // Click confirm in modal
+      fireEvent.click(screen.getByTestId('modal-confirm'))
+
+      // Button should show loading text
+      expect(screen.getByText('Deleting...')).toBeInTheDocument()
+    })
+
+    it('closes modal when delete is cancelled', async () => {
+      renderWithRouter('123')
+
+      await waitFor(() => {
+        const deleteButton = screen.getByTestId('session-detail-delete-button')
+        fireEvent.click(deleteButton)
+      })
+
+      // Modal should be open
+      expect(screen.getByTestId('modal')).toBeInTheDocument()
+
+      // Click cancel
+      fireEvent.click(screen.getByTestId('modal-cancel'))
+
+      // Modal should be closed
+      expect(screen.queryByTestId('modal')).not.toBeInTheDocument()
+    })
+
+    it('disables delete button during deletion (AC-149.9)', async () => {
+      // Mock deleteSession to simulate loading
+      ;(sessionApi.deleteSession as jest.Mock).mockImplementation(
+        () => new Promise(() => {})
+      )
+
+      renderWithRouter('123')
+
+      await waitFor(() => {
+        const deleteButton = screen.getByTestId('session-detail-delete-button')
+        fireEvent.click(deleteButton)
+      })
+
+      // Click confirm in modal
+      fireEvent.click(screen.getByTestId('modal-confirm'))
+
+      // Original delete button should be disabled
+      expect(screen.getByTestId('session-detail-delete-button')).toBeDisabled()
     })
   })
 })
