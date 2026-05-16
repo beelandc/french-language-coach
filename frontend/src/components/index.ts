@@ -2,6 +2,7 @@
 export { default as ScenarioSelector } from './ScenarioSelector'
 export { default as ChatInterface } from './ChatInterface'
 export { default as FeedbackView } from './FeedbackView'
+export { default as SessionDetail } from './SessionDetail'
 export { default as ScenarioCard } from './ScenarioCard'
 export { default as MessageBubble } from './MessageBubble'
 export { default as ChatHeader } from './ChatHeader'

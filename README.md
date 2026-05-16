@@ -12,8 +12,9 @@ Users select a conversation scenario (e.g., ordering at a café, asking for dire
 2. **Start Chatting**: Type messages in French and get responses from the AI tutor
 3. **End Session**: Click "End Session" to receive detailed feedback
 4. **Review Feedback**: See scores for grammar, vocabulary, fluency, and overall performance with specific corrections
-5. **Navigate**: Use the Back button to return to scenario selection or start a new session
-5. **Start Again**: Begin a new session with any scenario
+5. **Review Session Details**: Navigate to `/sessions/{id}` to view full conversation transcript alongside feedback
+6. **Navigate**: Use the Back button to return to scenario selection or start a new session
+7. **Start Again**: Begin a new session with any scenario
 
 ### Difficulty Levels
 
@@ -41,6 +42,7 @@ Each scenario supports three difficulty levels that affect the AI's system promp
 - Conversation history stored in SQLite
 - Structured feedback with grammar, vocabulary, fluency scores
 - Example corrections with explanations
+- Session detail view combining transcript and feedback
 - Clean, responsive single-page interface
 
 ## Setup & Installation
@@ -193,6 +195,8 @@ french-language-coach/
 │   │   │   ├── ChatInterface.stories.tsx
 │   │   │   ├── FeedbackView.tsx
 │   │   │   ├── FeedbackView.stories.tsx
+│   │   │   ├── SessionDetail.tsx
+│   │   │   ├── SessionDetail.stories.tsx
 │   │   │   ├── ScenarioSelector.tsx
 │   │   │   ├── ScenarioSelector.stories.tsx
 │   │   │   ├── ChatHeader.tsx
@@ -209,7 +213,8 @@ french-language-coach/
 │   │   ├── pages/           # Page-level components (React Router routes)
 │   │   │   ├── HomePage.tsx
 │   │   │   ├── ChatPage.tsx
-│   │   │   └── FeedbackPage.tsx
+│   │   │   ├── FeedbackPage.tsx
+│   │   │   └── SessionDetailPage.tsx
 │   │   ├── hooks/           # Custom React hooks
 │   │   │   ├── useSessions.tsx
 │   │   │   └── index.ts

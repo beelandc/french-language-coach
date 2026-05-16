@@ -104,6 +104,10 @@ export interface FeedbackViewProps {
   sessionId: string
 }
 
+export interface SessionDetailProps {
+  sessionId: string
+}
+
 // Deprecated: Use MessageBubbleProps instead
 export interface MessageProps {
   message: Message
