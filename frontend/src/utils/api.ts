@@ -40,6 +40,11 @@ export async function api<T>(endpoint: string, options: ApiOptions = {}): Promis
     throw new Error(errorMessage)
   }
 
+  // Handle 204 No Content responses (e.g., DELETE requests)
+  if (response.status === 204) {
+    return undefined as unknown as T
+  }
+
   return response.json() as Promise<T>
 }
 
