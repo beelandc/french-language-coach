@@ -70,6 +70,11 @@ export const sessionApi = {
     api<Session>(`/sessions/${sessionId}`,
       { method: 'GET' }
     ),
+
+  listSessions: (page: number = 1, perPage: number = 10) =>
+    api<SessionListResponse>(`/sessions/?page=${page}&per_page=${perPage}`,
+      { method: 'GET' }
+    ),
 }
 
 // Re-export types for convenience
@@ -80,4 +85,7 @@ export type {
   Session,
   Correction,
   ApiError,
+  SessionSummary,
+  PaginationInfo,
+  SessionListResponse,
 } from '../types/index'
