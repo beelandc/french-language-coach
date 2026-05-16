@@ -394,6 +394,77 @@ This project uses **GitHub Flow with Issue-Based Branching**: one dedicated bran
 - Single-user only (all sessions stored in one database)
 - Requires Mistral API key (paid service)
 
+## Running Tests
+
+This project has test suites for both the backend and frontend components.
+
+### Backend Tests
+
+The backend uses **pytest** with **pytest-asyncio** for testing FastAPI endpoints, services, and schemas.
+
+**Prerequisites:**
+- Python virtual environment activated
+- Backend dependencies installed (`pip install -r requirements.txt`)
+
+**To run all backend tests:**
+```bash
+pytest
+```
+
+**To run with verbose output:**
+```bash
+pytest -v
+```
+
+**To run a specific test file:**
+```bash
+pytest tests/test_sessions_listing.py
+```
+
+**To run with test coverage:**
+```bash
+pytest --cov=. --cov-report=term-missing
+```
+
+**Available backend test files:**
+- `tests/test_scenarios.py` - Tests for scenario difficulty levels
+- `tests/test_schemas.py` - Tests for Pydantic schemas
+- `tests/test_sessions_listing.py` - Tests for session listing and filtering endpoints
+- `tests/test_session_deletion.py` - Tests for session deletion endpoint
+
+### Frontend Tests
+
+The frontend uses **Vitest** for unit and component testing.
+
+**Prerequisites:**
+- Frontend dependencies installed (`cd frontend && npm install`)
+
+**To run all frontend tests:**
+```bash
+cd frontend
+npm run test
+```
+
+**To run tests with UI mode:**
+```bash
+cd frontend
+npm run test:ui
+```
+
+**To run tests with coverage:**
+```bash
+cd frontend
+npm run test:coverage
+```
+
+**To run Storybook interaction tests:**
+```bash
+cd frontend
+npm run test:storybook
+```
+
+> **Note:** Frontend test scripts are defined in `frontend/package.json`. If Vitest is not yet configured, you can add it with: `cd frontend && npm install -D vitest @testing-library/react @testing-library/jest-dom`
+
 ## License
 
 MIT License
