@@ -1,6 +1,6 @@
 import { useState, useCallback, createContext, useContext } from 'react'
 import { sessionApi } from '../utils/api'
-import type { Session, Message, Feedback } from '../types'
+import type { Session, Message, Feedback, Difficulty } from '../types'
 
 interface SessionsContextType {
   sessions: Session[]
@@ -9,7 +9,7 @@ interface SessionsContextType {
   sessionEnded: boolean
   isLoading: boolean
   error: string | null
-  createSession: (scenarioId: string) => Promise<string>
+  createSession: (scenarioId: string, difficulty?: Difficulty) => Promise<string>
   sendMessage: (sessionId: string, content: string) => Promise<Message>
   getFeedback: (sessionId: string, forceRefresh?: boolean) => Promise<Feedback | null>
   endSession: () => void
@@ -35,12 +35,12 @@ export function SessionsProvider({ children }: SessionsProviderProps) {
 
   const clearError = useCallback(() => setError(null), [])
 
-  const createSession = useCallback(async (scenarioId: string): Promise<string> => {
+  const createSession = useCallback(async (scenarioId: string, difficulty?: Difficulty): Promise<string> => {
     setIsLoading(true)
     setError(null)
 
     try {
-      const response = await sessionApi.create(scenarioId)
+      const response = await sessionApi.create(scenarioId, difficulty)
       const newSessionId = String(response.id) // Ensure string type
       setCurrentSessionId(newSessionId)
       setCurrentScenarioId(scenarioId)
@@ -51,6 +51,7 @@ export function SessionsProvider({ children }: SessionsProviderProps) {
         {
           id: newSessionId,
           scenario_id: scenarioId,
+          difficulty: difficulty || 'intermediate',
           created_at: response.created_at,
           ended_at: null,
           messages: [],

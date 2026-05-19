@@ -10,9 +10,10 @@ import { vi, beforeAll, afterEach, afterAll } from 'vitest'
 // Create a mock sessionApi module to prevent real HTTP requests
 // This mock is used by components that import sessionApi directly (like SessionHistory)
 const mockSessionApi = {
-  create: vi.fn(async (scenarioId: string) => ({
+  create: vi.fn(async (scenarioId: string, difficulty?: string) => ({
     id: Date.now(),
     scenario_id: scenarioId,
+    difficulty: difficulty || 'intermediate',
     created_at: new Date().toISOString(),
   })),
   sendMessage: vi.fn(async (sessionId: string, content: string) => ({

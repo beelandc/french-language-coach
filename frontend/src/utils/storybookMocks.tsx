@@ -60,6 +60,7 @@ const mockFeedback: Feedback = {
 const mockSession: Session = {
   id: 'mock-session-1',
   scenario_id: 'cafe_order',
+  difficulty: 'intermediate',
   created_at: '2024-01-15T10:30:00Z',
   ended_at: null,
   messages: mockMessages,
@@ -69,6 +70,7 @@ const mockSession: Session = {
 const mockEndedSession: Session = {
   id: 'mock-ended-session-1',
   scenario_id: 'cafe_order',
+  difficulty: 'intermediate',
   created_at: '2024-01-15T10:30:00Z',
   ended_at: '2024-01-15T10:35:00Z',
   messages: mockMessages,
@@ -78,6 +80,7 @@ const mockEndedSession: Session = {
 const mockEmptySession: Session = {
   id: 'empty-session-1',
   scenario_id: 'cafe_order',
+  difficulty: 'intermediate',
   created_at: '2024-01-15T10:30:00Z',
   ended_at: null,
   messages: [],
@@ -117,7 +120,7 @@ export function MockSessionsProvider({
 
   const clearError = useCallback(() => setError(null), [])
 
-  const createSession = useCallback(async (scenarioId: string): Promise<string> => {
+  const createSession = useCallback(async (scenarioId: string, difficulty?: string): Promise<string> => {
     setIsLoading(true)
     setError(null)
 
@@ -134,6 +137,7 @@ export function MockSessionsProvider({
       {
         id: newSessionId,
         scenario_id: scenarioId,
+        difficulty: (difficulty || 'intermediate') as const,
         created_at: new Date().toISOString(),
         ended_at: null,
         messages: [],

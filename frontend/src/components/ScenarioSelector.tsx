@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSessions } from '../hooks/useSessions'
-import type { Scenario } from '../types'
+import type { Scenario, Difficulty } from '../types'
 import ScenarioCard from './ScenarioCard'
+import DifficultySelector from './DifficultySelector'
 
 // Hardcoded scenarios matching backend - will fetch from API in future
 const SCENARIOS: Scenario[] = [
@@ -21,6 +22,7 @@ const SCENARIOS: Scenario[] = [
 export default function ScenarioSelector() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>('intermediate')
   const { createSession, isLoading: isCreating } = useSessions()
   const navigate = useNavigate()
 
@@ -32,13 +34,17 @@ export default function ScenarioSelector() {
     return () => clearTimeout(timer)
   }, [])
 
+  const handleDifficultyChange = useCallback((difficulty: Difficulty) => {
+    setSelectedDifficulty(difficulty)
+  }, [])
+
   const handleScenarioClick = async (scenarioId: string) => {
     if (isCreating) return
     
     setError(null)
     
     try {
-      const sessionId = await createSession(scenarioId)
+      const sessionId = await createSession(scenarioId, selectedDifficulty)
       // Navigate to chat page with the new session ID
       navigate(`/chat/${sessionId}`)
     } catch (err) {
@@ -55,6 +61,15 @@ export default function ScenarioSelector() {
   return (
     <>
       {error && <div className="error-message">{error}</div>}
+      
+      {/* Difficulty Selector - allows user to choose difficulty before starting */}
+      <div className="difficulty-selector-container">
+        <DifficultySelector 
+          onDifficultyChange={handleDifficultyChange} 
+          defaultDifficulty={selectedDifficulty}
+        />
+      </div>
+      
       <div className="scenarios-grid">
         {SCENARIOS.map(scenario => (
           <ScenarioCard

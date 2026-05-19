@@ -9,12 +9,13 @@ Users select a conversation scenario (e.g., ordering at a café, asking for dire
 ## Usage
 
 1. **Select a Scenario**: Choose from 10 built-in conversation scenarios
-2. **Start Chatting**: Type messages in French and get responses from the AI tutor
-3. **End Session**: Click "End Session" to receive detailed feedback
-4. **Review Feedback**: See scores for grammar, vocabulary, fluency, and overall performance with specific corrections
-5. **Review Session Details**: Navigate to `/sessions/{id}` to view full conversation transcript alongside feedback
-6. **Navigate**: Use the Back button to return to scenario selection or start a new session
-7. **Start Again**: Begin a new session with any scenario
+2. **Select Difficulty**: Choose your difficulty level (Beginner, Intermediate, or Advanced) to tailor the AI's responses to your proficiency
+3. **Start Chatting**: Type messages in French and get responses from the AI tutor
+4. **End Session**: Click "End Session" to receive detailed feedback
+5. **Review Feedback**: See scores for grammar, vocabulary, fluency, and overall performance with specific corrections
+6. **Review Session Details**: Navigate to `/sessions/{id}` to view full conversation transcript alongside feedback
+7. **Navigate**: Use the Back button to return to scenario selection or start a new session
+8. **Start Again**: Begin a new session with any scenario
 
 ### Difficulty Levels
 
@@ -191,6 +192,9 @@ french-language-coach/
 ├── frontend/                # React SPA frontend (Vite + TypeScript)
 │   ├── src/
 │   │   ├── components/      # Reusable UI components + Storybook stories
+│   │   │   ├── DifficultySelector.tsx
+│   │   │   ├── DifficultySelector.stories.tsx
+│   │   │   ├── DifficultySelector.test.tsx
 │   │   │   ├── ChatInterface.tsx
 │   │   │   ├── ChatInterface.stories.tsx
 │   │   │   ├── FeedbackView.tsx

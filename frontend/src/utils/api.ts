@@ -51,10 +51,10 @@ export async function api<T>(endpoint: string, options: ApiOptions = {}): Promis
 // Session API functions
 // Note: Backend returns session_id as integer, but we coerce to string for frontend consistency
 export const sessionApi = {
-  create: (scenarioId: string) => 
-    api<{ id: number; scenario_id: string; created_at: string }>('/sessions/', {
+  create: (scenarioId: string, difficulty?: string) => 
+    api<{ id: number; scenario_id: string; difficulty: string; created_at: string }>('/sessions/', {
       method: 'POST',
-      data: { scenario_id: scenarioId },
+      data: { scenario_id: scenarioId, ...(difficulty && { difficulty }) },
     }),
 
   sendMessage: (sessionId: string, content: string) =>
@@ -98,4 +98,6 @@ export type {
   SessionSummary,
   PaginationInfo,
   SessionListResponse,
+  Difficulty,
+  DifficultySelectorProps,
 } from '../types/index'
