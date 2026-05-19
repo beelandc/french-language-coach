@@ -1,5 +1,8 @@
 // API Type Definitions for French Language Coach
 
+// Difficulty types
+export type Difficulty = 'beginner' | 'intermediate' | 'advanced'
+
 // Scenario types
 export interface Scenario {
   id: string
@@ -29,6 +32,7 @@ export interface BackendMessage {
 export interface Session {
   id: string
   scenario_id: string
+  difficulty?: Difficulty
   created_at: string
   ended_at: string | null
   messages: Message[]
@@ -57,6 +61,7 @@ export interface Feedback {
 export interface CreateSessionResponse {
   id: string
   scenario_id: string
+  difficulty?: Difficulty
   created_at: string
 }
 
@@ -71,6 +76,11 @@ export interface ApiError {
 }
 
 // Component prop types
+export interface DifficultySelectorProps {
+  onDifficultyChange: (difficulty: Difficulty) => void
+  defaultDifficulty?: Difficulty
+}
+
 export interface ScenarioCardProps {
   scenario: Scenario
   onClick: () => void
@@ -121,7 +131,7 @@ export interface SessionsContextType {
   sessionEnded: boolean
   isLoading: boolean
   error: string | null
-  createSession: (scenarioId: string) => Promise<string>
+  createSession: (scenarioId: string, difficulty?: Difficulty) => Promise<string>
   sendMessage: (sessionId: string, content: string) => Promise<Message>
   getFeedback: (sessionId: string, forceRefresh?: boolean) => Promise<Feedback | null>
   endSession: () => void
