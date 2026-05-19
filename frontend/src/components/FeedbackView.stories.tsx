@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { MemoryRouter } from 'react-router-dom'
 import FeedbackView from './FeedbackView'
 import { MockSessionsProvider } from '../utils/storybookMocks'
 import type { Feedback } from '@/types'
@@ -26,30 +25,28 @@ const mockFeedback: Feedback = {
   ],
 }
 
+const mockEndedSession = {
+  id: 'mock-ended-session-1',
+  scenario_id: 'cafe_order',
+  created_at: '2024-01-15T10:30:00Z',
+  ended_at: '2024-01-15T10:35:00Z',
+  messages: [],
+  feedback: mockFeedback,
+}
+
+const mockNoFeedbackSession = {
+  id: 'no-feedback-session-1',
+  scenario_id: 'cafe_order',
+  created_at: '2024-01-15T10:30:00Z',
+  ended_at: '2024-01-15T10:35:00Z',
+  messages: [],
+  feedback: null,
+}
+
 const meta: Meta<typeof FeedbackView> = {
   title: 'Components/FeedbackView',
   component: FeedbackView,
   tags: ['autodocs'],
-  decorators: [
-    (Story) => (
-      <MemoryRouter initialEntries={['/feedback/mock-ended-session-1']}>
-        <MockSessionsProvider initialSessions={[
-          {
-            id: 'mock-ended-session-1',
-            scenario_id: 'cafe_order',
-            created_at: '2024-01-15T10:30:00Z',
-            ended_at: '2024-01-15T10:35:00Z',
-            messages: [],
-            feedback: mockFeedback,
-          },
-        ]} currentSessionId="mock-ended-session-1" currentScenarioId="cafe_order" sessionEnded={true}>
-          <div style={{ padding: '20px', maxWidth: '800px' }}>
-            <Story />
-          </div>
-        </MockSessionsProvider>
-      </MemoryRouter>
-    ),
-  ],
   argTypes: {
     sessionId: {
       description: 'The ID of the session to display feedback for',
@@ -76,47 +73,47 @@ export const WithFeedback: Story = {
   args: {
     sessionId: 'mock-ended-session-1',
   },
+  decorators: [
+    (Story) => (
+      <MockSessionsProvider
+        initialSessions={[mockEndedSession]}
+        currentSessionId="mock-ended-session-1"
+        currentScenarioId="cafe_order"
+        sessionEnded={true}
+      >
+        <Story />
+      </MockSessionsProvider>
+    ),
+  ],
 }
 
 export const Loading: Story = {
-  decorators: [
-    (Story) => (
-      <MemoryRouter initialEntries={['/feedback/loading-session-1']}>
-        <MockSessionsProvider initialSessions={[]} currentSessionId="loading-session-1" isLoading={true}>
-          <div style={{ padding: '20px', maxWidth: '800px' }}>
-            <Story />
-          </div>
-        </MockSessionsProvider>
-      </MemoryRouter>
-    ),
-  ],
   args: {
     sessionId: 'loading-session-1',
   },
+  decorators: [
+    (Story) => (
+      <MockSessionsProvider initialSessions={[]} currentSessionId="loading-session-1" isLoading={true}>
+        <Story />
+      </MockSessionsProvider>
+    ),
+  ],
 }
 
 export const NoFeedback: Story = {
-  decorators: [
-    (Story) => (
-      <MemoryRouter initialEntries={['/feedback/no-feedback-session-1']}>
-        <MockSessionsProvider initialSessions={[
-          {
-            id: 'no-feedback-session-1',
-            scenario_id: 'cafe_order',
-            created_at: '2024-01-15T10:30:00Z',
-            ended_at: '2024-01-15T10:35:00Z',
-            messages: [],
-            feedback: null,
-          },
-        ]} currentSessionId="no-feedback-session-1" currentScenarioId="cafe_order" sessionEnded={true}>
-          <div style={{ padding: '20px', maxWidth: '800px' }}>
-            <Story />
-          </div>
-        </MockSessionsProvider>
-      </MemoryRouter>
-    ),
-  ],
   args: {
     sessionId: 'no-feedback-session-1',
   },
+  decorators: [
+    (Story) => (
+      <MockSessionsProvider
+        initialSessions={[mockNoFeedbackSession]}
+        currentSessionId="no-feedback-session-1"
+        currentScenarioId="cafe_order"
+        sessionEnded={true}
+      >
+        <Story />
+      </MockSessionsProvider>
+    ),
+  ],
 }

@@ -1,20 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { MemoryRouter } from 'react-router-dom'
 import ScenarioSelector from './ScenarioSelector'
+import { MockSessionsProvider } from '../utils/storybookMocks'
 
 const meta: Meta<typeof ScenarioSelector> = {
   title: 'Components/ScenarioSelector',
   component: ScenarioSelector,
   tags: ['autodocs'],
-  decorators: [
-    (Story) => (
-      <MemoryRouter>
-        <div style={{ padding: '20px' }}>
-          <Story />
-        </div>
-      </MemoryRouter>
-    ),
-  ],
   argTypes: {
     // ScenarioSelector doesn't accept props - it manages its own state
   },
@@ -36,4 +27,11 @@ type Story = StoryObj<typeof meta>
 // The component handles scenario selection internally
 export const Default: Story = {
   args: {},
+  decorators: [
+    (Story) => (
+      <MockSessionsProvider initialSessions={[]} currentSessionId={null} currentScenarioId={null}>
+        <Story />
+      </MockSessionsProvider>
+    ),
+  ],
 }

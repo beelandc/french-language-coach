@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { MemoryRouter } from 'react-router-dom'
 import SessionHistory from './SessionHistory'
 import type { SessionSummary } from '@/types'
 
@@ -7,15 +6,6 @@ const meta: Meta<typeof SessionHistory> = {
   title: 'Components/SessionHistory',
   component: SessionHistory,
   tags: ['autodocs'],
-  decorators: [
-    (Story) => (
-      <MemoryRouter>
-        <div style={{ padding: '20px', maxWidth: '800px' }}>
-          <Story />
-        </div>
-      </MemoryRouter>
-    ),
-  ],
   argTypes: {
     onSessionClick: {
       description: 'Callback function when a session is clicked',

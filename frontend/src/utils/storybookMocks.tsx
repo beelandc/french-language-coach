@@ -2,10 +2,12 @@
  * Storybook Mock Utilities
  * 
  * This file provides mock implementations of hooks and contexts
- * for use in Storybook stories.
+ * for use in Storybook stories. It uses the real SessionsContext
+ * so that components using useSessions() can work with mock data.
  */
 
-import React, { createContext, useContext, useState, useCallback } from 'react'
+import React, { useContext, useState, useCallback } from 'react'
+import { SessionsContext } from '../hooks/useSessions'
 import type { Session, Message, Feedback, SessionsContextType } from '@/types'
 
 // Mock data
@@ -82,9 +84,6 @@ const mockEmptySession: Session = {
   feedback: null,
 }
 
-// Mock Sessions Context
-const MockSessionsContext = createContext<SessionsContextType | undefined>(undefined)
-
 interface MockSessionsProviderProps {
   children: React.ReactNode
   initialSessions?: Session[]
@@ -95,6 +94,11 @@ interface MockSessionsProviderProps {
   error?: string | null
 }
 
+/**
+ * Mock Sessions Provider that uses the real SessionsContext
+ * This allows components that use useSessions() to work with mock data
+ * in Storybook stories.
+ */
 export function MockSessionsProvider({
   children,
   initialSessions = [mockSession],
@@ -163,14 +167,14 @@ export function MockSessionsProvider({
               {
                 id: String(timestamp),
                 session_id: sessionId,
-                role: 'user',
+                role: 'user' as const,
                 content,
                 created_at: now,
               },
               {
                 id: String(timestamp + 1),
                 session_id: sessionId,
-                role: 'assistant',
+                role: 'assistant' as const,
                 content: `J'ai reçu: "${content}". Comment puis-je vous aider ?`,
                 created_at: now,
               },
@@ -184,7 +188,7 @@ export function MockSessionsProvider({
     const message: Message = {
       id: String(timestamp + 1),
       session_id: sessionId,
-      role: 'assistant',
+      role: 'assistant' as const,
       content: `J'ai reçu: "${content}". Comment puis-je vous aider ?`,
       created_at: now,
     }
@@ -228,6 +232,10 @@ export function MockSessionsProvider({
 
   const endSession = useCallback(() => setSessionEnded(true), [])
 
+  const handleSetCurrentSessionId = useCallback((id: string | null) => {
+    setCurrentSessionIdState(id)
+  }, [])
+
   const value: SessionsContextType = {
     sessions,
     currentSessionId: currentSessionIdState,
@@ -239,22 +247,16 @@ export function MockSessionsProvider({
     sendMessage,
     getFeedback,
     endSession,
-    setCurrentSessionId,
+    setCurrentSessionId: handleSetCurrentSessionId,
     clearError,
   }
 
+  // Use the REAL SessionsContext so useSessions() hook works
   return (
-    <MockSessionsContext.Provider value={value}>
+    <SessionsContext.Provider value={value}>
       {children}
-    </MockSessionsContext.Provider>
+    </SessionsContext.Provider>
   )
-}
-
-// Mock useSessions hook
-export function useMockSessions(): SessionsContextType {
-  const context = useContext(MockSessionsContext)
-  if (context === undefined) throw new Error('useMockSessions must be used within a MockSessionsProvider')
-  return context
 }
 
 // Preset configurations for different scenarios
