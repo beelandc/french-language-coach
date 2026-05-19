@@ -46,6 +46,7 @@ export default defineConfig({
       })],
       test: {
         name: 'storybook',
+        setupFiles: [path.join(dirname, 'src/testSetup.ts')],
         browser: {
           enabled: true,
           headless: true,

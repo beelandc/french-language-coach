@@ -6,6 +6,37 @@
 
 This document establishes the Structured Prompt Driven Development (SPDD) workflow for the French Language Coach project. SPDD provides a systematic methodology for integrating AI coding assistants (Mistral Vibe) into the development process while maintaining quality, consistency, and human oversight.
 
+---
+
+## 🚨 CRITICAL: MANDATORY PROCESS ORDER
+
+**YOU MUST FOLLOW THIS EXACT SEQUENCE FOR EVERY AI-ASSISTED TASK:**
+
+```
+1. ANALYSIS FIRST → Create analysis document in spdd/analysis/
+2. PROMPT SECOND → Create prompt document in spdd/prompt/ 
+3. IMPLEMENT LAST → Use the prompt to drive implementation
+```
+
+**FORBIDDEN:** Starting implementation before creating BOTH the analysis AND prompt artifacts.
+
+**FORBIDDEN:** Treating yourself as both human and AI without the structured prompt artifact.
+
+**VIOLATION EXAMPLE (from issue #150):**
+- ❌ Created analysis → Started implementation directly → Created prompt after
+- ✅ CORRECT: Create analysis → Create prompt → Use prompt to guide implementation
+
+**EVERY DEVELOPMENT TASK REQUIRES:**
+- [ ] GitHub issue identified
+- [ ] Analysis artifact created in `spdd/analysis/`
+- [ ] Prompt artifact created in `spdd/prompt/` **BEFORE implementation begins**
+- [ ] Implementation driven by the structured prompt
+- [ ] All acceptance criteria verified
+
+---
+
+=======
+
 ## Core Principles
 
 ### Intent
@@ -83,9 +114,10 @@ The REASONS canvas is the foundation of our SPDD approach. Every development tas
 3. **Check VISION.md** - Verify alignment with project vision
 4. **Review tests** - Understand existing test patterns and coverage
 5. **Create Analysis Artifact** - Document your understanding in `spdd/analysis/` using the ANALYSIS-TEMPLATE.md. This captures the REASONS canvas and ensures clarity before prompting the AI.
-6. **Update Github Issue** - Refine the github issue description to include the generated REASONS canvas. Use the github cli (gh) to apply updates to the issue.
 
 ### Phase 3: Prompt Engineering
+
+**MANDATORY**: You MUST create the prompt artifact BEFORE beginning any implementation work. Even when you are acting as both the human and the AI assistant, you MUST create the structured prompt and use it to drive your implementation.
 
 When requesting AI assistance, structure prompts with:
 
@@ -115,7 +147,14 @@ DELIVERABLES:
 - Documentation updates
 ```
 
-**IMPORTANT**: Before sending the prompt to the AI, create a prompt artifact in `spdd/prompt/` using the PROMPT-TEMPLATE.md. After receiving the AI response, update the artifact with the actual prompt used, the AI's response (optionally), and any human review notes. See the [Artifact Capture section](#artifact-capture-the-spdd-directory) for details.
+**CRITICAL**: Before sending the prompt to the AI (or before you as AI begin implementation), create a prompt artifact in `spdd/prompt/` using the PROMPT-TEMPLATE.md. This is NOT optional. After receiving the AI response or completing implementation, update the artifact with the actual prompt used, the AI's response (optionally), and any human review notes. See the [Artifact Capture section](#artifact-capture-the-spdd-directory) for details.
+
+**WHAT YOU DID WRONG IN ISSUE #150:**
+- You created the analysis artifact ✅
+- You started implementation directly ❌ (should have created prompt artifact first)
+- You created the prompt artifact after implementation ❌ (should have been before)
+- **NEVER DO THIS AGAIN**
+=======
 
 ### Phase 4: Iterative Development
 1. **AI generates initial solution** based on structured prompt
@@ -275,22 +314,29 @@ Files follow the pattern: `FLC-{SEQUENCE}-{TIMESTAMP}-[TYPE]-{description}.md`
 
 ### Workflow for Each GitHub Issue
 
+**CRITICAL: SEQUENCE IS MANDATORY. DO NOT DEVIATE.**
+
 1. **Before prompting the AI**: Create an analysis document in `spdd/analysis/`
    - Use the REASONS canvas (from `SPDD.md`)
    - Reference the GitHub issue number
    - Document all acceptance criteria
 
-2. **When prompting the AI**: Create a prompt document in `spdd/prompt/`
-   - Capture the exact prompt text used
+2. **Before ANY implementation**: Create a prompt document in `spdd/prompt/`
+   - Capture the exact prompt text you will use to drive implementation
    - Include context, constraints, examples
    - Reference the related analysis document
+   - **THIS MUST BE DONE BEFORE YOU WRITE ANY CODE**
 
-3. **After receiving AI output**: Update the prompt document
+3. **Implement using the prompt**: Use the structured prompt you created in step 2 to drive your implementation
+   - Follow the CONTEXT, GOAL, CONSTRAINTS, EXAMPLES structure
+   - Implement exactly what the prompt specifies
+
+4. **After receiving AI output or completing implementation**: Update the prompt document
    - Add human review notes
    - Document any changes made
    - Record verification status
 
-4. **When creating tests**: Optionally create test scenario documents
+5. **When creating tests**: Optionally create test scenario documents
    - Map tests to acceptance criteria
    - Document edge cases covered
 

@@ -19,6 +19,8 @@ interface SessionsContextType {
 
 const SessionsContext = createContext<SessionsContextType | undefined>(undefined)
 
+export { SessionsContext }
+
 interface SessionsProviderProps {
   children: React.ReactNode
 }
