@@ -6,6 +6,29 @@
 
 This project **MUST** follow the SPDD methodology as documented in `SPDD.md`. This is non-negotiable.
 
+### 🚨 CRITICAL: YOU MUST FOLLOW THIS EXACT PROCESS
+
+**EVERY AI-ASSISTED DEVELOPMENT TASK REQUIRES THIS SEQUENCE:**
+
+```
+STEP 1: Identify GitHub issue
+STEP 2: Create analysis artifact in spdd/analysis/
+STEP 3: Create prompt artifact in spdd/prompt/ **BEFORE ANY CODE IS WRITTEN**
+STEP 4: Use the structured prompt to drive implementation
+STEP 5: Verify all acceptance criteria
+```
+
+**FORBIDDEN - NEVER DO THIS:**
+- ❌ Starting implementation before creating the prompt artifact
+- ❌ Creating the prompt artifact after implementation is complete
+- ❌ Skipping either the analysis or prompt artifact
+- ❌ Treating yourself as both human and AI without structured prompts
+
+**VIOLATION FROM ISSUE #150 (DO NOT REPEAT):**
+- Created analysis ✅
+- Started implementation directly ❌ (MUST create prompt first)
+- Created prompt after implementation ❌ (MUST be before)
+
 ### Quick Reference
 
 1. **ALWAYS start with a GitHub issue** - Never work without one
@@ -60,6 +83,7 @@ For every development request:
 - [ ] **Documentation considered**: Will I need to update README.md, VISION.md, or add docstrings?
 - [ ] **README.md updates**: If adding/change API endpoints, configuration, or project structure, update README.md accordingly
 - [ ] **SPDD artifacts created**: Analysis in `spdd/analysis/`, prompt in `spdd/prompt/` (REQUIRED - See SPDD.md)
+- [ ] **PROMPT CREATED BEFORE IMPLEMENTATION**: Have I created the prompt artifact in `spdd/prompt/` BEFORE writing any code? (CRITICAL - This was violated in issue #150)
 
 ## Project Specifics
 
@@ -120,6 +144,11 @@ For every development request:
 
 **CRITICAL**: You MUST create SPDD artifacts in the `spdd/` directory for every AI-assisted development task.
 
+**MANDATORY SEQUENCE - NO EXCEPTIONS:**
+1. Create analysis artifact
+2. Create prompt artifact **BEFORE ANY CODE IS WRITTEN**
+3. Use prompt to drive implementation
+
 ### What to Create
 
 1. **Before prompting**: Analysis document in `spdd/analysis/`
@@ -127,10 +156,12 @@ For every development request:
    - Apply the REASONS canvas
    - Reference the GitHub issue
 
-2. **When prompting**: Prompt document in `spdd/prompt/`
+2. **Before ANY implementation**: Prompt document in `spdd/prompt/`
    - Use `spdd/template/PROMPT-TEMPLATE.md`
-   - Capture the exact prompt text
+   - Capture the exact prompt text **YOU WILL USE TO DRIVE IMPLEMENTATION**
    - Include context, constraints, examples
+   - **THIS MUST EXIST BEFORE YOU WRITE ANY CODE**
+   - **VIOLATION: Issue #150 created prompt AFTER implementation - NEVER DO THIS**
 
 3. **For testing**: Test scenarios document (recommended)
    - Use `spdd/template/TEST-SCENARIOS-TEMPLATE.md`
