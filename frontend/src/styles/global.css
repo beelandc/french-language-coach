@@ -780,6 +780,23 @@ header h1 {
     align-items: center;
 }
 
+/* Session Feedback Header */
+.session-feedback-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e0e0e0;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.session-feedback-header h3 {
+    margin: 0;
+    flex: 1;
+}
+
 /* PDF Export Button */
 .btn-export {
     background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
@@ -845,6 +862,20 @@ header h1 {
     }
     
     .btn-export {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .session-feedback-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .session-feedback-header h3 {
+        margin-bottom: 10px;
+    }
+    
+    .session-feedback-header .btn-export {
         width: 100%;
         justify-content: center;
     }

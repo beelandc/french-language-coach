@@ -6,6 +6,7 @@ import MessageBubble from './MessageBubble'
 import ScoreCard from './ScoreCard'
 import CorrectionItem from './CorrectionItem'
 import ConfirmationModal from './ConfirmationModal'
+import { generateFeedbackPDF } from '../utils/pdfExport'
 
 /**
  * SessionDetail component displays the full conversation transcript and feedback report
@@ -18,6 +19,8 @@ export default function SessionDetail({ sessionId }: SessionDetailProps) {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
+  const [isExportingPDF, setIsExportingPDF] = useState(false)
+  const [pdfError, setPdfError] = useState<string | null>(null)
   const navigate = useNavigate()
 
   // Check if session is locked (cannot be deleted when locked)
@@ -164,6 +167,34 @@ export default function SessionDetail({ sessionId }: SessionDetailProps) {
     return getScenarioName(session.scenario_id)
   }, [session, getScenarioName])
 
+  // Handle PDF export
+  const handleExportToPDF = useCallback(async () => {
+    if (!session?.feedback || !sessionId) {
+      setPdfError('No feedback available to export')
+      return;
+    }
+
+    try {
+      setIsExportingPDF(true);
+      setPdfError(null);
+      await generateFeedbackPDF(session.feedback, sessionId);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to export PDF';
+      setPdfError(errorMessage);
+      console.error('Error exporting PDF:', err);
+    } finally {
+      setIsExportingPDF(false);
+    }
+  }, [session?.feedback, sessionId]);
+
+  // Clear PDF error after some time
+  useEffect(() => {
+    if (pdfError) {
+      const timer = setTimeout(() => setPdfError(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [pdfError]);
+
   if (isLoading) {
     return (
       <div className="page-container">
@@ -251,7 +282,23 @@ export default function SessionDetail({ sessionId }: SessionDetailProps) {
       {/* Feedback Section */}
       {hasFeedback ? (
         <div className="session-feedback">
-          <h3>Feedback Report</h3>
+          <div className="session-feedback-header">
+            <h3>Feedback Report</h3>
+            <button 
+              className="btn-export" 
+              onClick={handleExportToPDF}
+              disabled={isExportingPDF}
+            >
+              {isExportingPDF ? 'Exporting...' : 'Export to PDF'}
+            </button>
+          </div>
+          
+          {/* PDF Error Notice */}
+          {pdfError && (
+            <div className="pdf-error-notice">
+              <span>⚠️ {pdfError}</span>
+            </div>
+          )}
           
           {/* Scores */}
           <div className="feedback-section">

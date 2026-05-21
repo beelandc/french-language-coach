@@ -12,6 +12,15 @@ vi.mock('../utils/api', () => ({
   },
 }))
 
+// Mock the PDF export utility
+vi.mock('../utils/pdfExport', () => ({
+  generateFeedbackPDF: vi.fn(),
+  isPDFExportAvailable: vi.fn(() => true)
+}))
+
+// Import the mocked PDF export function
+import { generateFeedbackPDF } from '../utils/pdfExport'
+
 // Import the mocked API
 import { sessionApi } from '../utils/api'
 
@@ -669,6 +678,151 @@ describe('SessionDetail Component', () => {
 
       // Original delete button should be disabled
       expect(screen.getByTestId('session-detail-delete-button')).toBeDisabled()
+    })
+  })
+
+  describe('PDF Export Functionality', () => {
+    beforeEach(() => {
+      ;(sessionApi.getSession as jest.Mock).mockResolvedValue({
+        id: 123,
+        scenario_id: 'cafe_order',
+        difficulty: 'intermediate',
+        created_at: '2026-05-15T10:00:00Z',
+        ended_at: '2026-05-15T10:15:00Z',
+        messages: [
+          { role: 'user', content: 'Bonjour, je voudrais un café.' },
+          { role: 'assistant', content: 'Bonjour ! Que souhaitez-vous ?' },
+        ],
+        feedback: {
+          grammar_score: 85,
+          vocabulary_score: 90,
+          fluency_score: 88,
+          overall_score: 88,
+          strengths: ['Good vocabulary usage', 'Natural phrasing'],
+          focus_area: 'grammar',
+          example_corrections: [
+            {
+              original: 'je voudrais un café',
+              corrected: 'Je voudrais un café',
+              explanation: 'Capitalize first person singular',
+            },
+          ],
+        },
+      })
+      vi.clearAllMocks()
+      mockNavigate.mockClear()
+    })
+
+    it('renders Export to PDF button when feedback is available', async () => {
+      renderWithRouter('123')
+
+      await waitFor(() => {
+        expect(screen.getByText('Export to PDF')).toBeInTheDocument()
+      })
+    })
+
+    it('does not render Export to PDF button when feedback is null', async () => {
+      ;(sessionApi.getSession as jest.Mock).mockResolvedValue({
+        id: 456,
+        scenario_id: 'ask_directions',
+        difficulty: 'beginner',
+        created_at: '2026-05-15T11:00:00Z',
+        ended_at: null,
+        messages: [{ role: 'user', content: 'Où est la gare ?' }],
+        feedback: null,
+      })
+
+      renderWithRouter('456')
+
+      await waitFor(() => {
+        expect(screen.queryByText('Export to PDF')).not.toBeInTheDocument()
+      })
+    })
+
+    it('calls generateFeedbackPDF when Export to PDF button is clicked', async () => {
+      renderWithRouter('123')
+
+      await waitFor(() => {
+        expect(screen.getByText('Export to PDF')).toBeInTheDocument()
+      })
+
+      const exportButton = screen.getByText('Export to PDF')
+      fireEvent.click(exportButton)
+
+      await waitFor(() => {
+        expect(generateFeedbackPDF).toHaveBeenCalled()
+      })
+    })
+
+    it('passes feedback and sessionId to generateFeedbackPDF', async () => {
+      renderWithRouter('123')
+
+      await waitFor(() => {
+        expect(screen.getByText('Export to PDF')).toBeInTheDocument()
+      })
+
+      const exportButton = screen.getByText('Export to PDF')
+      fireEvent.click(exportButton)
+
+      await waitFor(() => {
+        expect(generateFeedbackPDF).toHaveBeenCalledWith(
+          expect.objectContaining({
+            grammar_score: 85,
+            vocabulary_score: 90,
+            fluency_score: 88,
+            overall_score: 88,
+          }),
+          '123'
+        )
+      })
+    })
+
+    it('displays error message when PDF export fails', async () => {
+      const mockError = new Error('Failed to export PDF')
+      ;(generateFeedbackPDF as jest.Mock).mockRejectedValue(mockError)
+
+      renderWithRouter('123')
+
+      await waitFor(() => {
+        expect(screen.getByText('Export to PDF')).toBeInTheDocument()
+      })
+
+      const exportButton = screen.getByText('Export to PDF')
+      fireEvent.click(exportButton)
+
+      await waitFor(() => {
+        expect(screen.getByText(/⚠️ Failed to export PDF/)).toBeInTheDocument()
+      })
+    })
+
+    it('shows loading state during PDF export', async () => {
+      // Mock generateFeedbackPDF to simulate loading
+      ;(generateFeedbackPDF as jest.Mock).mockImplementation(
+        () => new Promise(() => {})
+      )
+
+      renderWithRouter('123')
+
+      await waitFor(() => {
+        expect(screen.getByText('Export to PDF')).toBeInTheDocument()
+      })
+
+      const exportButton = screen.getByText('Export to PDF')
+      fireEvent.click(exportButton)
+
+      // Button should show loading text
+      await waitFor(() => {
+        expect(screen.getByText('Exporting...')).toBeInTheDocument()
+      })
+    })
+
+    it('displays Export to PDF button in feedback section', async () => {
+      renderWithRouter('123')
+
+      await waitFor(() => {
+        expect(screen.getByText('Feedback Report')).toBeInTheDocument()
+        expect(screen.getByText('Export to PDF')).toBeInTheDocument()
+      })
     })
   })
 })
