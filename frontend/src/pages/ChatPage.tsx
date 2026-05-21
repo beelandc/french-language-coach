@@ -5,7 +5,7 @@ export default function ChatPage() {
   const { sessionId } = useParams<{ sessionId: string }>()
   
   return (
-    <div className="page-container">
+    <div className="page-container" data-testid="chat-page">
       <ChatInterface sessionId={sessionId || ''} />
     </div>
   )

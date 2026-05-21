@@ -55,12 +55,12 @@ export default function ScenarioSelector() {
   }
 
   if (isLoading) {
-    return <div>Loading scenarios...</div>
+    return <div data-testid="loading-scenarios">Loading scenarios...</div>
   }
 
   return (
-    <>
-      {error && <div className="error-message">{error}</div>}
+    <div data-testid="scenario-selector">
+      {error && <div className="error-message" data-testid="scenario-error">{error}</div>}
       
       {/* Difficulty Selector - allows user to choose difficulty before starting */}
       <div className="difficulty-selector-container">
@@ -70,7 +70,7 @@ export default function ScenarioSelector() {
         />
       </div>
       
-      <div className="scenarios-grid">
+      <div className="scenarios-grid" data-testid="scenarios-grid">
         {SCENARIOS.map(scenario => (
           <ScenarioCard
             key={scenario.id}
@@ -79,6 +79,6 @@ export default function ScenarioSelector() {
           />
         ))}
       </div>
-    </>
+    </div>
   )
 }

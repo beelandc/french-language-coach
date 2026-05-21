@@ -10,7 +10,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="page-container">
+    <div className="page-container" data-testid="home-page">
       <h2>Select a Conversation Scenario</h2>
       <ScenarioSelector />
       

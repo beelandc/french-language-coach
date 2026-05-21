@@ -13,13 +13,17 @@
     "test": "vitest run",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
-    "test:storybook": "vitest run --project storybook"
+    "test:storybook": "vitest run --project storybook",
+    "e2e": "cypress open",
+    "e2e:run": "cypress run",
+    "e2e:run:headed": "cypress run --headed",
+    "e2e:run:ci": "cypress run --headed --browser chrome --spec 'cypress/e2e/**/*.cy.ts'"
   },
   "dependencies": {
+    "jspdf": "^2.5.1",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "react-router-dom": "^7.15.0",
-    "jspdf": "^2.5.1"
+    "react-router-dom": "^7.15.0"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^5.2.1",
@@ -36,6 +40,7 @@
     "@vitest/browser-playwright": "^4.1.6",
     "@vitest/coverage-v8": "^4.1.6",
     "@vitest/ui": "^4.1.6",
+    "cypress": "^15.15.0",
     "eslint": "^10.3.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
