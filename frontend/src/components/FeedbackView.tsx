@@ -1,15 +1,18 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSessions } from '../hooks/useSessions'
 import type { FeedbackViewProps, Feedback } from '../types'
 import ScoreCard from './ScoreCard'
 import CorrectionItem from './CorrectionItem'
+import { generateFeedbackPDF } from '../utils/pdfExport'
 
 export default function FeedbackView({ sessionId }: FeedbackViewProps) {
   const { getFeedback, isLoading: isSessionsLoading } = useSessions()
   const [feedback, setFeedback] = useState<Feedback | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isExportingPDF, setIsExportingPDF] = useState(false)
+  const [pdfError, setPdfError] = useState<string | null>(null)
   const navigate = useNavigate()
 
   // Load feedback when component mounts
@@ -47,6 +50,33 @@ export default function FeedbackView({ sessionId }: FeedbackViewProps) {
     navigate('/')
   }
 
+  const handleExportToPDF = useCallback(async () => {
+    if (!feedback || !sessionId) {
+      setPdfError('No feedback available to export')
+      return;
+    }
+
+    try {
+      setIsExportingPDF(true);
+      setPdfError(null);
+      await generateFeedbackPDF(feedback, sessionId);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to export PDF';
+      setPdfError(errorMessage);
+      console.error('Error exporting PDF:', err);
+    } finally {
+      setIsExportingPDF(false);
+    }
+  }, [feedback, sessionId]);
+
+  // Clear PDF error after some time
+  useEffect(() => {
+    if (pdfError) {
+      const timer = setTimeout(() => setPdfError(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [pdfError]);
+
   if (isLoading || isSessionsLoading) {
     return <div className="page-container">Loading feedback...</div>
   }
@@ -77,13 +107,28 @@ export default function FeedbackView({ sessionId }: FeedbackViewProps) {
     <div className="feedback-container">
       <div className="feedback-header">
         <h2>Session Feedback</h2>
-        <button className="btn-secondary" onClick={handleBackToChat}>
-          Back to Chat
-        </button>
-        <button className="btn-primary" onClick={handleNewSession}>
-          New Session
-        </button>
+        <div className="feedback-actions">
+          <button className="btn-secondary" onClick={handleBackToChat} disabled={isExportingPDF}>
+            Back to Chat
+          </button>
+          <button className="btn-primary" onClick={handleNewSession} disabled={isExportingPDF}>
+            New Session
+          </button>
+          <button 
+            className="btn-export" 
+            onClick={handleExportToPDF}
+            disabled={!feedback || isExportingPDF}
+          >
+            {isExportingPDF ? 'Exporting...' : 'Export to PDF'}
+          </button>
+        </div>
       </div>
+
+      {pdfError && (
+        <div className="pdf-error-notice">
+          <span>⚠️ {pdfError}</span>
+        </div>
+      )}
 
       <div className="feedback-content">
         {/* Scores Section */}
