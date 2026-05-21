@@ -25,6 +25,9 @@ class SessionResponse(BaseModel):
     ended_at: Optional[datetime] = None
     messages: list[Message]
     feedback: Optional[dict[str, Any]] = None
+    is_locked: bool = False
+    locked_at: Optional[datetime] = None
+    locked_by: Optional[str] = None
 
 
 class SessionSummary(BaseModel):
@@ -36,6 +39,9 @@ class SessionSummary(BaseModel):
     created_at: datetime
     ended_at: Optional[datetime] = None
     overall_score: Optional[int] = None
+    is_locked: bool = False
+    locked_at: Optional[datetime] = None
+    locked_by: Optional[str] = None
 
 
 class PaginationInfo(BaseModel):

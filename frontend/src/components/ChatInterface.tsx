@@ -14,7 +14,12 @@ export default function ChatInterface({ sessionId }: ChatInterfaceProps) {
     sendMessage,
     getFeedback,
     sessions,
+    lockSession,
+    unlockSession,
   } = useSessions()
+  
+  // Generate a unique client ID for this session/tab
+  const clientId = useRef<string>(`chat_${sessionId}_${Date.now()}`).current
   
   const [inputValue, setInputValue] = useState('')
   const [isSending, setIsSending] = useState(false)
@@ -61,6 +66,38 @@ export default function ChatInterface({ sessionId }: ChatInterfaceProps) {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
+
+  // Lock session on mount, unlock on unmount
+  useEffect(() => {
+    const lockAndUnlock = async () => {
+      if (sessionId) {
+        try {
+          // Lock the session when ChatInterface is mounted
+          await lockSession(sessionId, clientId)
+        } catch (err) {
+          // Silently handle lock errors (session might already be locked by another tab)
+          console.warn('Failed to lock session:', err)
+        }
+      }
+    }
+    
+    lockAndUnlock()
+    
+    return () => {
+      // Unlock the session when ChatInterface is unmounted
+      const unlock = async () => {
+        if (sessionId) {
+          try {
+            await unlockSession(sessionId, clientId)
+          } catch (err) {
+            // Silently handle unlock errors
+            console.warn('Failed to unlock session:', err)
+          }
+        }
+      }
+      unlock()
+    }
+  }, [sessionId, lockSession, unlockSession, clientId])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

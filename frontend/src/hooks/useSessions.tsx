@@ -15,6 +15,8 @@ interface SessionsContextType {
   endSession: () => void
   setCurrentSessionId: (id: string | null) => void
   clearError: () => void
+  lockSession: (sessionId: string, clientId?: string) => Promise<void>
+  unlockSession: (sessionId: string, clientId?: string) => Promise<void>
 }
 
 const SessionsContext = createContext<SessionsContextType | undefined>(undefined)
@@ -170,6 +172,96 @@ export function SessionsProvider({ children }: SessionsProviderProps) {
 
   const endSession = useCallback(() => setSessionEnded(true), [])
 
+  const lockSession = useCallback(async (sessionId: string, clientId?: string): Promise<void> => {
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      // Update session state optimistically first
+      setSessions(prev =>
+        prev.map(session => {
+          if (session.id === sessionId) {
+            return {
+              ...session,
+              is_locked: true,
+              locked_at: new Date().toISOString(),
+              locked_by: clientId || `client_${sessionId}_${Date.now()}`,
+            }
+          }
+          return session
+        })
+      )
+
+      // Call API to lock on backend
+      await sessionApi.lockSession(sessionId, clientId)
+      setIsLoading(false)
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to lock session'
+      setError(errorMessage)
+      setIsLoading(false)
+      // Revert optimistic update on error
+      setSessions(prev =>
+        prev.map(session => {
+          if (session.id === sessionId) {
+            return {
+              ...session,
+              is_locked: false,
+              locked_at: null,
+              locked_by: null,
+            }
+          }
+          return session
+        })
+      )
+      throw err
+    }
+  }, [])
+
+  const unlockSession = useCallback(async (sessionId: string, clientId?: string): Promise<void> => {
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      // Update session state optimistically first
+      setSessions(prev =>
+        prev.map(session => {
+          if (session.id === sessionId) {
+            return {
+              ...session,
+              is_locked: false,
+              locked_at: null,
+              locked_by: null,
+            }
+          }
+          return session
+        })
+      )
+
+      // Call API to unlock on backend
+      await sessionApi.unlockSession(sessionId, clientId)
+      setIsLoading(false)
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to unlock session'
+      setError(errorMessage)
+      setIsLoading(false)
+      // Revert optimistic update on error
+      setSessions(prev =>
+        prev.map(session => {
+          if (session.id === sessionId) {
+            return {
+              ...session,
+              is_locked: true,
+              locked_at: new Date().toISOString(),
+              locked_by: clientId || `client_${sessionId}_${Date.now()}`,
+            }
+          }
+          return session
+        })
+      )
+      throw err
+    }
+  }, [])
+
   const value: SessionsContextType = {
     sessions,
     currentSessionId,
@@ -183,6 +275,8 @@ export function SessionsProvider({ children }: SessionsProviderProps) {
     endSession,
     setCurrentSessionId,
     clearError,
+    lockSession,
+    unlockSession,
   }
 
   return (

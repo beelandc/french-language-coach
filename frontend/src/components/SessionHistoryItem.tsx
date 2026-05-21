@@ -6,15 +6,18 @@ import type { SessionHistoryItemProps, SessionSummary } from '../types'
  * SessionHistoryItem component displays a single session in the history list.
  * It shows scenario name, date, and overall score (if available).
  * Clicking the item triggers the onClick callback with the session ID.
- * If onDelete is provided and session is completed, a delete button is shown.
+ * If onDelete is provided and session is not locked, a delete button is shown.
+ * 
+ * Updated for Issue #160: Delete button disabled only when session is locked.
  */
 export default function SessionHistoryItem({ session, onClick, onDelete }: SessionHistoryItemProps) {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
 
-  // Check if session is active (cannot be deleted)
-  const isActiveSession = session.ended_at === null
+  // Check if session is locked (cannot be deleted when locked)
+  // Updated for Issue #160: Now based on is_locked instead of ended_at
+  const isSessionLocked = session.is_locked === true
 
   // Format the date for display
   const formatDate = (dateString: string): string => {
@@ -82,9 +85,14 @@ export default function SessionHistoryItem({ session, onClick, onDelete }: Sessi
   }, [])
 
   // Get tooltip text for disabled delete button
+  // Updated for Issue #160: Now based on lock status
   const getDeleteButtonTooltip = (): string => {
-    if (isActiveSession) {
-      return 'Cannot delete active session'
+    if (isSessionLocked) {
+      return 'Session is currently in use by another tab'
+    }
+    // For incomplete sessions, add a warning
+    if (session.ended_at === null) {
+      return 'This is an incomplete session. Deleting it will permanently remove all conversation data.'
     }
     return ''
   }
@@ -120,12 +128,12 @@ export default function SessionHistoryItem({ session, onClick, onDelete }: Sessi
           )}
           <span className="view-detail">Click to view details &rarr;</span>
           
-          {/* Delete button - only show if onDelete is provided and session is not active */}
+          {/* Delete button - only show if onDelete is provided and session is not locked */}
           {onDelete && (
             <button
               className="session-item-delete"
               onClick={handleDeleteClick}
-              disabled={isActiveSession || isDeleting}
+              disabled={isSessionLocked || isDeleting}
               title={getDeleteButtonTooltip()}
               data-testid="session-delete-button"
               aria-label={`Delete session ${session.scenario_name}`}
@@ -143,7 +151,11 @@ export default function SessionHistoryItem({ session, onClick, onDelete }: Sessi
           onCancel={handleCancelDelete}
           onConfirm={handleConfirmDelete}
           title="Delete Session"
-          message={`Are you sure you want to delete "${session.scenario_name}" from ${formatDate(session.created_at)}? This action cannot be undone.`}
+          message={
+            session.ended_at === null
+              ? `Are you sure you want to delete "${session.scenario_name}" from ${formatDate(session.created_at)}? This is an INCOMPLETE session. Deleting it will permanently remove all conversation data. This action cannot be undone.`
+              : `Are you sure you want to delete "${session.scenario_name}" from ${formatDate(session.created_at)}? This action cannot be undone.`
+          }
           confirmText="Delete"
           cancelText="Cancel"
           isLoading={isDeleting}

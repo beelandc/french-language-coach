@@ -1,13 +1,14 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from math import ceil
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Response
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, Header
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
 from models.session import Session as SessionModel
+from pydantic import BaseModel
 from schemas.session import SessionCreate, SessionResponse, SessionListResponse, SessionSummary, PaginationInfo
 from scenarios import get_scenario, VALID_DIFFICULTIES, SCENARIOS
 from services.mistral import mistral_client
@@ -193,7 +194,10 @@ async def list_sessions(
                 difficulty=getattr(session, 'difficulty', None) or "intermediate",
                 created_at=session.created_at,
                 ended_at=session.ended_at,
-                overall_score=overall_score
+                overall_score=overall_score,
+                is_locked=session.is_locked,
+                locked_at=session.locked_at,
+                locked_by=session.locked_by,
             )
         )
     
@@ -225,6 +229,9 @@ async def get_session(
         ended_at=session.ended_at,
         messages=session.messages_list,
         feedback=session.feedback_dict,
+        is_locked=session.is_locked,
+        locked_at=session.locked_at,
+        locked_by=session.locked_by,
     )
 
 
@@ -237,15 +244,144 @@ async def delete_session(
     Delete a session by ID.
     
     Returns 204 on success, 404 if session not found.
-    Active sessions (where ended_at is NULL) cannot be deleted.
+    Locked sessions cannot be deleted to prevent accidental deletion of active sessions.
     """
     session = await db.get(SessionModel, session_id)
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
     
-    if session.ended_at is None:
-        raise HTTPException(status_code=400, detail="Cannot delete active session")
+    # Check if session is locked (prevents deletion of sessions in use)
+    if session.is_locked:
+        raise HTTPException(status_code=400, detail="Cannot delete locked session")
     
     await db.delete(session)
     await db.commit()
     return Response(status_code=204)
+
+
+# Lock TTL constant (minutes) - locks automatically expire after this duration
+LOCK_TTL_MINUTES = 10
+
+
+class SessionLockResponse(BaseModel):
+    """Response for lock/unlock endpoints."""
+    id: int
+    is_locked: bool
+    locked_at: Optional[datetime] = None
+    locked_by: Optional[str] = None
+
+
+@router.post("/{session_id}/lock", response_model=SessionLockResponse)
+async def lock_session(
+    session_id: int,
+    db: AsyncSession = Depends(get_db),
+    x_client_id: Optional[str] = Header(None, description="Optional client identifier for lock ownership")
+) -> SessionLockResponse:
+    """
+    Lock a session to prevent concurrent access.
+    
+    This endpoint acquires a lock on a session, preventing it from being deleted
+    while in use. Locks automatically expire after LOCK_TTL_MINUTES (10 minutes).
+    
+    If the session is already locked but the lock has expired (older than TTL),
+    the lock will be refreshed for the new client.
+    
+    Args:
+        session_id: The ID of the session to lock
+        x_client_id: Optional client identifier (defaults to generated UUID if not provided)
+        
+    Returns:
+        SessionLockResponse with lock status and details
+        
+    Raises:
+        HTTPException 404: If session not found
+    """
+    session = await db.get(SessionModel, session_id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    # Generate client ID if not provided
+    client_id = x_client_id or f"client_{session_id}_{datetime.utcnow().isoformat()}"
+    
+    # Check if we can lock this session (not already locked or lock expired)
+    if session.can_be_locked():
+        # Set lock fields
+        session.is_locked = True
+        session.locked_at = datetime.utcnow()
+        session.locked_by = client_id
+        await db.commit()
+        await db.refresh(session)
+    
+    # Return current lock status
+    return SessionLockResponse(
+        id=session.id,
+        is_locked=session.is_locked,
+        locked_at=session.locked_at,
+        locked_by=session.locked_by
+    )
+
+
+@router.post("/{session_id}/unlock", response_model=SessionLockResponse)
+async def unlock_session(
+    session_id: int,
+    db: AsyncSession = Depends(get_db),
+    x_client_id: Optional[str] = Header(None, description="Optional client identifier for lock ownership verification")
+) -> SessionLockResponse:
+    """
+    Unlock a session to allow deletion.
+    
+    This endpoint releases a lock on a session, allowing it to be deleted.
+    For safety, only the client that acquired the lock can release it,
+    unless the lock has expired.
+    
+    Args:
+        session_id: The ID of the session to unlock
+        x_client_id: Optional client identifier for verification
+        
+    Returns:
+        SessionLockResponse with lock status and details
+        
+    Raises:
+        HTTPException 404: If session not found
+        HTTPException 403: If trying to unlock a session locked by another client (and lock not expired)
+    """
+    session = await db.get(SessionModel, session_id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    # If lock has expired, allow unlock regardless of client
+    if session.is_lock_expired():
+        # Clear the lock
+        session.is_locked = False
+        session.locked_at = None
+        session.locked_by = None
+        await db.commit()
+        await db.refresh(session)
+        return SessionLockResponse(
+            id=session.id,
+            is_locked=session.is_locked,
+            locked_at=session.locked_at,
+            locked_by=session.locked_by
+        )
+    
+    # If session is locked and client_id is provided, verify ownership
+    if session.is_locked and session.locked_by and x_client_id:
+        if session.locked_by != x_client_id:
+            raise HTTPException(
+                status_code=403,
+                detail=f"Cannot unlock session locked by another client: {session.locked_by}"
+            )
+    
+    # Clear the lock
+    session.is_locked = False
+    session.locked_at = None
+    session.locked_by = None
+    await db.commit()
+    await db.refresh(session)
+    
+    return SessionLockResponse(
+        id=session.id,
+        is_locked=session.is_locked,
+        locked_at=session.locked_at,
+        locked_by=session.locked_by
+    )

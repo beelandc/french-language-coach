@@ -37,6 +37,10 @@ export interface Session {
   ended_at: string | null
   messages: Message[]
   feedback: Feedback | null
+  // Session locking fields for preventing concurrent access
+  is_locked: boolean
+  locked_at: string | null
+  locked_by: string | null
 }
 
 // Correction type for feedback
@@ -63,6 +67,14 @@ export interface CreateSessionResponse {
   scenario_id: string
   difficulty?: Difficulty
   created_at: string
+}
+
+// Session lock response types
+export interface SessionLockResponse {
+  id: string
+  is_locked: boolean
+  locked_at: string | null
+  locked_by: string | null
 }
 
 export interface SendMessageResponse {
@@ -148,6 +160,10 @@ export interface SessionSummary {
   created_at: string
   ended_at: string | null
   overall_score: number | null
+  // Session locking fields
+  is_locked: boolean
+  locked_at: string | null
+  locked_by: string | null
 }
 
 export interface PaginationInfo {

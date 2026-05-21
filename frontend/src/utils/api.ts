@@ -1,5 +1,5 @@
 // API Client for French Language Coach
-import type { Feedback } from '../types/index'
+import type { Feedback, Session, SessionLockResponse } from '../types/index'
 
 // Use relative paths for development (Vite proxy handles routing)
 // Use same-origin for production
@@ -85,6 +85,18 @@ export const sessionApi = {
     api<void>(`/sessions/${sessionId}`,
       { method: 'DELETE' }
     ),
+
+  lockSession: (sessionId: string, clientId?: string) =>
+    api<SessionLockResponse>(`/sessions/${sessionId}/lock`, {
+      method: 'POST',
+      headers: clientId ? { 'X-Client-ID': clientId } : undefined,
+    }),
+
+  unlockSession: (sessionId: string, clientId?: string) =>
+    api<SessionLockResponse>(`/sessions/${sessionId}/unlock`, {
+      method: 'POST',
+      headers: clientId ? { 'X-Client-ID': clientId } : undefined,
+    }),
 }
 
 // Re-export types for convenience
@@ -98,6 +110,7 @@ export type {
   SessionSummary,
   PaginationInfo,
   SessionListResponse,
+  SessionLockResponse,
   Difficulty,
   DifficultySelectorProps,
 } from '../types/index'

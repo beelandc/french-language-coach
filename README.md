@@ -258,10 +258,12 @@ french-language-coach/
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/sessions/` | List all sessions with pagination. Query parameters: `page` (default 1), `per_page` (default 10, max 100), `scenario_id` (filter by scenario), `date_from` (filter by start date), `date_to` (filter by end date), `min_score` (filter by minimum overall score). Returns summary: id, scenario_id, scenario_name, difficulty, created_at, ended_at, overall_score |
+| GET | `/sessions/` | List all sessions with pagination. Query parameters: `page` (default 1), `per_page` (default 10, max 100), `scenario_id` (filter by scenario), `date_from` (filter by start date), `date_to` (filter by end date), `min_score` (filter by minimum overall score). Returns summary: id, scenario_id, scenario_name, difficulty, created_at, ended_at, overall_score, **is_locked, locked_at, locked_by** |
 | POST | `/sessions/` | Create a new conversation session. Optional `difficulty` parameter: beginner, intermediate (default), or advanced |
-| GET | `/sessions/{id}` | Get session details and messages. Returns `difficulty` field |
-| DELETE | `/sessions/{id}` | Delete a session. Returns 204 on success, 404 if not found |
+| GET | `/sessions/{id}` | Get session details and messages. Returns `difficulty` field, **is_locked, locked_at, locked_by** |
+| DELETE | `/sessions/{id}` | Delete a session. Returns 204 on success, 404 if not found. **Returns 400 if session is locked** (prevents deletion of sessions in use) |
+| POST | `/sessions/{id}/lock` | Lock a session to prevent deletion while in use. Accepts optional `X-Client-ID` header for lock ownership. Auto-unlocks after 10 minutes (TTL). Returns lock status. |
+| POST | `/sessions/{id}/unlock` | Unlock a session to allow deletion. Requires matching `X-Client-ID` header unless lock has expired. Returns lock status. |
 | POST | `/sessions/{id}/messages` | Send a message, get AI reply. Uses session's difficulty level for system prompt |
 | POST | `/sessions/{id}/feedback` | Generate end-of-session feedback |
 
@@ -271,6 +273,22 @@ french-language-coach/
 2. **User sends message** → POST /sessions/{id}/messages/ → Mistral chat API → AI response stored in session
 3. **User requests feedback** → POST /sessions/{id}/feedback/ → Mistral chat API with feedback prompt → structured JSON feedback stored in session
 4. **Frontend displays** conversation history and feedback report
+
+### Session Locking (Issue #160)
+
+The application implements a session locking mechanism to prevent accidental deletion of sessions currently in use:
+
+- **Automatic Locking**: Sessions are automatically locked when loaded in the ChatInterface (on mount)
+- **Automatic Unlocking**: Sessions are automatically unlocked when the user leaves the ChatInterface (on unmount)
+- **Cross-Tab Safety**: Locking works across browser tabs via backend state
+- **TTL Auto-Unlock**: Abandoned locks automatically expire after 10 minutes to prevent deadlocks
+- **Delete Protection**: Sessions can only be deleted when not locked (regardless of completion status)
+- **Continue Session**: Incomplete sessions can be resumed from the SessionDetail view via "Continue Session" button
+
+This allows users to:
+- Delete incomplete sessions (previously blocked)
+- Continue incomplete sessions from SessionDetail
+- Prevent accidental deletion of sessions currently in use
 
 ## Mistral LLM Integration
 
