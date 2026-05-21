@@ -761,3 +761,91 @@ header h1 {
         min-width: 100%;
     }
 }
+
+/* Feedback header actions */
+.feedback-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e0e0e0;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.feedback-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* PDF Export Button */
+.btn-export {
+    background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-export:hover:not(:disabled) {
+    background: linear-gradient(135deg, #6d28d9 0%, #4c1d95 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.4);
+}
+
+.btn-export:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* PDF Error Notice */
+.pdf-error-notice {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #b91c1c;
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive adjustments for feedback header */
+@media (max-width: 768px) {
+    .feedback-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .feedback-actions {
+        justify-content: center;
+    }
+    
+    .btn-export {
+        width: 100%;
+        justify-content: center;
+    }
+}

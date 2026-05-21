@@ -9,7 +9,7 @@ frontend/
 ├── src/
 │   ├── components/       # Reusable UI components
 │   │   ├── ChatInterface.tsx
-│   │   ├── FeedbackView.tsx
+│   │   ├── FeedbackView.tsx  # Includes PDF export button
 │   │   ├── ScenarioSelector.tsx
 │   │   ├── ChatHeader.tsx
 │   │   ├── MessageBubble.tsx
@@ -26,6 +26,7 @@ frontend/
 │   │   └── useSessions.tsx
 │   ├── utils/            # Utility functions and Storybook mocks
 │   │   ├── api.ts
+│   │   ├── pdfExport.ts   # PDF generation utility (Issue #23)
 │   │   └── storybookMocks.tsx
 │   ├── types/            # TypeScript type definitions
 │   │   └── index.ts
@@ -247,8 +248,51 @@ const meta: Meta<typeof MyComponent> = {
 - **Schemas**: See `schemas/session.py`
 - **Scenarios**: See `scenarios.py`
 
+## Features
+
+### PDF Export (Issue #23)
+
+The FeedbackView component includes a **PDF Export** feature that allows users to download their feedback reports as PDF files for offline review and sharing.
+
+#### How it works:
+1. User views feedback in the FeedbackView component
+2. User clicks the "Export to PDF" button
+3. The `generateFeedbackPDF` utility function creates a jsPDF document containing:
+   - Session ID and generation date
+   - All four score categories (Grammar, Vocabulary, Fluency, Overall)
+   - Complete list of strengths
+   - Focus area for improvement
+   - All example corrections with original, corrected, and explanation text
+4. PDF automatically downloads with filename: `french-coach-feedback-{sessionId}-{date}-{time}.pdf`
+
+#### Technical Details:
+- **Library**: jsPDF v2.5.1 (client-side PDF generation)
+- **Implementation**: `frontend/src/utils/pdfExport.ts`
+- **Component Integration**: `frontend/src/components/FeedbackView.tsx`
+- **Features**:
+  - A4 portrait format
+  - Automatic pagination for long content
+  - UTF-8 support for French characters (é, è, ê, à, ç, etc.)
+  - Loading state during PDF generation
+  - Error handling with user feedback
+  - Dynamic import to reduce initial bundle size
+  - Cross-browser compatible (Chrome, Firefox, Safari, Edge)
+
+#### Usage:
+```typescript
+import { generateFeedbackPDF } from './utils/pdfExport';
+
+// Generate and download PDF from feedback data
+await generateFeedbackPDF(feedback, sessionId);
+```
+
 ## SPDD Artifacts
 
 - Analysis: `spdd/analysis/FLC-002-202605121600-[Analysis]-issue-121-react-migration.md`
 - Prompt: `spdd/prompt/FLC-002-202605121630-[Feat]-issue-121-react-migration.md`
 - GitHub Issue: #121
+
+### PDF Export Feature (Issue #23)
+- Analysis: `spdd/analysis/FLC-015-202605211800-[Analysis]-issue-23-pdf-export.md`
+- Prompt: `spdd/prompt/FLC-015-202605211830-[Feat]-issue-23-pdf-export.md`
+- GitHub Issue: #23
