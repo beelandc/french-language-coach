@@ -46,6 +46,9 @@ export function SessionsProvider({ children }: SessionsProviderProps) {
       setCurrentScenarioId(scenarioId)
       setSessionEnded(false)
 
+      // Use messages from the API response (which may include initial AI greeting)
+      const messagesFromApi = response.messages || []
+
       setSessions(prev => [
         ...prev,
         {
@@ -54,7 +57,7 @@ export function SessionsProvider({ children }: SessionsProviderProps) {
           difficulty: difficulty || 'intermediate',
           created_at: response.created_at,
           ended_at: null,
-          messages: [],
+          messages: messagesFromApi,
           feedback: null,
         },
       ])

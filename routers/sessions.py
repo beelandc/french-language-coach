@@ -10,6 +10,7 @@ from database import get_db
 from models.session import Session as SessionModel
 from schemas.session import SessionCreate, SessionResponse, SessionListResponse, SessionSummary, PaginationInfo
 from scenarios import get_scenario, VALID_DIFFICULTIES, SCENARIOS
+from services.mistral import mistral_client
 
 router = APIRouter(prefix="/sessions", tags=["sessions"])
 
@@ -32,6 +33,10 @@ async def create_session(
             detail=f"Invalid difficulty '{difficulty}'. Must be one of: {', '.join(VALID_DIFFICULTIES)}"
         )
 
+    # Get scenario with the validated difficulty level for system prompt
+    scenario_with_difficulty = get_scenario(session_create.scenario_id, difficulty=difficulty)
+
+    # Create the session model with empty messages initially
     new_session = SessionModel(
         scenario_id=session_create.scenario_id,
         difficulty=difficulty,
@@ -42,13 +47,34 @@ async def create_session(
     await db.commit()
     await db.refresh(new_session)
 
+    # Generate initial AI greeting message
+    messages = []
+    try:
+        # Generate AI greeting using the scenario's system prompt with empty message history
+        ai_greeting = mistral_client.get_chat_response(
+            messages, scenario_with_difficulty["system_prompt"]
+        )
+        # Add AI greeting as the first message
+        initial_message = {"role": "assistant", "content": ai_greeting}
+        messages.append(initial_message)
+    except Exception:
+        # If AI greeting generation fails, continue without it
+        # This ensures session creation doesn't break
+        pass
+
+    # Update session with greeting message
+    if messages:
+        new_session.messages_list = messages
+        await db.commit()
+        await db.refresh(new_session)
+
     return SessionResponse(
         id=new_session.id,
         scenario_id=new_session.scenario_id,
         difficulty=new_session.difficulty,
         created_at=new_session.created_at,
         ended_at=new_session.ended_at,
-        messages=[],
+        messages=new_session.messages_list,
         feedback=None,
     )
 
