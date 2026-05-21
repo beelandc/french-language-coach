@@ -9,7 +9,7 @@ import ConfirmationModal from './ConfirmationModal'
 
 /**
  * SessionDetail component displays the full conversation transcript and feedback report
- * for a completed session. This is a read-only view.
+ * for a session. Updated for Issue #160 to support session continuation.
  */
 export default function SessionDetail({ sessionId }: SessionDetailProps) {
   const [session, setSession] = useState<Session | null>(null)
@@ -20,8 +20,12 @@ export default function SessionDetail({ sessionId }: SessionDetailProps) {
   const [deleteError, setDeleteError] = useState<string | null>(null)
   const navigate = useNavigate()
 
-  // Check if session is active (cannot be deleted)
-  const isActiveSession = session ? session.ended_at === null : true
+  // Check if session is locked (cannot be deleted when locked)
+  // Updated for Issue #160: Now based on is_locked instead of ended_at
+  const isSessionLocked = session ? session.is_locked === true : false
+  
+  // Check if session is incomplete (can be continued)
+  const isIncompleteSession = session ? session.ended_at === null : false
 
   // Map scenario IDs to human-readable names
   const getScenarioName = useCallback((scenarioId: string): string => {
@@ -104,6 +108,13 @@ export default function SessionDetail({ sessionId }: SessionDetailProps) {
   const handleBack = () => {
     navigate('/')
   }
+
+  // Handle continue session button click - navigate to chat interface
+  const handleContinueSession = useCallback(() => {
+    if (sessionId) {
+      navigate(`/chat/${sessionId}`)
+    }
+  }, [sessionId, navigate])
 
   // Handle delete button click - open confirmation modal
   const handleDeleteClick = useCallback(() => {
@@ -313,8 +324,21 @@ export default function SessionDetail({ sessionId }: SessionDetailProps) {
           Back to Home
         </button>
         
-        {/* Delete button - only show for completed sessions */}
-        {!isActiveSession && (
+        {/* Continue Session button - only show for incomplete sessions */}
+        {isIncompleteSession && (
+          <button
+            className="btn-primary session-continue-button"
+            onClick={handleContinueSession}
+            disabled={isDeleting}
+            data-testid="session-detail-continue-button"
+            aria-label={`Continue session ${getScenarioDisplayName()}`}
+          >
+            Continue Session
+          </button>
+        )}
+        
+        {/* Delete button - only show for unlocked sessions */}
+        {!isSessionLocked && (
           <button
             className="btn-danger session-delete-button"
             onClick={handleDeleteClick}
@@ -334,7 +358,11 @@ export default function SessionDetail({ sessionId }: SessionDetailProps) {
           onCancel={handleCancelDelete}
           onConfirm={handleConfirmDelete}
           title="Delete Session"
-          message={`Are you sure you want to delete "${getScenarioDisplayName()}" from ${formatDate(session.created_at)}? This action cannot be undone.`}
+          message={
+            session.ended_at === null
+              ? `Are you sure you want to delete "${getScenarioDisplayName()}" from ${formatDate(session.created_at)}? This is an INCOMPLETE session. Deleting it will permanently remove all conversation data. This action cannot be undone.`
+              : `Are you sure you want to delete "${getScenarioDisplayName()}" from ${formatDate(session.created_at)}? This action cannot be undone.`
+          }
           confirmText="Delete"
           cancelText="Cancel"
           isLoading={isDeleting}

@@ -172,37 +172,87 @@ class TestDeleteSession:
     @pytest.mark.asyncio
     async def test_delete_active_session_fails(self, client, test_db):
         """
-        Test that active sessions (ended_at is NULL) cannot be deleted.
+        Test that active sessions (ended_at is NULL) CAN be deleted if not locked.
         
-        Given: An active session exists (ended_at is NULL)
+        This test has been updated for Issue #160: Session Locking and Continuation.
+        Previously, deletion was blocked based on ended_at. Now it's based on is_locked.
+        
+        Given: An active session exists (ended_at is NULL, is_locked is False)
         When: DELETE /sessions/{id} is called
-        Then: Returns 400 with detail "Cannot delete active session"
-              AND session remains in database
+        Then: Returns 204 and session is removed
         """
-        # Given: An active session exists (ended_at is NULL)
+        # Given: An active session exists (ended_at is NULL, not locked)
         session = SessionModel(
             scenario_id="cafe_order",
             difficulty="intermediate",
             created_at=datetime.utcnow(),
             ended_at=None,  # Active session - not ended
             messages="[]",
+            is_locked=False,  # Not locked - can be deleted
+            locked_at=None,
+            locked_by=None,
         )
         test_db.add(session)
         await test_db.commit()
         await test_db.refresh(session)
         session_id = session.id
         
-        # Verify session is active (ended_at is None)
+        # Verify session is active (ended_at is None) and not locked
         get_response = client.get(f"/sessions/{session_id}")
         assert get_response.status_code == 200
         assert get_response.json()["ended_at"] is None
+        assert get_response.json()["is_locked"] == False
         
         # When: Attempt to delete active session
         response = client.delete(f"/sessions/{session_id}")
         
+        # Then: Returns 204 (now allowed for unlocked sessions)
+        assert response.status_code == 204
+        
+        # And: Session is removed from database
+        get_after = client.get(f"/sessions/{session_id}")
+        assert get_after.status_code == 404
+    
+    @pytest.mark.asyncio
+    async def test_delete_locked_session_fails(self, client, test_db):
+        """
+        Test that locked sessions cannot be deleted.
+        
+        This is the new behavior for Issue #160: Session Locking and Continuation.
+        Deletion is now blocked based on is_locked, not ended_at.
+        
+        Given: A locked session exists
+        When: DELETE /sessions/{id} is called
+        Then: Returns 400 with detail "Cannot delete locked session"
+              AND session remains in database
+        """
+        # Given: A locked session exists
+        session = SessionModel(
+            scenario_id="cafe_order",
+            difficulty="intermediate",
+            created_at=datetime.utcnow(),
+            ended_at=None,  # Could be incomplete or complete
+            messages="[]",
+            is_locked=True,  # Locked - cannot be deleted
+            locked_at=datetime.utcnow(),
+            locked_by="test-client",
+        )
+        test_db.add(session)
+        await test_db.commit()
+        await test_db.refresh(session)
+        session_id = session.id
+        
+        # Verify session is locked
+        get_response = client.get(f"/sessions/{session_id}")
+        assert get_response.status_code == 200
+        assert get_response.json()["is_locked"] == True
+        
+        # When: Attempt to delete locked session
+        response = client.delete(f"/sessions/{session_id}")
+        
         # Then: Returns 400
         assert response.status_code == 400
-        assert response.json()["detail"] == "Cannot delete active session"
+        assert response.json()["detail"] == "Cannot delete locked session"
         
         # And: Session still exists
         get_after = client.get(f"/sessions/{session_id}")
