@@ -111,7 +111,7 @@ export default function ChatInterface({ sessionId }: ChatInterfaceProps) {
         scenarioName={scenarioName}
         onBack={handleBack}
         onEndSession={handleEndSession}
-        disabled={!sessionId || sessionEnded}
+        disabled={!sessionId || sessionEnded || isLoading}
       />
 
       <div className="chat-messages">
@@ -123,6 +123,11 @@ export default function ChatInterface({ sessionId }: ChatInterfaceProps) {
           messages.map(message => (
             <MessageBubble key={message.id} message={message} />
           ))
+        )}
+        {isLoading && (
+          <div className="loading-spinner" role="status" aria-live="polite" aria-label="Loading AI response...">
+            <div className="spinner" />
+          </div>
         )}
         <div ref={messagesEndRef} />
       </div>
