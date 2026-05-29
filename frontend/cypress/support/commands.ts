@@ -2,6 +2,21 @@
 
 // Custom Cypress commands for French Language Coach E2E tests
 
+// Define Feedback type for use in commands
+interface Feedback {
+  grammar_score: number
+  vocabulary_score: number
+  fluency_score: number
+  overall_score: number
+  strengths: string[]
+  focus_area: string
+  example_corrections: {
+    original: string
+    corrected: string
+    explanation: string
+  }[]
+}
+
 // Command to select a scenario from the home page
 Cypress.Commands.add('selectScenario', (scenarioId: string) => {
   cy.getByTestId(`scenario-${scenarioId}`).click()
@@ -60,7 +75,7 @@ Cypress.Commands.add('mockMessageResponse', (sessionId: number = 1, content: str
 })
 
 // Command to mock feedback response
-Cypress.Commands.add('mockFeedbackResponse', (sessionId: number = 1, feedbackData?: Partial<Cypress.Feedback>) => {
+Cypress.Commands.add('mockFeedbackResponse', (sessionId: number = 1, feedbackData?: Partial<Feedback>) => {
   const defaultFeedback = {
     grammar_score: 85,
     vocabulary_score: 90,
@@ -82,32 +97,19 @@ Cypress.Commands.add('mockFeedbackResponse', (sessionId: number = 1, feedbackDat
 })
 
 // Type definitions for Cypress
-namespace Cypress {
-  interface Chainable {
-    selectScenario(scenarioId: string): Chainable<Element>
-    sendMessage(content: string): Chainable<Element>
-    endSession(): Chainable<Element>
-    getFeedbackScore(scoreType: 'grammar' | 'vocabulary' | 'fluency' | 'overall'): Chainable<Element>
-    waitForRoute(route: string): Chainable<Element>
-    shouldBeOnPage(page: 'home' | 'chat' | 'feedback'): Chainable<Element>
-    waitForLoadingComplete(): Chainable<Element>
-    mockSessionCreation(sessionId?: number, scenarioId?: string): Chainable<void>
-    mockMessageResponse(sessionId?: number, content?: string): Chainable<void>
-    mockFeedbackResponse(sessionId?: number, feedbackData?: Partial<Feedback>): Chainable<void>
-  }
-
-  // Feedback type matching the backend
-  interface Feedback {
-    grammar_score: number
-    vocabulary_score: number
-    fluency_score: number
-    overall_score: number
-    strengths: string[]
-    focus_area: string
-    example_corrections: {
-      original: string
-      corrected: string
-      explanation: string
-    }[]
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      selectScenario(scenarioId: string): Chainable<Element>
+      sendMessage(content: string): Chainable<Element>
+      endSession(): Chainable<Element>
+      getFeedbackScore(scoreType: 'grammar' | 'vocabulary' | 'fluency' | 'overall'): Chainable<Element>
+      waitForRoute(route: string): Chainable<Element>
+      shouldBeOnPage(page: 'home' | 'chat' | 'feedback'): Chainable<Element>
+      waitForLoadingComplete(): Chainable<Element>
+      mockSessionCreation(sessionId?: number, scenarioId?: string): Chainable<void>
+      mockMessageResponse(sessionId?: number, content?: string): Chainable<void>
+      mockFeedbackResponse(sessionId?: number, feedbackData?: Partial<Feedback>): Chainable<void>
+    }
   }
 }

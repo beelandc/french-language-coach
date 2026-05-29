@@ -4,9 +4,6 @@
 // Import commands
 import './commands'
 
-// TypeScript support
-import '@testing-library/cypress' // For user event helpers
-
 // Declare global types for Cypress
 declare global {
   namespace Cypress {

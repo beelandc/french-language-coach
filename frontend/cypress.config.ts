@@ -16,8 +16,8 @@ export default defineConfig({
       // implement node event listeners here
     },
     
-    // Browser configuration
-    browser: 'chrome',
+    // Browser configuration - use electron for compatibility
+    browser: 'electron',
     
     // Disable web security for cross-origin testing (needed for API mocking)
     chromeWebSecurity: false,
@@ -80,6 +80,10 @@ export default defineConfig({
   
   // TypeScript support
   tsConfig: 'cypress/tsconfig.json',
+  
+  // Disable allowCypressEnv to avoid deprecation warning
+  // Use cy.env() or Cypress.expose() instead of Cypress.env()
+  allowCypressEnv: false,
   
   // Reporter options
   reporter: 'spec',
