@@ -5,7 +5,7 @@ export default function FeedbackPage() {
   const { sessionId } = useParams<{ sessionId: string }>()
   
   return (
-    <div className="page-container">
+    <div className="page-container" data-testid="feedback-page">
       <FeedbackView sessionId={sessionId || ''} />
     </div>
   )

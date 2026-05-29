@@ -34,11 +34,22 @@ frontend/
 │   │   └── global.css
 │   ├── App.tsx           # Main app component with React Router
 │   └── main.tsx          # App entry point
+├── cypress/             # E2E Test Framework (Issue #27)
+│   ├── config/
+│   │   └── cypress.config.ts  # Cypress configuration
+│   ├── e2e/
+│   │   └── conversation-flow.cy.ts  # E2E test for conversation flow
+│   ├── fixtures/
+│   │   └── test-data.json  # Test data fixtures
+│   └── support/
+│       ├── commands.ts   # Custom Cypress commands
+│       └── index.ts       # Support file with type definitions
 ├── .storybook/           # Storybook configuration
 │   ├── main.ts           # Storybook main configuration
 │   └── preview.tsx       # Storybook preview configuration
 ├── public/              # Static assets
 ├── vite.config.ts        # Vite configuration
+├── cypress.config.ts    # Cypress root configuration
 ├── package.json          # Dependencies
 └── tsconfig.app.json    # TypeScript configuration
 ```
@@ -103,6 +114,216 @@ The FastAPI backend already serves static files from the `static/` directory. Af
 | `npm run preview` | Preview production build locally |
 | `npm run storybook` | Start Storybook dev server at http://localhost:6006 |
 | `npm run build-storybook` | Build Storybook for deployment |
+| `npm run e2e` | Open Cypress Test Runner (GUI) |
+| `npm run e2e:run` | Run Cypress tests headlessly |
+| `npm run e2e:run:headed` | Run Cypress tests with browser visible |
+| `npm run e2e:run:ci` | Run Cypress tests for CI environment |
+
+## E2E Testing with Cypress (Issue #27)
+
+This project uses **Cypress** for end-to-end testing to validate the complete user journey through the application.
+
+### Setup
+
+Cypress is already installed as a dev dependency. No additional setup is required.
+
+### Running Tests
+
+#### Development Mode (GUI)
+Open the Cypress Test Runner to interactively run and debug tests:
+
+```bash
+npm run e2e
+```
+
+This opens the Cypress GUI where you can:
+- See all test specs
+- Click on tests to run them
+- View test results in real-time
+- Debug failing tests
+
+#### Headless Mode
+Run all tests without opening the browser:
+
+```bash
+npm run e2e:run
+```
+
+#### Headed Mode (Visible Browser)
+Run tests with the browser visible (useful for debugging):
+
+```bash
+npm run e2e:run:headed
+```
+
+#### CI Mode
+Run tests in CI-compatible mode (headless, with specific browser):
+
+```bash
+npm run e2e:run:ci
+```
+
+### Test Organization
+
+```
+cypress/
+├── config/
+│   └── cypress.config.ts      # Cypress configuration
+├── e2e/
+│   └── conversation-flow.cy.ts # Main E2E test spec (Issue #27)
+├── fixtures/
+│   └── test-data.json          # Test data fixtures
+└── support/
+    ├── commands.ts             # Custom commands
+    └── index.ts               # Support file with type definitions
+```
+
+### Current Tests
+
+**Issue #27: E2E-1.5: E2E test conversation flow**
+
+All 7 acceptance criteria are tested:
+
+| AC # | Description | Status |
+|------|-------------|--------|
+| AC-1 | Test scenario selection | ✅ |
+| AC-2 | Test starting a session | ✅ |
+| AC-3 | Test sending multiple messages | ✅ |
+| AC-4 | Test receiving AI responses | ✅ |
+| AC-5 | Test ending session | ✅ |
+| AC-6 | Test feedback display | ✅ |
+| AC-7 | Test runs in CI | ✅ |
+
+### Test Structure
+
+The main test file `cypress/e2e/conversation-flow.cy.ts` tests:
+
+1. **Scenario Selection**: Navigating from home page to chat page
+2. **Session Creation**: Verifying POST /sessions/ API call
+3. **Message Sending**: Sending multiple messages with AI responses
+4. **Session Ending**: Ending session and navigating to feedback
+5. **Feedback Display**: Verifying all feedback components render correctly
+6. **Complete Flow**: End-to-end test of the entire conversation journey
+
+### Custom Commands
+
+Cypress custom commands for easier test writing:
+
+| Command | Description |
+|---------|-------------|
+| `cy.selectScenario(scenarioId)` | Select a scenario by ID |
+| `cy.sendMessage(content)` | Type and send a message |
+| `cy.endSession()` | Click the end session button |
+| `cy.getFeedbackScore(scoreType)` | Get a specific score element |
+| `cy.shouldBeOnPage(page)` | Verify current page |
+| `cy.waitForLoadingComplete()` | Wait for loading to finish |
+| `cy.mockSessionCreation()` | Mock session creation API |
+| `cy.mockMessageResponse()` | Mock message sending API |
+| `cy.mockFeedbackResponse()` | Mock feedback API |
+
+### API Mocking
+
+Tests use `cy.intercept()` to mock API responses for deterministic testing:
+
+```typescript
+// Example: Mock session creation
+cy.intercept('POST', '/sessions/', {
+  id: 1,
+  scenario_id: 'cafe_order',
+  created_at: '2024-01-01T00:00:00Z',
+}).as('createSession')
+
+// Later in test
+cy.wait('@createSession')
+```
+
+### Data Test IDs
+
+Components have `data-testid` attributes for stable selectors:
+
+- `home-page` - Home page container
+- `chat-page` - Chat page container
+- `feedback-page` - Feedback page container
+- `scenario-{id}` - Individual scenario card
+- `message-input` - Chat message input field
+- `send-button` - Send message button
+- `end-session-button` - End session button
+- `chat-interface` - Chat interface container
+- `feedback-view` - Feedback view container
+- `grammar-score`, `vocabulary-score`, etc. - Individual score displays
+
+### CI Integration
+
+For CI/CD pipelines, use:
+
+```bash
+npm run e2e:run:ci
+```
+
+Or configure GitHub Actions workflow:
+
+```yaml
+name: Cypress Tests
+on: [push, pull_request]
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npm run e2e:run
+```
+
+### Configuration
+
+Cypress is configured in `cypress.config.ts`:
+
+- **Base URL**: http://localhost:5173 (Vite dev server)
+- **Browser**: Chrome
+- **Port**: 5173 (matches Vite)
+- **TypeScript**: Enabled with path aliases
+- **Timeouts**: Configured for reliable testing
+
+### Best Practices
+
+1. **Use `data-testid` selectors** for stable tests
+2. **Mock API responses** for deterministic tests
+3. **Keep tests independent** - each test should set up its own state
+4. **Use custom commands** for reusable actions
+5. **Test user journeys** not just individual features
+6. **Keep tests fast** - aim for < 5 minutes total runtime
+
+### Troubleshooting
+
+**Issue: Tests fail with "Cannot read properties of null (reading 'call')"**
+- Solution: Ensure the Vite dev server is running (`npm run dev`)
+- Cypress needs the app to be running at http://localhost:5173
+
+**Issue: API calls are not being intercepted**
+- Solution: Check that the URL pattern matches exactly
+- Use `cy.intercept('POST', '/sessions/')` not `cy.intercept('POST', 'sessions/')`
+
+**Issue: Tests are flaky**
+- Solution: Use `cy.wait()` or `cy.wait('@alias')` to wait for async operations
+- Avoid arbitrary timeouts - wait for specific conditions
+
+### Related Files
+
+- **Cypress Config**: `cypress.config.ts`
+- **TypeScript Config**: `cypress/tsconfig.json`
+- **Tests**: `cypress/e2e/conversation-flow.cy.ts`
+- **Fixtures**: `cypress/fixtures/test-data.json`
+- **Commands**: `cypress/support/commands.ts`
+- **Support**: `cypress/support/index.ts`
+
+### SPDD Artifacts
+
+- **Analysis**: `spdd/analysis/FLC-016-202605211712-[Analysis]-issue-27-e2e-conversation-flow.md`
+- **Prompt**: `spdd/prompt/FLC-016-202605211725-[Feat]-issue-27-e2e-conversation-flow.md`
+- **GitHub Issue**: #27
 
 ## Storybook
 

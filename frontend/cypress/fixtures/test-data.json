@@ -1,0 +1,58 @@
+{
+  "scenarios": [
+    {
+      "id": "cafe_order",
+      "name": "Ordering at a Café",
+      "description": "Practice ordering coffee, pastries, and asking about menu items in a Parisian café."
+    },
+    {
+      "id": "ask_directions",
+      "name": "Asking for Directions",
+      "description": "Practice asking for and understanding directions to landmarks around Paris."
+    },
+    {
+      "id": "job_interview",
+      "name": "Job Interview",
+      "description": "Simulate a job interview in French for a position as a software engineer."
+    }
+  ],
+  "messages": [
+    {
+      "user": "Bonjour, je voudrais un café",
+      "assistant": "Bonjour ! Quel type de café souhaitez-vous ?"
+    },
+    {
+      "user": "Un café noir, s'il vous plaît",
+      "assistant": "Très bien. Avec du sucre ?"
+    },
+    {
+      "user": "Non, sans sucre merci",
+      "assistant": "Parfait. Cela fera 2,50 euros."
+    }
+  ],
+  "feedback": {
+    "grammar_score": 85,
+    "vocabulary_score": 90,
+    "fluency_score": 80,
+    "overall_score": 85,
+    "strengths": [
+      "Good vocabulary usage",
+      "Clear sentence structure"
+    ],
+    "focus_area": "grammar",
+    "example_corrections": [
+      {
+        "original": "Je vais au cafe",
+        "corrected": "Je vais au café",
+        "explanation": "Accent needed on café"
+      }
+    ]
+  },
+  "session": {
+    "id": 1,
+    "scenario_id": "cafe_order",
+    "created_at": "2024-01-01T00:00:00Z",
+    "ended_at": null,
+    "difficulty": "intermediate"
+  }
+}

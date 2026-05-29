@@ -143,7 +143,7 @@ export default function ChatInterface({ sessionId }: ChatInterfaceProps) {
   const isLoading = isSessionsLoading || isSending
 
   return (
-    <div className="chat-container">
+    <div className="chat-container" data-testid="chat-interface">
       <ChatHeader
         scenarioName={scenarioName}
         onBack={handleBack}
@@ -151,9 +151,9 @@ export default function ChatInterface({ sessionId }: ChatInterfaceProps) {
         disabled={!sessionId || sessionEnded || isLoading}
       />
 
-      <div className="chat-messages">
+      <div className="chat-messages" data-testid="chat-messages">
         {messages.length === 0 ? (
-          <div className="empty-state">
+          <div className="empty-state" data-testid="empty-chat-state">
             <p>Start your conversation by typing a message below.</p>
           </div>
         ) : (
@@ -162,28 +162,29 @@ export default function ChatInterface({ sessionId }: ChatInterfaceProps) {
           ))
         )}
         {isLoading && (
-          <div className="loading-spinner" role="status" aria-live="polite" aria-label="Loading AI response...">
+          <div className="loading-spinner" role="status" aria-live="polite" aria-label="Loading AI response..." data-testid="loading-spinner">
             <div className="spinner" />
           </div>
         )}
         <div ref={messagesEndRef} />
       </div>
 
-      <form className="message-form" onSubmit={handleSubmit}>
+      <form className="message-form" onSubmit={handleSubmit} data-testid="message-form">
         <input
           type="text"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           placeholder="Type your message in French..."
           disabled={sessionEnded || isLoading}
+          data-testid="message-input"
         />
-        <button type="submit" className="btn-primary" disabled={isLoading}>
+        <button type="submit" className="btn-primary" disabled={isLoading} data-testid="send-button">
           Send
         </button>
       </form>
 
-      {error && <div className="error-message">{error}</div>}
-      {sessionsError && <div className="error-message">{sessionsError}</div>}
+      {error && <div className="error-message" data-testid="chat-error">{error}</div>}
+      {sessionsError && <div className="error-message" data-testid="sessions-error">{sessionsError}</div>}
     </div>
   )
 }
