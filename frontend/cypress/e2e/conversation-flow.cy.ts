@@ -290,7 +290,8 @@ describe('Conversation Flow - Issue #27', () => {
 
       // Then: Both user message and AI response are visible
       cy.get('body').should('contain', userMessage)
-      cy.get('body').should('contain', 'Mock AI response')
+      // The message contains "café" so the mock should return the coffee response
+      cy.get('body').should('contain', 'Quel type de café souhaitez-vous')
     })
   })
 
