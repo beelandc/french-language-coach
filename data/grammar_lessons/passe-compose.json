@@ -1,0 +1,87 @@
+{
+  "$schema": "https://french-language-coach.github.io/schemas/grammar_lesson.json",
+  "id": "passe-compose",
+  "title": "Passé Composé (Compound Past)",
+  "topic": "Past Tenses",
+  "difficulty": "beginner",
+  "sections": [
+    {
+      "title": "Introduction to Passé Composé",
+      "content": "The passé composé is the most common past tense in French, used for completed actions. It is formed with an auxiliary verb (avoir or être) and the past participle of the main verb.",
+      "examples": [
+        "J'ai mangé une pomme (I ate an apple)",
+        "Il est parti à 8h (He left at 8 o'clock)",
+        "Nous avons fini nos devoirs (We finished our homework)"
+      ]
+    },
+    {
+      "title": "Formation with Avoir",
+      "content": "Most verbs use avoir as the auxiliary. The past participle of regular -ER verbs ends in -é, -IR verbs in -i, and -RE verbs in -u. Conjugate avoir in present tense + past participle.",
+      "examples": [
+        "J'ai parlé (I spoke)",
+        "Tu as fini (You finished)",
+        "Il a vendu (He sold)",
+        "Nous avons dansé (We danced)",
+        "Vous avez choisi (You chose)",
+        "Ils ont attendu (They waited)"
+      ]
+    },
+    {
+      "title": "Formation with Être",
+      "content": "Verbs of motion and state changes use être as the auxiliary. The past participle must agree in gender and number with the subject. Key verbs: aller, venir, partir, arriver, entrer, sortir, monter, descendre, naître, mourir.",
+      "examples": [
+        "Je suis allé(e) au marché (I went to the market)",
+        "Tu es venu(e) à l'heure (You came on time)",
+        "Il est parti tôt (He left early)",
+        "Nous sommes arrivés en retard (We arrived late)",
+        "Vous êtes montés en haut (You went upstairs)",
+        "Elles sont descendues rapidement (They came down quickly)"
+      ]
+    },
+    {
+      "title": "Past Participle Agreement with Être",
+      "content": "When être is the auxiliary, the past participle must agree with the subject in gender and number. Add -e for feminine, -s for plural, -es for feminine plural.",
+      "examples": [
+        "Marie est partie (Marie left) - feminine singular",
+        "Paul et Jean sont partis (Paul and Jean left) - masculine plural",
+        "Les filles sont arrivées (The girls arrived) - feminine plural"
+      ]
+    },
+    {
+      "title": "Past Participle Agreement with Avoir",
+      "content": "When avoir is the auxiliary, the past participle agrees with a preceding direct object only if it comes before the verb. This is called the 'COD rule'.",
+      "examples": [
+        "J'ai mangé la pomme (I ate the apple) - no agreement, COD after verb",
+        "La pomme que j'ai mangée était délicieuse (The apple that I ate was delicious) - COD before verb, so agreement",
+        "Les livres que j'ai lus sont intéressants (The books that I read are interesting) - masculine plural COD before verb"
+      ]
+    },
+    {
+      "title": "Common Irregular Past Participles",
+      "content": "Many common verbs have irregular past participles that must be memorized.",
+      "examples": [
+        "être → été (avoir: j'ai été)",
+        "avoir → eu (avoir: j'ai eu)",
+        "faire → fait (avoir: j'ai fait)",
+        "prendre → pris (avoir: j'ai pris)",
+        "voir → vu (avoir: j'ai vu)",
+        "pouvoir → pu (avoir: j'ai pu)",
+        "vouloir → voulu (avoir: j'ai voulu)",
+        "savoir → su (avoir: j'ai su)"
+      ]
+    },
+    {
+      "title": "Negation in Passé Composé",
+      "content": "To negate the passé composé, place ne/n' before the auxiliary and pas after: ne + auxiliary + pas + past participle.",
+      "examples": [
+        "Je n'ai pas mangé (I did not eat)",
+        "Il n'est pas parti (He did not leave)",
+        "Nous n'avons pas fini (We did not finish)"
+      ]
+    },
+    {
+      "title": "Practice Exercise",
+      "content": "Write 10 sentences using the passé composé with both avoir and être. Include at least 3 verbs with irregular past participles."
+    }
+  ]
+}
