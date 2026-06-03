@@ -180,7 +180,8 @@ french-language-coach/
 ├── models/
 │   └── session.py           # SQLAlchemy ORM model for a conversation session
 ├── schemas/
-│   └── session.py           # Pydantic schemas for API request/response
+│   ├── session.py           # Pydantic schemas for API request/response
+│   └── grammar_lesson.py    # Pydantic models for grammar lesson validation (Phase 2)
 ├── services/
 │   └── mistral.py           # Mistral API client: chat completion + feedback generation
 ├── routers/
@@ -189,6 +190,10 @@ french-language-coach/
 │   ├── messages.py          # POST /sessions/{id}/messages (send a message, get AI reply)
 │   └── feedback.py          # POST /sessions/{id}/feedback (generate end-of-session report)
 ├── scenarios.py             # Static list of 10 built-in conversation scenarios with system prompts
+├── data/
+│   └── grammar_lessons/     # Grammar lesson JSON files for Phase 2 (20+ lessons)
+├── scripts/
+│   └── validate_grammar_lessons.py  # Validation script for grammar lessons
 ├── frontend/                # React SPA frontend (Vite + TypeScript)
 │   ├── src/
 │   │   ├── components/      # Reusable UI components + Storybook stories
@@ -458,6 +463,8 @@ pytest --cov=. --cov-report=term-missing
 - `tests/test_schemas.py` - Tests for Pydantic schemas
 - `tests/test_sessions_listing.py` - Tests for session listing and filtering endpoints
 - `tests/test_session_deletion.py` - Tests for session deletion endpoint
+- `tests/test_grammar_lesson_schema.py` - Tests for grammar lesson schema (Issue #28)
+- `tests/test_grammar_lessons_issue_30.py` - Tests for 20+ grammar lessons (Issue #30)
 
 ### Frontend Tests
 

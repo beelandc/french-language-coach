@@ -1,0 +1,63 @@
+{
+  "$schema": "https://french-language-coach.github.io/schemas/grammar_lesson.json",
+  "id": "future-proche",
+  "title": "Future Proche (Near Future)",
+  "topic": "Future Tenses",
+  "difficulty": "beginner",
+  "sections": [
+    {
+      "title": "Introduction to Future Proche",
+      "content": "The near future (futur proche) is used to express actions that will happen very soon, in the immediate future. It is formed with the present tense of aller (to go) + the infinitive of the main verb.",
+      "examples": [
+        "Je vais manger (I am going to eat)",
+        "Tu vas partir (You are going to leave)",
+        "Il va pleuvoir (It is going to rain)"
+      ]
+    },
+    {
+      "title": "Formation",
+      "content": "Conjugate aller in the present tense and add the infinitive: je vais + infinitive, tu vas + infinitive, il/elle/on va + infinitive, nous allons + infinitive, vous allez + infinitive, ils/elles vont + infinitive.",
+      "examples": [
+        "Je vais parler (I am going to speak)",
+        "Tu vas finir (You are going to finish)",
+        "Il va vendre (He is going to sell)",
+        "Nous allons danser (We are going to dance)",
+        "Vous allez choisir (You are going to choose)",
+        "Ils vont attendre (They are going to wait)"
+      ]
+    },
+    {
+      "title": "Uses of Future Proche",
+      "content": "The near future is used for: 1) Actions that will happen very soon, 2) Actions that are about to happen, 3) Intentions or plans for the immediate future, 4) Predictions about the near future.",
+      "examples": [
+        "Je vais sortir dans 5 minutes (I'm going to go out in 5 minutes) - very soon",
+        "Attention! Tu vas tomber! (Careful! You're going to fall!) - about to happen",
+        "Je vais étudier ce soir (I'm going to study tonight) - intention",
+        "Il va neiger demain (It's going to snow tomorrow) - prediction"
+      ]
+    },
+    {
+      "title": "Future Proche vs Future Simple",
+      "content": "Use futur proche for immediate or near future actions. Use future simple for more distant future actions or for formal/predictive statements.",
+      "examples": [
+        "Je vais manger dans 5 minutes (I'm going to eat in 5 minutes) - near future",
+        "Je mangerai demain à cette heure (I will eat tomorrow at this time) - more distant",
+        "Il va pleuvoir cet après-midi (It's going to rain this afternoon) - near future",
+        "Il pleuvra demain (It will rain tomorrow) - more distant"
+      ]
+    },
+    {
+      "title": "Negation",
+      "content": "To negate the future proche, place ne/n' before aller and pas after: ne + vais/vas/va/allons/allez/vont + pas + infinitive.",
+      "examples": [
+        "Je ne vais pas manger (I am not going to eat)",
+        "Tu ne vas pas partir (You are not going to leave)",
+        "Il ne va pas pleuvoir (It is not going to rain)"
+      ]
+    },
+    {
+      "title": "Practice Exercise",
+      "content": "Write 10 sentences using the near future tense. Describe what you and others are going to do this week."
+    }
+  ]
+}
