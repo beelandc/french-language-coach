@@ -25,19 +25,6 @@ jobs:
     name: Cypress E2E Tests (Issue #27)
     runs-on: ubuntu-latest
     
-    # Service containers for database (if needed in future)
-    services:
-      # Currently not needed as we use API mocking
-      # postgres:
-      #   image: postgres:13
-      #   env:
-      #     POSTGRES_PASSWORD: postgres
-      #     POSTGRES_USER: postgres
-      #     POSTGRES_DB: test_db
-      #   ports:
-      #     - 5432:5432
-      #   options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-    
     strategy:
       fail-fast: false
       matrix:
