@@ -76,12 +76,12 @@ export default function ExercisePage() {
 
   // Handle navigation back
   const handleBack = useCallback(() => {
-    navigate('/reference')
+    navigate('/exercises')
   }, [navigate])
 
-  // Handle navigation to exercises list (if we had one)
+  // Handle navigation to exercises list
   const handleChooseAnother = useCallback(() => {
-    navigate('/reference')
+    navigate('/exercises')
   }, [navigate])
 
   if (isLoading) {
