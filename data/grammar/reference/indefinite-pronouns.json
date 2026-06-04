@@ -1,0 +1,18 @@
+{
+  "id": "indefinite-pronouns",
+  "term": "Indefinite Pronouns",
+  "category": "Pronouns",
+  "difficulty": "intermediate",
+  "definition": "Pronouns for non-specific: quelqu'un, personne, quelque chose, rien.",
+  "examples": [
+    "Quelqu'un a téléphoné",
+    "Personne n'est là"
+  ],
+  "common_pitfalls": [
+    "Personne and rien are negative",
+    "Use ne with these pronouns"
+  ],
+  "related_terms": [
+    "negative-pronouns"
+  ]
+}

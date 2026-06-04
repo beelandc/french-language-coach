@@ -1,0 +1,20 @@
+{
+  "id": "present-tense-regular",
+  "term": "Present Tense (Regular Verbs)",
+  "category": "Verbs",
+  "difficulty": "beginner",
+  "definition": "The present tense of regular French verbs follows predictable patterns: -ER, -IR, -RE groups.",
+  "examples": [
+    "Je parle (I speak) - ER verb",
+    "Tu finis (You finish) - IR verb",
+    "Il vend (He sells) - RE verb"
+  ],
+  "common_pitfalls": [
+    "ER verbs drop -er: parler → parl-",
+    "IR verbs have different endings: finis, finis, finit"
+  ],
+  "related_terms": [
+    "present-tense-irregular",
+    "verb-conjugation"
+  ]
+}

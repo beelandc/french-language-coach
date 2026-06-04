@@ -1,0 +1,18 @@
+{
+  "id": "verb-infinitive-constructions",
+  "term": "Verb + Infinitive",
+  "category": "Verbs",
+  "difficulty": "intermediate",
+  "definition": "Some verbs require à or de before infinitive.",
+  "examples": [
+    "Je veux partir",
+    "Il commence à étudier"
+  ],
+  "common_pitfalls": [
+    "No preposition for vouloir, pouvoir",
+    "à for commencer, continuer"
+  ],
+  "related_terms": [
+    "infinitive"
+  ]
+}

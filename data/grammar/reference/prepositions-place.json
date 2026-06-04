@@ -1,0 +1,21 @@
+{
+  "id": "prepositions-place",
+  "term": "Prepositions of Place",
+  "category": "Prepositions",
+  "difficulty": "beginner",
+  "definition": "Location and direction: à, en, dans, sur, sous, etc. Static vs dynamic.",
+  "examples": [
+    "Le chat est sur le canapé (static)",
+    "Je mets le livre sur la table (dynamic)",
+    "Il est dans la cuisine (static)",
+    "Elle entre dans la pièce (dynamic)"
+  ],
+  "common_pitfalls": [
+    "à for cities: à Paris",
+    "en for feminine countries: en France",
+    "au for masculine countries: au Canada"
+  ],
+  "related_terms": [
+    "prepositions-direction"
+  ]
+}

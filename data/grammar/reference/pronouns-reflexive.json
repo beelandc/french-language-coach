@@ -1,0 +1,19 @@
+{
+  "id": "pronouns-reflexive",
+  "term": "Reflexive Pronouns",
+  "category": "Pronouns",
+  "difficulty": "intermediate",
+  "definition": "With reflexive verbs: me, te, se, nous, vous, se. Before verb.",
+  "examples": [
+    "Je me lave (I wash myself)",
+    "Tu te réveilles (You wake up)",
+    "Il se rase (He shaves)"
+  ],
+  "common_pitfalls": [
+    "Come BEFORE the verb",
+    "Use être as auxiliary in compound tenses"
+  ],
+  "related_terms": [
+    "reflexive-verbs"
+  ]
+}

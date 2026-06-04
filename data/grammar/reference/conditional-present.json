@@ -1,0 +1,20 @@
+{
+  "id": "conditional-present",
+  "term": "Conditional Present",
+  "category": "Verbs",
+  "difficulty": "intermediate",
+  "definition": "Hypothetical mood: infinitive + imperfect endings. Many irregular stems.",
+  "examples": [
+    "J'aimerais (I would like)",
+    "Tu devrais (You should) - irregular",
+    "Il pourrait (He could) - irregular"
+  ],
+  "common_pitfalls": [
+    "Endings: -ais, -ais, -ait, -ions, -iez, -aient",
+    "Used for polite requests, hypotheticals"
+  ],
+  "related_terms": [
+    "conditional-past",
+    "polite-requests"
+  ]
+}
