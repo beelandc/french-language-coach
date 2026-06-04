@@ -5,6 +5,8 @@ import FeedbackPage from './pages/FeedbackPage'
 import SessionDetailPage from './pages/SessionDetailPage'
 import LessonPage from './pages/LessonPage'
 import LessonDetailPage from './pages/LessonDetailPage'
+import ReferencePage from './pages/ReferencePage'
+import ExercisePage from './pages/ExercisePage'
 
 function App() {
   return (
@@ -22,6 +24,10 @@ function App() {
           {/* Grammar Lessons Routes (Phase 2) */}
           <Route path="/lessons" element={<LessonPage />} />
           <Route path="/lessons/:lessonId" element={<LessonDetailPage />} />
+          {/* Grammar Reference Routes (Phase 2) */}
+          <Route path="/reference" element={<ReferencePage />} />
+          {/* Grammar Exercise Routes (Phase 2) */}
+          <Route path="/exercises/:exerciseId" element={<ExercisePage />} />
         </Routes>
       </main>
     </div>

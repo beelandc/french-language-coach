@@ -17,3 +17,15 @@ export { default as ConfirmationModal } from './ConfirmationModal'
 export { default as LessonCard } from './LessonCard'
 export { default as LessonSearch } from './LessonSearch'
 export { default as LessonBrowser } from './LessonBrowser'
+
+// Grammar Reference Components (Phase 2)
+export { default as ReferenceCard } from './ReferenceCard'
+export { default as ReferenceSearch } from './ReferenceSearch'
+
+// Exercise Components (Phase 2)
+export { default as Exercise } from './Exercise'
+export { default as FillInTheBlankExercise } from './ExerciseTypes/FillInTheBlankExercise'
+export { default as MultipleChoiceExercise } from './ExerciseTypes/MultipleChoiceExercise'
+export { default as TranslationExercise } from './ExerciseTypes/TranslationExercise'
+export { default as ConjugationExercise } from './ExerciseTypes/ConjugationExercise'
+export { default as SentenceTransformationExercise } from './ExerciseTypes/SentenceTransformationExercise'

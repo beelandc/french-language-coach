@@ -4,10 +4,12 @@ This module provides RESTful endpoints for accessing grammar content:
 - GET /grammar/lessons/ - List all grammar lessons with filtering and pagination
 - GET /grammar/lessons/{id} - Get a specific grammar lesson by ID
 - GET /grammar/reference/ - Search grammar reference entries with filtering
+- GET /grammar/exercises/ - List grammar exercises with filtering and pagination
+- GET /grammar/exercises/{id} - Get a specific exercise by ID
 
 The router loads data from JSON files in the data/ directory and uses
-Pydantic models from schemas/grammar_lesson.py and schemas/grammar_reference.py
-for validation.
+Pydantic models from schemas/grammar_lesson.py, schemas/grammar_reference.py,
+and schemas/grammar_exercise.py for validation.
 """
 
 from math import ceil
@@ -24,6 +26,11 @@ from schemas.grammar import (
     ReferenceListResponse,
     ReferenceResponse,
 )
+from schemas.grammar_exercise import (
+    Exercise,
+    ExerciseType,
+    load_exercises_from_directory,
+)
 from schemas.grammar_lesson import (
     DifficultyLevel,
     GrammarLesson,
@@ -38,17 +45,355 @@ from schemas.grammar_reference import (
 router = APIRouter(prefix="/grammar", tags=["grammar"])
 
 
+# Endpoint: GET /grammar/exercises/
 # ============================================================================
+
+@router.get("/exercises/", response_model=ReferenceListResponse)
+async def list_exercises(
+    page: int = Query(1, ge=1, description="Page number, starting at 1"),
+    per_page: int = Query(10, ge=1, le=100, description="Items per page, maximum 100"),
+    exercise_type: Optional[ExerciseType] = Query(
+        None,
+        description="Filter by exercise type: fill-in-the-blank, multiple-choice, translation, conjugation, or sentence-transformation"
+    ),
+    topic: Optional[str] = Query(None, description="Filter by topic (case-insensitive substring)"),
+    difficulty: Optional[DifficultyLevel] = Query(
+        None,
+        description="Filter by difficulty level: beginner, intermediate, or advanced"
+    ),
+) -> ReferenceListResponse:
+    """List all grammar exercises with optional filtering and pagination.
+    
+    Supports filtering by:
+    - exercise_type: Exact match on exercise type
+    - topic: Case-insensitive substring match on the exercise's topic field
+    - difficulty: Exact match on difficulty level
+    
+    All filters are optional and use AND logic (all must match).
+    
+    Returns a paginated list of exercises with full content.
+    Use GET /grammar/exercises/{id} to retrieve a specific exercise by ID.
+    """
+    # Load all exercises
+    exercises_dict = get_exercises()
+    
+    # Apply filters
+    filtered_exercises = filter_exercises(exercises_dict, exercise_type, topic, difficulty)
+    
+    # Apply pagination
+    paginated_exercises, pagination = paginate(filtered_exercises, page, per_page)
+    
+    # Convert to response format (reuse ReferenceResponse as it has similar structure)
+    # For now, we'll return exercises as-is since they already have the full structure
+    exercise_responses = [
+        ReferenceResponse(  # Reusing ReferenceResponse as it has similar structure
+            id=exercise.id,
+            term=exercise.prompt,
+            category=exercise.topic,
+            difficulty=exercise.difficulty,
+            definition=exercise.prompt,
+        )
+        for exercise in paginated_exercises
+    ]
+    
+    return ReferenceListResponse(
+        references=exercise_responses,  # Using references field for now
+        pagination=pagination,
+    )
+
+
+# ============================================================================
+# Endpoint: GET /grammar/exercises/{id}
+# ============================================================================
+
+@router.get("/exercises/{exercise_id}")
+async def get_exercise(exercise_id: str) -> Exercise:
+    """Get a specific grammar exercise by ID.
+    
+    Returns the full exercise content including all type-specific fields.
+    
+    Args:
+        exercise_id: The unique identifier of the exercise
+        
+    Returns:
+        The complete Exercise with all fields
+        
+    Raises:
+        HTTPException 404: If the exercise with the given ID is not found
+    """
+    # Load all exercises
+    exercises_dict = get_exercises()
+    
+    # Find exercise by ID
+    if exercise_id not in exercises_dict:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Exercise not found: {exercise_id}"
+        )
+    
+    # Return the full exercise
+    return exercises_dict[exercise_id]
+=======
+# ============================================================================
+# Endpoint: GET /grammar/exercises/
+# ============================================================================
+
+@router.get("/exercises/")
+async def list_exercises(
+    page: int = Query(1, ge=1, description="Page number, starting at 1"),
+    per_page: int = Query(10, ge=1, le=100, description="Items per page, maximum 100"),
+    exercise_type: Optional[ExerciseType] = Query(
+        None,
+        description="Filter by exercise type: fill-in-the-blank, multiple-choice, translation, conjugation, or sentence-transformation"
+    ),
+    topic: Optional[str] = Query(None, description="Filter by topic (case-insensitive substring)"),
+    difficulty: Optional[DifficultyLevel] = Query(
+        None,
+        description="Filter by difficulty level: beginner, intermediate, or advanced"
+    ),
+):
+    """List all grammar exercises with optional filtering and pagination.
+    
+    Supports filtering by:
+    - exercise_type: Exact match on exercise type
+    - topic: Case-insensitive substring match on the exercise's topic field
+    - difficulty: Exact match on difficulty level
+    
+    All filters are optional and use AND logic (all must match).
+    
+    Returns a paginated list of exercises with full content.
+    Use GET /grammar/exercises/{id} to retrieve a specific exercise by ID.
+    """
+    # Load all exercises
+    exercises_dict = get_exercises()
+    
+    # Apply filters
+    filtered_exercises = filter_exercises(exercises_dict, exercise_type, topic, difficulty)
+    
+    # Apply pagination
+    paginated_exercises, pagination = paginate(filtered_exercises, page, per_page)
+    
+    # Return exercises as a simple dictionary with pagination info
+    return {
+        "exercises": [exercise.model_dump() for exercise in paginated_exercises],
+        "pagination": {
+            "total": pagination.total,
+            "page": pagination.page,
+            "per_page": pagination.per_page,
+            "total_pages": pagination.total_pages,
+        }
+    }
+
+
+# ============================================================================
+# Endpoint: GET /grammar/exercises/{id}
+# ============================================================================
+
+@router.get("/exercises/{exercise_id}")
+async def get_exercise(exercise_id: str):
+    """Get a specific grammar exercise by ID.
+    
+    Returns the full exercise content including all type-specific fields.
+    
+    Args:
+        exercise_id: The unique identifier of the exercise
+        
+    Returns:
+        The complete Exercise with all fields
+        
+    Raises:
+        HTTPException 404: If the exercise with the given ID is not found
+    """
+    # Load all exercises
+    exercises_dict = get_exercises()
+    
+    # Find exercise by ID
+    if exercise_id not in exercises_dict:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Exercise not found: {exercise_id}"
+        )
+    
+    # Return the full exercise as a dictionary
+    return exercises_dict[exercise_id].model_dump()Endpoint: GET /grammar/exercises/
+# ============================================================================
+
+@router.get("/exercises/", response_model=ReferenceListResponse)
+async def list_exercises(
+    page: int = Query(1, ge=1, description="Page number, starting at 1"),
+    per_page: int = Query(10, ge=1, le=100, description="Items per page, maximum 100"),
+    exercise_type: Optional[ExerciseType] = Query(
+        None,
+        description="Filter by exercise type: fill-in-the-blank, multiple-choice, translation, conjugation, or sentence-transformation"
+    ),
+    topic: Optional[str] = Query(None, description="Filter by topic (case-insensitive substring)"),
+    difficulty: Optional[DifficultyLevel] = Query(
+        None,
+        description="Filter by difficulty level: beginner, intermediate, or advanced"
+    ),
+) -> ReferenceListResponse:
+    """List all grammar exercises with optional filtering and pagination.
+    
+    Supports filtering by:
+    - exercise_type: Exact match on exercise type
+    - topic: Case-insensitive substring match on the exercise's topic field
+    - difficulty: Exact match on difficulty level
+    
+    All filters are optional and use AND logic (all must match).
+    
+    Returns a paginated list of exercises with full content.
+    Use GET /grammar/exercises/{id} to retrieve a specific exercise by ID.
+    """
+    # Load all exercises
+    exercises_dict = get_exercises()
+    
+    # Apply filters
+    filtered_exercises = filter_exercises(exercises_dict, exercise_type, topic, difficulty)
+    
+    # Apply pagination
+    paginated_exercises, pagination = paginate(filtered_exercises, page, per_page)
+    
+    # Convert to response format (reuse ReferenceResponse for now, or create ExerciseResponse)
+    # For now, we'll return exercises as-is since they already have the full structure
+    exercise_responses = [
+        ReferenceResponse(  # Reusing ReferenceResponse as it has similar structure
+            id=exercise.id,
+            term=exercise.prompt,
+            category=exercise.topic,
+            difficulty=exercise.difficulty,
+            definition=exercise.prompt,
+        )
+        for exercise in paginated_exercises
+    ]
+    
+    return ReferenceListResponse(
+        references=exercise_responses,  # Using references field for now
+        pagination=pagination,
+    )
+
+
+# ============================================================================
+# Endpoint: GET /grammar/exercises/{id}
+# ============================================================================
+
+@router.get("/exercises/{exercise_id}")
+async def get_exercise(exercise_id: str) -> Exercise:
+    """Get a specific grammar exercise by ID.
+    
+    Returns the full exercise content including all type-specific fields.
+    
+    Args:
+        exercise_id: The unique identifier of the exercise
+        
+    Returns:
+        The complete Exercise with all fields
+        
+    Raises:
+        HTTPException 404: If the exercise with the given ID is not found
+    """
+    # Load all exercises
+    exercises_dict = get_exercises()
+    
+    # Find exercise by ID
+    if exercise_id not in exercises_dict:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Exercise not found: {exercise_id}"
+        )
+    
+    # Return the full exercise
+    return exercises_dict[exercise_id]
+=======
+# ============================================================================
+# Endpoint: GET /grammar/exercises/
+# ============================================================================
+
+@router.get("/exercises/")
+async def list_exercises(
+    page: int = Query(1, ge=1, description="Page number, starting at 1"),
+    per_page: int = Query(10, ge=1, le=100, description="Items per page, maximum 100"),
+    exercise_type: Optional[ExerciseType] = Query(
+        None,
+        description="Filter by exercise type: fill-in-the-blank, multiple-choice, translation, conjugation, or sentence-transformation"
+    ),
+    topic: Optional[str] = Query(None, description="Filter by topic (case-insensitive substring)"),
+    difficulty: Optional[DifficultyLevel] = Query(
+        None,
+        description="Filter by difficulty level: beginner, intermediate, or advanced"
+    ),
+):
+    """List all grammar exercises with optional filtering and pagination.
+    
+    Supports filtering by:
+    - exercise_type: Exact match on exercise type
+    - topic: Case-insensitive substring match on the exercise's topic field
+    - difficulty: Exact match on difficulty level
+    
+    All filters are optional and use AND logic (all must match).
+    
+    Returns a paginated list of exercises with full content.
+    Use GET /grammar/exercises/{id} to retrieve a specific exercise by ID.
+    """
+    # Load all exercises
+    exercises_dict = get_exercises()
+    
+    # Apply filters
+    filtered_exercises = filter_exercises(exercises_dict, exercise_type, topic, difficulty)
+    
+    # Apply pagination
+    paginated_exercises, pagination = paginate(filtered_exercises, page, per_page)
+    
+    # Return exercises as a simple list with pagination info
+    # Note: We return the full exercise objects which include all type-specific fields
+    return {
+        "exercises": [exercise.model_dump() for exercise in paginated_exercises],
+        "pagination": pagination.model_dump()
+    }
+
+
+# ============================================================================
+# Endpoint: GET /grammar/exercises/{id}
+# ============================================================================
+
+@router.get("/exercises/{exercise_id}")
+async def get_exercise(exercise_id: str):
+    """Get a specific grammar exercise by ID.
+    
+    Returns the full exercise content including all type-specific fields.
+    
+    Args:
+        exercise_id: The unique identifier of the exercise
+        
+    Returns:
+        The complete Exercise with all fields
+        
+    Raises:
+        HTTPException 404: If the exercise with the given ID is not found
+    """
+    # Load all exercises
+    exercises_dict = get_exercises()
+    
+    # Find exercise by ID
+    if exercise_id not in exercises_dict:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Exercise not found: {exercise_id}"
+        )
+    
+    # Return the full exercise as a dictionary
+    return exercises_dict[exercise_id].model_dump()============================================================================
 # Data Loading Utilities
 # ============================================================================
 
 # Paths to grammar data directories
 LESSONS_DIRECTORY = Path(__file__).parent.parent / "data" / "grammar_lessons"
 REFERENCES_DIRECTORY = Path(__file__).parent.parent / "data" / "grammar" / "reference"
+EXERCISES_DIRECTORY = Path(__file__).parent.parent / "data" / "grammar" / "exercises"
 
 # Valid values for enum-based filters
 VALID_DIFFICULTIES = {d.value for d in DifficultyLevel}
 VALID_CATEGORIES = {c.value for c in GrammarReferenceCategory}
+VALID_EXERCISE_TYPES = {e.value for e in ExerciseType}
 
 
 def get_lessons() -> dict[str, GrammarLesson]:
@@ -66,6 +411,9 @@ def get_lessons() -> dict[str, GrammarLesson]:
     return load_lessons_from_directory(LESSONS_DIRECTORY)
 
 
+# Helper Functions for Filtering and Pagination
+# ============================================================================
+=======
 def get_references() -> dict[str, GrammarReference]:
     """Load and return all grammar reference entries from the reference directory.
     
@@ -81,7 +429,24 @@ def get_references() -> dict[str, GrammarReference]:
     return load_references_from_directory(REFERENCES_DIRECTORY)
 
 
+def get_exercises() -> dict[str, Exercise]:
+    """Load and return all grammar exercises from the exercises directory.
+    
+    Returns:
+        Dictionary mapping exercise IDs to Exercise instances.
+        
+    Raises:
+        FileNotFoundError: If the exercises directory does not exist.
+        ValueError: If any exercise file contains invalid data.
+    """
+    if not EXERCISES_DIRECTORY.exists():
+        return {}
+    return load_exercises_from_directory(EXERCISES_DIRECTORY)
+
+
 # ============================================================================
+# Helper Functions for Filtering and Pagination
+# ========================================================================================================================================================
 # Helper Functions for Filtering and Pagination
 # ============================================================================
 
@@ -167,6 +532,44 @@ def filter_references(
             continue
         
         filtered.append(reference)
+    
+    return filtered
+
+
+def filter_exercises(
+    exercises: dict[str, Exercise],
+    exercise_type: Optional[ExerciseType] = None,
+    topic: Optional[str] = None,
+    difficulty: Optional[DifficultyLevel] = None,
+) -> list[Exercise]:
+    """Filter exercises by type, topic, and/or difficulty.
+    
+    Uses AND logic: an exercise must match ALL provided filters.
+    
+    Args:
+        exercises: Dictionary of all exercises
+        exercise_type: Optional exercise type filter
+        topic: Optional topic filter (case-insensitive substring match)
+        difficulty: Optional difficulty level filter
+        
+    Returns:
+        List of matching Exercise instances
+    """
+    filtered = []
+    for exercise in exercises.values():
+        # Check exercise type filter
+        if exercise_type and exercise.type != exercise_type:
+            continue
+        
+        # Check topic filter (case-insensitive substring match)
+        if topic and topic.lower() not in exercise.topic.lower():
+            continue
+        
+        # Check difficulty filter
+        if difficulty and exercise.difficulty != difficulty:
+            continue
+        
+        filtered.append(exercise)
     
     return filtered
 
@@ -348,3 +751,94 @@ async def list_references(
         references=reference_responses,
         pagination=pagination,
     )
+
+
+# ============================================================================
+# Endpoint: GET /grammar/exercises/
+# ============================================================================
+
+@router.get("/exercises/", response_model=ReferenceListResponse)
+async def list_exercises(
+    page: int = Query(1, ge=1, description="Page number, starting at 1"),
+    per_page: int = Query(10, ge=1, le=100, description="Items per page, maximum 100"),
+    exercise_type: Optional[ExerciseType] = Query(
+        None,
+        description="Filter by exercise type: fill-in-the-blank, multiple-choice, translation, conjugation, or sentence-transformation"
+    ),
+    topic: Optional[str] = Query(None, description="Filter by topic (case-insensitive substring)"),
+    difficulty: Optional[DifficultyLevel] = Query(
+        None,
+        description="Filter by difficulty level: beginner, intermediate, or advanced"
+    ),
+) -> ReferenceListResponse:
+    """List all grammar exercises with optional filtering and pagination.
+    
+    Supports filtering by:
+    - exercise_type: Exact match on exercise type
+    - topic: Case-insensitive substring match on the exercise's topic field
+    - difficulty: Exact match on difficulty level
+    
+    All filters are optional and use AND logic (all must match).
+    
+    Returns a paginated list of exercises with full content.
+    Use GET /grammar/exercises/{id} to retrieve a specific exercise by ID.
+    """
+    # Load all exercises
+    exercises_dict = get_exercises()
+    
+    # Apply filters
+    filtered_exercises = filter_exercises(exercises_dict, exercise_type, topic, difficulty)
+    
+    # Apply pagination
+    paginated_exercises, pagination = paginate(filtered_exercises, page, per_page)
+    
+    # Convert to response format (reuse ReferenceResponse for now, or create ExerciseResponse)
+    # For now, we'll return exercises as-is since they already have the full structure
+    exercise_responses = [
+        ReferenceResponse(  # Reusing ReferenceResponse as it has similar structure
+            id=exercise.id,
+            term=exercise.prompt,
+            category=exercise.topic,
+            difficulty=exercise.difficulty,
+            definition=exercise.prompt,
+        )
+        for exercise in paginated_exercises
+    ]
+    
+    return ReferenceListResponse(
+        references=exercise_responses,  # Using references field for now
+        pagination=pagination,
+    )
+
+
+# ============================================================================
+# Endpoint: GET /grammar/exercises/{id}
+# ============================================================================
+
+@router.get("/exercises/{exercise_id}")
+async def get_exercise(exercise_id: str) -> Exercise:
+    """Get a specific grammar exercise by ID.
+    
+    Returns the full exercise content including all type-specific fields.
+    
+    Args:
+        exercise_id: The unique identifier of the exercise
+        
+    Returns:
+        The complete Exercise with all fields
+        
+    Raises:
+        HTTPException 404: If the exercise with the given ID is not found
+    """
+    # Load all exercises
+    exercises_dict = get_exercises()
+    
+    # Find exercise by ID
+    if exercise_id not in exercises_dict:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Exercise not found: {exercise_id}"
+        )
+    
+    # Return the full exercise
+    return exercises_dict[exercise_id]
