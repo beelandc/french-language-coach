@@ -262,6 +262,7 @@ french-language-coach/
 │   │   │   ├── LessonPage.tsx        # Grammar lessons browser (Phase 2)
 │   │   │   ├── LessonDetailPage.tsx  # Individual lesson viewer (Phase 2)
 │   │   │   ├── ReferencePage.tsx     # Grammar reference search page (Phase 2)
+│   │   │   ├── ExerciseBrowserPage.tsx # Exercise listing/browsing page (Phase 2)
 │   │   │   └── ExercisePage.tsx      # Individual exercise page (Phase 2)
 │   │   ├── hooks/           # Custom React hooks
 │   │   │   ├── useSessions.tsx
@@ -329,6 +330,7 @@ french-language-coach/
 | `/lessons` | LessonPage | Browse, search, and filter all grammar lessons (Phase 2) |
 | `/lessons/:lessonId` | LessonDetailPage | View full content of a specific grammar lesson (Phase 2) |
 | `/reference` | ReferencePage | Search and filter grammar reference entries (Phase 2) |
+| `/exercises` | ExerciseBrowserPage | Browse and filter all grammar exercises (Phase 2) |
 | `/exercises/:exerciseId` | ExercisePage | Practice a specific grammar exercise (Phase 2) |
 
 ### Data Flow
