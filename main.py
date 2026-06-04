@@ -9,6 +9,7 @@ from routers import (
     sessions_router,
     messages_router,
     feedback_router,
+    grammar_router,
 )
 
 app = FastAPI(
@@ -47,6 +48,7 @@ async def startup():
 app.include_router(sessions_router)
 app.include_router(messages_router)
 app.include_router(feedback_router)
+app.include_router(grammar_router)
 
 
 @app.get("/")
