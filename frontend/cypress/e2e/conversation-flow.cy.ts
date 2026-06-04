@@ -1,9 +1,9 @@
 /// <reference types="cypress" />
 
-// Cypress E2E Tests for Issue #27: Complete Conversation Flow
+// Cypress E2E Tests: Complete Conversation Flow
 // Tests the user journey: select scenario -> chat -> feedback
 
-describe('Conversation Flow - Issue #27', () => {
+describe('Conversation Flow', () => {
   const SESSION_ID = 1
   const SCENARIO_ID = 'cafe_order'
   
@@ -498,6 +498,41 @@ describe('Conversation Flow - Issue #27', () => {
   describe('Routing', () => {
     it('should navigate directly to chat page with session ID', () => {
       // Given: User visits chat page directly
+      // Mock the session list endpoint (used by useSessions hook)
+      cy.intercept('GET', '/sessions/?*', {
+        sessions: [
+          {
+            id: SESSION_ID,
+            scenario_id: SCENARIO_ID,
+            scenario_name: 'Ordering at a Café',
+            difficulty: 'intermediate',
+            created_at: '2024-01-01T00:00:00Z',
+            ended_at: null,
+            messages: [],
+            feedback: null,
+            is_locked: false,
+            locked_at: null,
+            locked_by: null,
+          },
+        ],
+        pagination: { total: 1, page: 1, per_page: 10, total_pages: 1 },
+      })
+
+      // Mock session lock/unlock endpoints (ChatInterface locks session on mount)
+      cy.intercept('POST', `/sessions/${SESSION_ID}/lock`, {
+        id: SESSION_ID,
+        is_locked: true,
+        locked_at: '2024-01-01T00:00:00Z',
+        locked_by: 'test-client',
+      })
+
+      cy.intercept('POST', `/sessions/${SESSION_ID}/unlock`, {
+        id: SESSION_ID,
+        is_locked: false,
+        locked_at: null,
+        locked_by: null,
+      })
+
       cy.visit(`/chat/${SESSION_ID}`)
 
       // Then: Chat page is displayed
@@ -507,11 +542,34 @@ describe('Conversation Flow - Issue #27', () => {
 
     it('should navigate directly to feedback page with session ID', () => {
       // Given: User visits feedback page directly
+      // Mock the session list endpoint (used by useSessions hook)
+      cy.intercept('GET', '/sessions/?*', {
+        sessions: [],
+        pagination: { total: 0, page: 1, per_page: 10, total_pages: 0 },
+      })
+
+      // Mock the feedback POST endpoint (FeedbackView calls getFeedback on mount)
+      cy.intercept('POST', `/sessions/${SESSION_ID}/feedback/`, {
+        grammar_score: 85,
+        vocabulary_score: 90,
+        fluency_score: 80,
+        overall_score: 85,
+        strengths: ['Good vocabulary usage', 'Clear sentence structure'],
+        focus_area: 'grammar',
+        example_corrections: [
+          {
+            original: 'Je vais au cafe',
+            corrected: 'Je vais au café',
+            explanation: 'Accent needed on café',
+          },
+        ],
+      }).as('getFeedback')
+
       cy.visit(`/feedback/${SESSION_ID}`)
 
       // Then: Feedback page is displayed
       cy.shouldBeOnPage('feedback')
-      // Note: Feedback might not load without mocking the API call
+      cy.wait('@getFeedback')
     })
   })
 })

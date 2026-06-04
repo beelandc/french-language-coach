@@ -23,7 +23,6 @@ export default defineConfig({
       // Proxy API endpoints to backend server
       '/sessions': 'http://localhost:8000',
       '/grammar': 'http://localhost:8000',
-      '/feedback': 'http://localhost:8000',
       // Static files in development
       '/static': 'http://localhost:8000'
     }
