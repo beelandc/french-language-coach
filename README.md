@@ -6,6 +6,11 @@ An immersive French conversation practice web application with AI-powered feedba
 
 Users select a conversation scenario (e.g., ordering at a café, asking for directions, job interview in French), then conduct an immersive conversation entirely in French with an AI tutor. At the end of the session, they receive a structured feedback report scoring their grammar, vocabulary, and fluency, with one prioritized focus area for improvement.
 
+Users can also study grammar through:
+- **Grammar Lessons**: 20+ interactive lessons covering core French grammar topics
+- **Grammar Reference Guide**: 50+ searchable reference entries for quick lookup of grammar terms and concepts
+- **Grammar Exercises**: 20+ interactive exercises with 5 types (fill-in-the-blank, multiple-choice, translation, conjugation, sentence transformation) for practicing grammar skills
+
 ## Usage
 
 1. **Select a Scenario**: Choose from 10 built-in conversation scenarios
@@ -18,6 +23,8 @@ Users select a conversation scenario (e.g., ordering at a café, asking for dire
 8. **Start Again**: Begin a new session with any scenario
 9. **Browse Grammar Lessons**: Navigate to `/lessons` to browse, search, and filter 20+ grammar lessons by topic and difficulty
 10. **Study Grammar Lessons**: Click on any lesson to view full content with sections and examples at `/lessons/{id}`
+11. **Search Grammar Reference**: Navigate to `/reference` to search and filter 50+ grammar reference entries by term, category, and difficulty
+12. **Practice Exercises**: Navigate to `/exercises/{exerciseId}` to practice interactive grammar exercises with immediate feedback and scoring
 
 ### Difficulty Levels
 
@@ -49,6 +56,10 @@ Each scenario supports three difficulty levels that affect the AI's system promp
 - Clean, responsive single-page interface
 - **Grammar Lessons**: 20+ interactive lessons covering core French grammar topics (Phase 2)
 - **Grammar Reference Guide**: 50+ searchable reference entries for quick lookup of grammar terms and concepts (Phase 2)
+- **Grammar Exercises**: 20+ interactive exercises with 5 types: fill-in-the-blank, multiple-choice, translation, conjugation, and sentence transformation (Phase 2)
+  - Real-time answer validation with immediate feedback
+  - Score tracking across exercise sessions
+  - Filterable by type, topic, and difficulty level
 
 ## Setup & Installation
 
@@ -186,7 +197,8 @@ french-language-coach/
 ├── schemas/
 │   ├── session.py           # Pydantic schemas for API request/response
 │   ├── grammar_lesson.py    # Pydantic models for grammar lesson validation (Phase 2)
-│   └── grammar_reference.py # Pydantic models for grammar reference entry validation (Phase 2)
+│   ├── grammar_reference.py # Pydantic models for grammar reference entry validation (Phase 2)
+│   └── grammar_exercise.py  # Pydantic models for grammar exercise validation (Phase 2)
 ├── services/
 │   └── mistral.py           # Mistral API client: chat completion + feedback generation
 ├── routers/
@@ -197,7 +209,8 @@ french-language-coach/
 ├── scenarios.py             # Static list of 10 built-in conversation scenarios with system prompts
 ├── data/
 │   ├── grammar_lessons/     # Grammar lesson JSON files for Phase 2 (20+ lessons)
-│   └── grammar/reference/   # Grammar reference entry JSON files for Phase 2 (50+ entries)
+│   ├── grammar/reference/   # Grammar reference entry JSON files for Phase 2 (50+ entries)
+│   └── grammar/exercises/   # Grammar exercise JSON files for Phase 2 (20+ exercises)
 ├── scripts/
 │   ├── validate_grammar_lessons.py  # Validation script for grammar lessons
 │   └── validate_grammar_reference.py  # Validation script for grammar reference entries
@@ -231,6 +244,15 @@ french-language-coach/
 │   │   │   ├── LessonSearch.stories.tsx
 │   │   │   ├── LessonBrowser.tsx     # Main lessons browser (Phase 2)
 │   │   │   ├── LessonBrowser.stories.tsx
+│   │   │   ├── ReferenceSearch.tsx   # Search and filter for grammar reference (Phase 2)
+│   │   │   ├── ReferenceCard.tsx     # Card component for reference entries (Phase 2)
+│   │   │   ├── Exercise.tsx          # Main exercise component (Phase 2)
+│   │   │   ├── ExerciseTypes/        # Type-specific exercise components (Phase 2)
+│   │   │   │   ├── FillInTheBlankExercise.tsx
+│   │   │   │   ├── MultipleChoiceExercise.tsx
+│   │   │   │   ├── TranslationExercise.tsx
+│   │   │   │   ├── ConjugationExercise.tsx
+│   │   │   │   └── SentenceTransformationExercise.tsx
 │   │   │   └── index.ts
 │   │   ├── pages/           # Page-level components (React Router routes)
 │   │   │   ├── HomePage.tsx
@@ -238,7 +260,9 @@ french-language-coach/
 │   │   │   ├── FeedbackPage.tsx
 │   │   │   ├── SessionDetailPage.tsx
 │   │   │   ├── LessonPage.tsx        # Grammar lessons browser (Phase 2)
-│   │   │   └── LessonDetailPage.tsx  # Individual lesson viewer (Phase 2)
+│   │   │   ├── LessonDetailPage.tsx  # Individual lesson viewer (Phase 2)
+│   │   │   ├── ReferencePage.tsx     # Grammar reference search page (Phase 2)
+│   │   │   └── ExercisePage.tsx      # Individual exercise page (Phase 2)
 │   │   ├── hooks/           # Custom React hooks
 │   │   │   ├── useSessions.tsx
 │   │   │   └── index.ts
@@ -291,6 +315,8 @@ french-language-coach/
 | GET | `/grammar/reference/` | Search grammar reference entries with pagination and filtering. Query parameters: `page` (default 1), `per_page` (default 10, max 100), `q` (search query - case-insensitive partial match on term, definition, examples, common_pitfalls), `category` (filter by grammatical category), `difficulty` (filter by level: beginner, intermediate, advanced). Returns full reference entries |
 | GET | `/grammar/progress/` | List lesson progress records with optional filtering. Query parameters: `lesson_id` (filter by lesson ID), `user_id` (filter by user ID), `completed` (filter by completion status: true/false). Returns list of progress records with id, user_id, lesson_id, completed, score, last_accessed, time_spent, created_at, updated_at. **user_id is nullable for Phase 1.5** |
 | POST | `/grammar/progress/` | Record a new lesson progress entry. Required: `lesson_id` (string, e.g., "articles"). Optional: `user_id` (integer, nullable), `completed` (boolean, default false), `score` (integer 0-100, default 0), `time_spent` (integer seconds >=0, default 0). Returns 201 with created progress record. Returns 422 for invalid score (<0 or >100) or time_spent (<0). **Validates: score must be 0-100, time_spent must be >=0** |
+| GET | `/grammar/exercises/` | List grammar exercises with optional filtering and pagination. Query parameters: `page` (default 1), `per_page` (default 10, max 100), `exercise_type` (filter by type: fill-in-the-blank, multiple-choice, translation, conjugation, sentence-transformation), `topic` (filter by topic substring), `difficulty` (filter by level: beginner, intermediate, advanced). Returns paginated list of exercises with full content |
+| GET | `/grammar/exercises/{id}` | Get a specific grammar exercise by ID. Returns full exercise content including all type-specific fields. Returns 404 if exercise not found |
 
 ### Frontend Routes
 
@@ -302,6 +328,8 @@ french-language-coach/
 | `/sessions/:sessionId` | SessionDetailPage | Full session details with transcript and feedback |
 | `/lessons` | LessonPage | Browse, search, and filter all grammar lessons (Phase 2) |
 | `/lessons/:lessonId` | LessonDetailPage | View full content of a specific grammar lesson (Phase 2) |
+| `/reference` | ReferencePage | Search and filter grammar reference entries (Phase 2) |
+| `/exercises/:exerciseId` | ExercisePage | Practice a specific grammar exercise (Phase 2) |
 
 ### Data Flow
 
@@ -438,6 +466,10 @@ This ensures:
 
 **See `spdd/README.md` for complete details on artifact structure and naming conventions.**
 
+**Issue #46 - ReferenceSearch and Exercise Components**:
+- Analysis: `spdd/analysis/FLC-024-202606041500-[Analysis]-issue-46-reference-search-exercise.md`
+- Prompt: `spdd/prompt/FLC-024-202606041530-[Feat]-issue-46-reference-search-exercise.md`
+
 #### Reference
 - [Structured Prompt Driven Development (Wei Zhang & Jessie Jie Xia)](https://martinfowler.com/articles/structured-prompt-driven.html)
 
@@ -498,6 +530,8 @@ pytest --cov=. --cov-report=term-missing
 - `tests/test_grammar_lessons_issue_30.py` - Tests for 20+ grammar lessons (Issue #30)
 - `tests/test_grammar_reference.py` - Tests for 50+ grammar reference entries (Issue #32)
 - `tests/test_grammar_router.py` - Tests for grammar router endpoints (Issue #36)
+- `tests/test_grammar_exercise_schema.py` - Tests for grammar exercise schema (Issue #34)
+- `tests/test_grammar_exercises.py` - Tests for grammar exercises (Issue #46)
 
 ### Frontend Tests
 
