@@ -1875,3 +1875,836 @@ header h1 {
         font-size: 1rem;
     }
 }
+
+/* ============================================================================
+   Grammar Reference Components (Phase 2)
+   ============================================================================ */
+
+/* Reference Page */
+.reference-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.reference-page-title {
+    color: #2c3e50;
+    margin-bottom: 10px;
+    font-size: 2rem;
+}
+
+.reference-page-description {
+    color: #666;
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+}
+
+/* Reference Search */
+.reference-search {
+    margin-bottom: 30px;
+    background: #fafafa;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #e0e0e0;
+}
+
+.reference-search-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: center;
+}
+
+.reference-search-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: center;
+    width: 100%;
+}
+
+.reference-search-input-group {
+    flex: 1;
+    min-width: 250px;
+}
+
+.reference-search-input {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.reference-search-input:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+.reference-search-input::placeholder {
+    color: #999;
+}
+
+.reference-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.reference-filter-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #555;
+}
+
+.reference-filter-select {
+    padding: 12px 16px;
+    font-size: 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.reference-filter-select:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+.reference-clear-filters {
+    padding: 12px 24px;
+    margin-left: auto;
+}
+
+/* Reference Cards Grid */
+.reference-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+/* Reference Card */
+.reference-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid #f0f0f0;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    cursor: pointer;
+}
+
+.reference-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    border-color: #e0e0e0;
+}
+
+.reference-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.reference-card-term {
+    color: #2c3e50;
+    font-size: 1.25rem;
+    margin: 0;
+    flex: 1;
+}
+
+.reference-card-badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.reference-category-badge,
+.reference-difficulty-badge {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.reference-card-definition {
+    color: #444;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 12px 0;
+}
+
+.reference-card-full-definition {
+    color: #333;
+    font-size: 1rem;
+    line-height: 1.7;
+    margin: 12px 0;
+}
+
+.reference-card-id {
+    color: #888;
+    font-size: 0.8rem;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.reference-card-expanded {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #f0f0f0;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.reference-card-examples,
+.reference-card-pitfalls,
+.reference-card-related {
+    margin: 12px 0;
+    color: #333;
+}
+
+.reference-card-examples strong,
+.reference-card-pitfalls strong,
+.reference-card-related strong {
+    color: #2c3e50;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.reference-card-examples ul,
+.reference-card-pitfalls ul {
+    margin: 8px 0 0 20px;
+    padding: 0;
+}
+
+.reference-card-examples li,
+.reference-card-pitfalls li {
+    margin-bottom: 4px;
+    color: #555;
+}
+
+.reference-card-related span {
+    color: #555;
+}
+
+/* Results and Pagination */
+.reference-results-count {
+    color: #666;
+    margin-bottom: 15px;
+    font-size: 0.95rem;
+}
+
+.no-results {
+    text-align: center;
+    padding: 40px;
+    color: #888;
+    background: #fafafa;
+    border-radius: 12px;
+    margin-bottom: 30px;
+}
+
+.no-results p {
+    margin: 8px 0;
+}
+
+.loading-message,
+.reference-loading {
+    text-align: center;
+    padding: 40px;
+    color: #888;
+}
+
+.reference-error {
+    text-align: center;
+    padding: 40px;
+    color: #d32f2f;
+    background: #ffebee;
+    border-radius: 12px;
+    margin-bottom: 30px;
+}
+
+.btn-retry {
+    margin-top: 15px;
+    padding: 10px 24px;
+    background: #d32f2f;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.btn-retry:hover {
+    background: #b71c1c;
+}
+
+/* Reference Pagination */
+.reference-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.btn-pagination {
+    padding: 10px 20px;
+    background: #4a90e2;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: background 0.2s;
+}
+
+.btn-pagination:hover:not(:disabled) {
+    background: #3a7bc8;
+}
+
+.btn-pagination:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.pagination-info {
+    color: #666;
+    font-size: 0.95rem;
+}
+
+/* Responsive styles for Reference components */
+@media (max-width: 1024px) {
+    .reference-cards-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .reference-search-form {
+        flex-direction: column;
+    }
+    
+    .reference-search-controls {
+        flex-direction: column;
+    }
+    
+    .reference-search-input-group,
+    .reference-filter-group {
+        width: 100%;
+    }
+    
+    .reference-cards-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .reference-card-header {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .reference-card-badges {
+        width: 100%;
+    }
+    
+    .reference-page-title {
+        font-size: 1.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .reference-page {
+        padding: 15px;
+    }
+    
+    .reference-page-title {
+        font-size: 1.5rem;
+    }
+    
+    .reference-page-description {
+        font-size: 1rem;
+    }
+    
+    .reference-search-input,
+    .reference-filter-select {
+        padding: 10px 12px;
+        font-size: 0.95rem;
+    }
+}
+
+/* ============================================================================
+   Exercise Components (Phase 2)
+   ============================================================================ */
+
+/* Exercise Page */
+.exercise-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.exercise-page-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.btn-back {
+    padding: 10px 20px;
+    background: #f5f5f5;
+    color: #333;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.2s;
+}
+
+.btn-back:hover {
+    background: #e0e0e0;
+}
+
+.exercise-page-title {
+    color: #2c3e50;
+    margin: 0;
+    font-size: 1.75rem;
+    flex: 1;
+}
+
+.exercise-page-content {
+    margin-bottom: 30px;
+}
+
+.exercise-page-footer {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+/* Exercise Component */
+.exercise {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid #f0f0f0;
+}
+
+.exercise-correct {
+    border-color: #4caf50;
+    background: #f8fff8;
+}
+
+.exercise-incorrect {
+    border-color: #f44336;
+    background: #fff8f8;
+}
+
+.exercise-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.exercise-info {
+    display: flex;
+    gap: 20px;
+}
+
+.exercise-topic {
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 6px 14px;
+    border-radius: 16px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.exercise-difficulty {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.exercise-score {
+    color: #666;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.exercise-content {
+    margin-bottom: 20px;
+}
+
+.exercise-prompt {
+    color: #333;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.exercise-source-text {
+    color: #555;
+    font-size: 1.05rem;
+    font-style: italic;
+    margin-bottom: 20px;
+    padding: 12px;
+    background: #fafafa;
+    border-radius: 8px;
+    border-left: 4px solid #4a90e2;
+}
+
+.exercise-answer-section {
+    margin-bottom: 20px;
+}
+
+.exercise-answer-label {
+    display: block;
+    color: #444;
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.exercise-text-input {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 1rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.exercise-text-input:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+/* Fill-in-the-blank specific */
+.fill-in-the-blank-exercise .exercise-prompt {
+    font-size: 1.2rem;
+}
+
+.exercise-blank-container {
+    display: inline-block;
+    margin: 0 8px;
+}
+
+.exercise-blank-input {
+    width: 150px;
+    padding: 8px 12px;
+    font-size: 1rem;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    vertical-align: baseline;
+    transition: border-color 0.3s;
+}
+
+.exercise-blank-input:focus {
+    outline: none;
+    border-color: #4a90e2;
+}
+
+/* Multiple choice specific */
+.multiple-choice-exercise .exercise-prompt {
+    margin-bottom: 20px;
+}
+
+.exercise-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.exercise-option {
+    display: flex;
+    align-items: center;
+    padding: 14px 18px;
+    background: white;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.exercise-option:hover {
+    border-color: #4a90e2;
+    background: #fafafa;
+}
+
+.exercise-option-input {
+    display: none; /* Hide the actual radio input */
+}
+
+.exercise-option-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+}
+
+.option-letter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: #f5f5f5;
+    border-radius: 50%;
+    color: #444;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.option-text {
+    color: #333;
+    font-size: 1rem;
+}
+
+.option-selected {
+    border-color: #4a90e2;
+    background: #e3f2fd;
+}
+
+.option-correct {
+    border-color: #4caf50;
+    background: #e8f5e9;
+}
+
+.option-incorrect {
+    border-color: #f44336;
+    background: #ffebee;
+}
+
+/* Translation specific */
+.translation-exercise .exercise-source-text {
+    font-size: 1.1rem;
+}
+
+/* Conjugation specific */
+.conjugation-exercise .exercise-prompt {
+    font-size: 1.05rem;
+}
+
+.conjugation-info {
+    margin-top: 16px;
+    padding: 12px;
+    background: #f5f5f5;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    color: #666;
+}
+
+/* Sentence Transformation specific */
+.sentence-transformation-exercise .exercise-prompt {
+    font-size: 1.05rem;
+    margin-bottom: 12px;
+}
+
+.transformation-info {
+    margin-top: 16px;
+    padding: 12px;
+    background: #f5f5f5;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    color: #666;
+}
+
+/* Hint */
+.exercise-hint {
+    margin-bottom: 20px;
+}
+
+.exercise-hint-toggle {
+    padding: 8px 16px;
+    background: #fff3e0;
+    color: #f57c00;
+    border: 1px solid #ffcc80;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+}
+
+.exercise-hint-toggle:hover {
+    background: #ffe0b2;
+}
+
+.exercise-hint-text {
+    margin-top: 12px;
+    padding: 12px;
+    background: #fff8e1;
+    border-radius: 8px;
+    color: #666;
+    font-size: 0.95rem;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Submit button */
+.exercise-submit {
+    padding: 12px 32px;
+    margin-top: 10px;
+}
+
+.exercise-submit:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+/* Feedback */
+.exercise-feedback {
+    margin-top: 20px;
+    padding: 16px 20px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-align: center;
+    animation: slideIn 0.3s ease-in-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.feedback-correct {
+    background: #e8f5e9;
+    color: #4caf50;
+    border: 2px solid #4caf50;
+}
+
+.feedback-incorrect {
+    background: #ffebee;
+    color: #f44336;
+    border: 2px solid #f44336;
+}
+
+/* Next button */
+.exercise-next {
+    padding: 12px 32px;
+    margin-top: 15px;
+    width: 100%;
+}
+
+.exercise-error {
+    color: #d32f2f;
+    padding: 20px;
+    text-align: center;
+    background: #ffebee;
+    border-radius: 8px;
+}
+
+/* Exercise info for text-based exercises */
+.exercise-answer-label {
+    display: block;
+    color: #444;
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.exercise-answer-section {
+    margin-bottom: 20px;
+}
+
+/* Responsive styles for Exercise components */
+@media (max-width: 768px) {
+    .exercise-page {
+        padding: 15px;
+    }
+    
+    .exercise-page-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+    
+    .exercise-page-title {
+        font-size: 1.5rem;
+    }
+    
+    .exercise {
+        padding: 20px;
+    }
+    
+    .exercise-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+    
+    .exercise-info {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .exercise-text-input {
+        padding: 10px 12px;
+        font-size: 0.95rem;
+    }
+    
+    .exercise-blank-input {
+        width: 120px;
+        padding: 6px 10px;
+        font-size: 0.95rem;
+    }
+    
+    .exercise-option {
+        padding: 12px 14px;
+    }
+    
+    .option-text {
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .exercise-page-title {
+        font-size: 1.3rem;
+    }
+    
+    .exercise-prompt {
+        font-size: 1rem;
+    }
+    
+    .exercise-text-input {
+        padding: 10px 12px;
+    }
+    
+    .exercise-feedback {
+        font-size: 1rem;
+    }
+    
+    .btn-back {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+}

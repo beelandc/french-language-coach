@@ -5,8 +5,13 @@ import type {
   SessionLockResponse,
   LessonListResponse, 
   LessonResponse, 
-  LessonSummary, 
-  Difficulty 
+  LessonSummary,
+  Difficulty,
+  ReferenceCategory,
+  GrammarReference,
+  ReferenceListResponse,
+  Exercise,
+  ExerciseListResponse,
 } from '../types/index'
 
 // Use relative paths for development (Vite proxy handles routing)
@@ -124,6 +129,68 @@ export const grammarApi = {
   // Get a single lesson by ID
   getLesson: (lessonId: string) =>
     api<LessonResponse>(`/grammar/lessons/${lessonId}`, { method: 'GET' }),
+
+  // Search grammar reference entries with optional filtering and pagination
+  searchReferences: (
+    query?: string,
+    category?: ReferenceCategory | '',
+    difficulty?: Difficulty | '',
+    page: number = 1,
+    perPage: number = 10
+  ) => {
+    // Build query string with only non-empty, non-undefined parameters
+    const params: string[] = []
+    params.push(`page=${page}`)
+    params.push(`per_page=${perPage}`)
+    
+    if (query) {
+      params.push(`q=${encodeURIComponent(query)}`)
+    }
+    if (category && category !== '') {
+      params.push(`category=${encodeURIComponent(category)}`)
+    }
+    if (difficulty && difficulty !== '') {
+      params.push(`difficulty=${encodeURIComponent(difficulty)}`)
+    }
+    
+    const queryString = params.length > 0 ? `?${params.join('&')}` : ''
+    return api<ReferenceListResponse>(`/grammar/reference/${queryString}`, { method: 'GET' })
+  },
+
+  // Get a single reference entry by ID (convenience function for direct access)
+  getReference: (referenceId: string) =>
+    api<GrammarReference>(`/grammar/reference/${referenceId}`, { method: 'GET' }),
+
+  // Get list of all exercises (if backend endpoint exists)
+  // Note: This may need a backend endpoint to be created in routers/grammar.py
+  listExercises: (
+    page: number = 1,
+    perPage: number = 10,
+    type?: string,
+    topic?: string,
+    difficulty?: Difficulty
+  ) => {
+    const params: string[] = []
+    params.push(`page=${page}`)
+    params.push(`per_page=${perPage}`)
+    
+    if (type) {
+      params.push(`type=${encodeURIComponent(type)}`)
+    }
+    if (topic) {
+      params.push(`topic=${encodeURIComponent(topic)}`)
+    }
+    if (difficulty) {
+      params.push(`difficulty=${encodeURIComponent(difficulty)}`)
+    }
+    
+    const queryString = params.length > 0 ? `?${params.join('&')}` : ''
+    return api<ExerciseListResponse>(`/grammar/exercises/${queryString}`, { method: 'GET' })
+  },
+
+  // Get a single exercise by ID (if backend endpoint exists)
+  getExercise: (exerciseId: string) =>
+    api<Exercise>(`/grammar/exercises/${exerciseId}`, { method: 'GET' }),
 }
 
 // Re-export types for convenience
@@ -149,4 +216,31 @@ export type {
   LessonSearchProps,
   LessonBrowserProps,
   LessonDetailProps,
+  // Grammar Reference types
+  ReferenceCategory,
+  GrammarReference,
+  ReferenceSummary,
+  ReferenceListResponse,
+  ReferenceResponse,
+  ReferenceCardProps,
+  ReferenceSearchProps,
+  ReferencePageProps,
+  // Exercise types
+  ExerciseType,
+  ExerciseBase,
+  Exercise,
+  FillInTheBlankExercise,
+  MultipleChoiceExercise,
+  TranslationExercise,
+  ConjugationExercise,
+  SentenceTransformationExercise,
+  ExerciseListResponse,
+  ExerciseProps,
+  FillInTheBlankExerciseProps,
+  MultipleChoiceExerciseProps,
+  TranslationExerciseProps,
+  ConjugationExerciseProps,
+  SentenceTransformationExerciseProps,
+  ExercisePageProps,
+  ExerciseSession,
 } from '../types/index'
