@@ -9,7 +9,7 @@ Users select a conversation scenario (e.g., ordering at a café, asking for dire
 Users can also study grammar through:
 - **Grammar Lessons**: 20+ interactive lessons covering core French grammar topics
 - **Grammar Reference Guide**: 50+ searchable reference entries for quick lookup of grammar terms and concepts
-- **Grammar Exercises**: 20+ interactive exercises with 5 types (fill-in-the-blank, multiple-choice, translation, conjugation, sentence transformation) for practicing grammar skills
+- **Grammar Exercises**: 5 interactive exercises with 5 types (fill-in-the-blank, multiple-choice, translation, conjugation, sentence transformation) for practicing grammar skills
 
 ## Usage
 
@@ -24,7 +24,8 @@ Users can also study grammar through:
 9. **Browse Grammar Lessons**: Navigate to `/lessons` to browse, search, and filter 20+ grammar lessons by topic and difficulty
 10. **Study Grammar Lessons**: Click on any lesson to view full content with sections and examples at `/lessons/{id}`
 11. **Search Grammar Reference**: Navigate to `/reference` to search and filter 50+ grammar reference entries by term, category, and difficulty
-12. **Practice Exercises**: Navigate to `/exercises/{exerciseId}` to practice interactive grammar exercises with immediate feedback and scoring
+12. **Browse Exercises**: Navigate to `/exercises` to browse and filter all grammar exercises
+13. **Practice Exercises**: Navigate to `/exercises/{exerciseId}` to practice a specific grammar exercise with immediate feedback and scoring
 
 ### Difficulty Levels
 
@@ -56,7 +57,7 @@ Each scenario supports three difficulty levels that affect the AI's system promp
 - Clean, responsive single-page interface
 - **Grammar Lessons**: 20+ interactive lessons covering core French grammar topics (Phase 2)
 - **Grammar Reference Guide**: 50+ searchable reference entries for quick lookup of grammar terms and concepts (Phase 2)
-- **Grammar Exercises**: 20+ interactive exercises with 5 types: fill-in-the-blank, multiple-choice, translation, conjugation, and sentence transformation (Phase 2)
+- **Grammar Exercises**: 5 interactive exercises with 5 types: fill-in-the-blank, multiple-choice, translation, conjugation, and sentence transformation (Phase 2)
   - Real-time answer validation with immediate feedback
   - Score tracking across exercise sessions
   - Filterable by type, topic, and difficulty level
@@ -205,12 +206,14 @@ french-language-coach/
 │   ├── __init__.py
 │   ├── sessions.py          # POST /sessions (start), GET /sessions/{id}, DELETE /sessions/{id}
 │   ├── messages.py          # POST /sessions/{id}/messages (send a message, get AI reply)
-│   └── feedback.py          # POST /sessions/{id}/feedback (generate end-of-session report)
+│   ├── feedback.py          # POST /sessions/{id}/feedback (generate end-of-session report)
+│   ├── grammar.py           # GET /grammar/lessons/, /grammar/reference/, /grammar/exercises/ endpoints (Phase 2)
+│   └── grammar_progress.py  # GET /grammar/progress/, POST /grammar/progress/ endpoints (Phase 2)
 ├── scenarios.py             # Static list of 10 built-in conversation scenarios with system prompts
 ├── data/
 │   ├── grammar_lessons/     # Grammar lesson JSON files for Phase 2 (20+ lessons)
 │   ├── grammar/reference/   # Grammar reference entry JSON files for Phase 2 (50+ entries)
-│   └── grammar/exercises/   # Grammar exercise JSON files for Phase 2 (20+ exercises)
+│   └── grammar/exercises/   # Grammar exercise JSON files for Phase 2 (5 exercises: fill-in-the-blank, multiple-choice, translation, conjugation, sentence-transformation)
 ├── scripts/
 │   ├── validate_grammar_lessons.py  # Validation script for grammar lessons
 │   └── validate_grammar_reference.py  # Validation script for grammar reference entries
@@ -532,8 +535,7 @@ pytest --cov=. --cov-report=term-missing
 - `tests/test_grammar_lessons_issue_30.py` - Tests for 20+ grammar lessons (Issue #30)
 - `tests/test_grammar_reference.py` - Tests for 50+ grammar reference entries (Issue #32)
 - `tests/test_grammar_router.py` - Tests for grammar router endpoints (Issue #36)
-- `tests/test_grammar_exercise_schema.py` - Tests for grammar exercise schema (Issue #34)
-- `tests/test_grammar_exercises.py` - Tests for grammar exercises (Issue #46)
+- `tests/test_grammar_exercise_schema.py` - Tests for grammar exercise schema (Issue #34, #46)
 
 ### Frontend Tests
 
