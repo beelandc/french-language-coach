@@ -1,0 +1,18 @@
+{
+  "id": "demonstrative-pronouns",
+  "term": "Demonstrative Pronouns",
+  "category": "Pronouns",
+  "difficulty": "intermediate",
+  "definition": "Pronouns replacing nouns: celui, celle, ceux, celles.",
+  "examples": [
+    "Celui-ci est à moi",
+    "Celle-là est belle"
+  ],
+  "common_pitfalls": [
+    "Agree in gender and number",
+    "-ci for near, -là for far"
+  ],
+  "related_terms": [
+    "demonstrative-adjectives"
+  ]
+}

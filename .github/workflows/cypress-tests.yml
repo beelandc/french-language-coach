@@ -1,6 +1,6 @@
 name: Cypress E2E Tests
 
-# Run Cypress E2E tests for the conversation flow (Issue #27)
+# Run Cypress E2E tests for the conversation flow
 # This workflow tests the complete user journey: scenario selection -> chat -> feedback
 
 on:
@@ -22,7 +22,7 @@ on:
 
 jobs:
   cypress-e2e:
-    name: Cypress E2E Tests (Issue #27)
+    name: Cypress E2E Tests
     runs-on: ubuntu-latest
     
     strategy:

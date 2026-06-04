@@ -1,0 +1,19 @@
+{
+  "id": "plus-que-parfait",
+  "term": "Plus-que-parfait",
+  "category": "Verbs",
+  "difficulty": "advanced",
+  "definition": "The past perfect tense for actions completed before another past action.",
+  "examples": [
+    "J'avais mangé",
+    "Elle était partie"
+  ],
+  "common_pitfalls": [
+    "Use imparfait of auxiliary + past participle",
+    "Agree past participle with subject when using être"
+  ],
+  "related_terms": [
+    "passe-compose",
+    "imparfait"
+  ]
+}

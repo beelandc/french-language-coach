@@ -1,0 +1,10 @@
+{
+  "$schema": "https://french-language-coach.github.io/schemas/grammar_exercise.json",
+  "id": "fill-in-the-blank-present-tense",
+  "type": "fill-in-the-blank",
+  "prompt": "Je ___ français.",
+  "correct_answer": "parle",
+  "topic": "Verbs",
+  "difficulty": "beginner",
+  "hint": "Conjugate 'parler' for 'je' in present tense"
+}

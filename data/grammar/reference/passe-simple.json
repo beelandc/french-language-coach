@@ -1,0 +1,18 @@
+{
+  "id": "passe-simple",
+  "term": "Passé Simple",
+  "category": "Verbs",
+  "difficulty": "advanced",
+  "definition": "Literary past tense for completed actions, mainly in written French.",
+  "examples": [
+    "Il entra",
+    "Elle prit"
+  ],
+  "common_pitfalls": [
+    "Rare in spoken French",
+    "Many irregular forms"
+  ],
+  "related_terms": [
+    "literary-tenses"
+  ]
+}

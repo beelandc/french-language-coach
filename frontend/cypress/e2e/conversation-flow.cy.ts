@@ -1,9 +1,9 @@
 /// <reference types="cypress" />
 
-// Cypress E2E Tests for Issue #27: Complete Conversation Flow
+// Cypress E2E Tests: Complete Conversation Flow
 // Tests the user journey: select scenario -> chat -> feedback
 
-describe('Conversation Flow - Issue #27', () => {
+describe('Conversation Flow', () => {
   const SESSION_ID = 1
   const SCENARIO_ID = 'cafe_order'
   

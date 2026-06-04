@@ -1,0 +1,85 @@
+{
+  "$schema": "https://french-language-coach.github.io/schemas/grammar_lesson.json",
+  "id": "negation",
+  "title": "Negation",
+  "topic": "Sentence Structure",
+  "difficulty": "beginner",
+  "sections": [
+    {
+      "title": "Introduction to Negation",
+      "content": "Negation in French is formed by surrounding the conjugated verb with ne (or n' before a vowel) and pas. This is the most basic form of negation, similar to 'not' or 'do not' in English.",
+      "examples": [
+        "Je ne parle pas (I do not speak)",
+        "Tu ne manges pas (You do not eat)",
+        "Il n'écoute pas (He does not listen)"
+      ]
+    },
+    {
+      "title": "Basic Negation: ne...pas",
+      "content": "The most common form of negation uses ne/n' before the verb and pas after. This negates the entire verb phrase.",
+      "examples": [
+        "Je parle français → Je ne parle pas français (I speak French → I do not speak French)",
+        "Tu as faim → Tu n'as pas faim (You are hungry → You are not hungry)",
+        "Il va au cinéma → Il ne va pas au cinéma (He goes to the cinema → He does not go to the cinema)",
+        "Nous sommes prêts → Nous ne sommes pas prêts (We are ready → We are not ready)"
+      ]
+    },
+    {
+      "title": "Other Negative Words",
+      "content": "French uses different negative words with ne for different meanings: jamais (never), rien (nothing), personne (nobody), plus (no longer), aucun(e) (none), que (only).",
+      "examples": [
+        "Je ne mange jamais de viande (I never eat meat)",
+        "Il ne voit rien (He sees nothing)",
+        "Je ne connais personne ici (I know nobody here)",
+        "Elle ne travaille plus ici (She no longer works here)",
+        "Je n'ai aucun ami à Paris (I have no friends in Paris)",
+        "Il ne boit que de l'eau (He drinks only water)"
+      ]
+    },
+    {
+      "title": "Negation with Jamais, Rien, Personne",
+      "content": "With jamais, rien, and personne, the ne is still required. Note that rien and personne can also be subjects.",
+      "examples": [
+        "Je ne vais jamais au restaurant (I never go to the restaurant)",
+        "Il ne fait rien le week-end (He does nothing on the weekend)",
+        "Je ne vois personne dans la rue (I see nobody in the street)",
+        "Rien ne va bien (Nothing is going well) - rien as subject",
+        "Personne ne sait la réponse (Nobody knows the answer) - personne as subject"
+      ]
+    },
+    {
+      "title": "Negation in Different Tenses",
+      "content": "Negation works the same way in all tenses. Place ne/n' before the auxiliary or the conjugated verb, and the negative word after.",
+      "examples": [
+        "Passé composé: Je n'ai pas mangé (I did not eat)",
+        "Imparfait: Je ne mangeais pas (I was not eating)",
+        "Future simple: Je ne mangerai pas (I will not eat)",
+        "Future proche: Je ne vais pas manger (I am not going to eat)",
+        "Conditional: Je ne mangerais pas (I would not eat)"
+      ]
+    },
+    {
+      "title": "Negation with Infinitive",
+      "content": "When negating an infinitive in a sentence, place ne...pas around the conjugated verb, not the infinitive.",
+      "examples": [
+        "Je veux partir → Je ne veux pas partir (I want to leave → I do not want to leave)",
+        "Il peut venir → Il ne peut pas venir (He can come → He cannot come)",
+        "Nous devons étudier → Nous ne devons pas étudier (We must study → We must not study)"
+      ]
+    },
+    {
+      "title": "Special Cases",
+      "content": "Some expressions have special negation forms. Also, ne alone (without pas) is used in some literary or formal constructions.",
+      "examples": [
+        "Je ne sais pas (I don't know) - common expression",
+        "Je ne crois pas (I don't think so)",
+        "Je ne suis pas sûr(e) (I'm not sure)",
+        "Je crains qu'il ne vienne pas (I fear he won't come) - subjunctive with ne alone"
+      ]
+    },
+    {
+      "title": "Practice Exercise",
+      "content": "Negate these sentences: 1) Je parle français. 2) Tu as un chat. 3) Il va au marché. 4) Nous avons fini. 5) Elle est heureuse. 6) Ils regardent la télé. 7) Je veux partir. 8) Tu peux venir."
+    }
+  ]
+}

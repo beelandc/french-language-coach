@@ -16,6 +16,8 @@ Users select a conversation scenario (e.g., ordering at a café, asking for dire
 6. **Review Session Details**: Navigate to `/sessions/{id}` to view full conversation transcript alongside feedback
 7. **Navigate**: Use the Back button to return to scenario selection or start a new session
 8. **Start Again**: Begin a new session with any scenario
+9. **Browse Grammar Lessons**: Navigate to `/lessons` to browse, search, and filter 20+ grammar lessons by topic and difficulty
+10. **Study Grammar Lessons**: Click on any lesson to view full content with sections and examples at `/lessons/{id}`
 
 ### Difficulty Levels
 
@@ -45,6 +47,8 @@ Each scenario supports three difficulty levels that affect the AI's system promp
 - Example corrections with explanations
 - Session detail view combining transcript and feedback
 - Clean, responsive single-page interface
+- **Grammar Lessons**: 20+ interactive lessons covering core French grammar topics (Phase 2)
+- **Grammar Reference Guide**: 50+ searchable reference entries for quick lookup of grammar terms and concepts (Phase 2)
 
 ## Setup & Installation
 
@@ -180,7 +184,9 @@ french-language-coach/
 ├── models/
 │   └── session.py           # SQLAlchemy ORM model for a conversation session
 ├── schemas/
-│   └── session.py           # Pydantic schemas for API request/response
+│   ├── session.py           # Pydantic schemas for API request/response
+│   ├── grammar_lesson.py    # Pydantic models for grammar lesson validation (Phase 2)
+│   └── grammar_reference.py # Pydantic models for grammar reference entry validation (Phase 2)
 ├── services/
 │   └── mistral.py           # Mistral API client: chat completion + feedback generation
 ├── routers/
@@ -189,6 +195,12 @@ french-language-coach/
 │   ├── messages.py          # POST /sessions/{id}/messages (send a message, get AI reply)
 │   └── feedback.py          # POST /sessions/{id}/feedback (generate end-of-session report)
 ├── scenarios.py             # Static list of 10 built-in conversation scenarios with system prompts
+├── data/
+│   ├── grammar_lessons/     # Grammar lesson JSON files for Phase 2 (20+ lessons)
+│   └── grammar/reference/   # Grammar reference entry JSON files for Phase 2 (50+ entries)
+├── scripts/
+│   ├── validate_grammar_lessons.py  # Validation script for grammar lessons
+│   └── validate_grammar_reference.py  # Validation script for grammar reference entries
 ├── frontend/                # React SPA frontend (Vite + TypeScript)
 │   ├── src/
 │   │   ├── components/      # Reusable UI components + Storybook stories
@@ -213,12 +225,20 @@ french-language-coach/
 │   │   │   ├── CorrectionItem.stories.tsx
 │   │   │   ├── ScenarioCard.tsx
 │   │   │   ├── ScenarioCard.stories.tsx
+│   │   │   ├── LessonCard.tsx        # Lesson card for browser (Phase 2)
+│   │   │   ├── LessonCard.stories.tsx
+│   │   │   ├── LessonSearch.tsx      # Search/filter controls (Phase 2)
+│   │   │   ├── LessonSearch.stories.tsx
+│   │   │   ├── LessonBrowser.tsx     # Main lessons browser (Phase 2)
+│   │   │   ├── LessonBrowser.stories.tsx
 │   │   │   └── index.ts
 │   │   ├── pages/           # Page-level components (React Router routes)
 │   │   │   ├── HomePage.tsx
 │   │   │   ├── ChatPage.tsx
 │   │   │   ├── FeedbackPage.tsx
-│   │   │   └── SessionDetailPage.tsx
+│   │   │   ├── SessionDetailPage.tsx
+│   │   │   ├── LessonPage.tsx        # Grammar lessons browser (Phase 2)
+│   │   │   └── LessonDetailPage.tsx  # Individual lesson viewer (Phase 2)
 │   │   ├── hooks/           # Custom React hooks
 │   │   │   ├── useSessions.tsx
 │   │   │   └── index.ts
@@ -266,6 +286,22 @@ french-language-coach/
 | POST | `/sessions/{id}/unlock` | Unlock a session to allow deletion. Requires matching `X-Client-ID` header unless lock has expired. Returns lock status. |
 | POST | `/sessions/{id}/messages` | Send a message, get AI reply. Uses session's difficulty level for system prompt |
 | POST | `/sessions/{id}/feedback` | Generate end-of-session feedback |
+| GET | `/grammar/lessons/` | List all grammar lessons with pagination and filtering. Query parameters: `page` (default 1), `per_page` (default 10, max 100), `topic` (filter by grammatical topic), `difficulty` (filter by level: beginner, intermediate, advanced). Returns summary: id, title, topic, difficulty |
+| GET | `/grammar/lessons/{id}` | Get a specific grammar lesson by ID. Returns full lesson content including sections with titles, content, and examples. Returns 404 if lesson not found |
+| GET | `/grammar/reference/` | Search grammar reference entries with pagination and filtering. Query parameters: `page` (default 1), `per_page` (default 10, max 100), `q` (search query - case-insensitive partial match on term, definition, examples, common_pitfalls), `category` (filter by grammatical category), `difficulty` (filter by level: beginner, intermediate, advanced). Returns full reference entries |
+| GET | `/grammar/progress/` | List lesson progress records with optional filtering. Query parameters: `lesson_id` (filter by lesson ID), `user_id` (filter by user ID), `completed` (filter by completion status: true/false). Returns list of progress records with id, user_id, lesson_id, completed, score, last_accessed, time_spent, created_at, updated_at. **user_id is nullable for Phase 1.5** |
+| POST | `/grammar/progress/` | Record a new lesson progress entry. Required: `lesson_id` (string, e.g., "articles"). Optional: `user_id` (integer, nullable), `completed` (boolean, default false), `score` (integer 0-100, default 0), `time_spent` (integer seconds >=0, default 0). Returns 201 with created progress record. Returns 422 for invalid score (<0 or >100) or time_spent (<0). **Validates: score must be 0-100, time_spent must be >=0** |
+
+### Frontend Routes
+
+| Path | Component | Description |
+|------|-----------|-------------|
+| `/` | HomePage | Scenario selection and app landing page |
+| `/chat/:sessionId` | ChatPage | Interactive chat interface for a session |
+| `/feedback/:sessionId` | FeedbackPage | Feedback report display for a completed session |
+| `/sessions/:sessionId` | SessionDetailPage | Full session details with transcript and feedback |
+| `/lessons` | LessonPage | Browse, search, and filter all grammar lessons (Phase 2) |
+| `/lessons/:lessonId` | LessonDetailPage | View full content of a specific grammar lesson (Phase 2) |
 
 ### Data Flow
 
@@ -458,6 +494,10 @@ pytest --cov=. --cov-report=term-missing
 - `tests/test_schemas.py` - Tests for Pydantic schemas
 - `tests/test_sessions_listing.py` - Tests for session listing and filtering endpoints
 - `tests/test_session_deletion.py` - Tests for session deletion endpoint
+- `tests/test_grammar_lesson_schema.py` - Tests for grammar lesson schema (Issue #28)
+- `tests/test_grammar_lessons_issue_30.py` - Tests for 20+ grammar lessons (Issue #30)
+- `tests/test_grammar_reference.py` - Tests for 50+ grammar reference entries (Issue #32)
+- `tests/test_grammar_router.py` - Tests for grammar router endpoints (Issue #36)
 
 ### Frontend Tests
 

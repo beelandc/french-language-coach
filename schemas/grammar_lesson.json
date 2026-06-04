@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://french-language-coach.github.io/schemas/grammar_lesson.json",
+  "title": "Grammar Lesson Schema",
+  "description": "Schema for defining grammar lessons in the French Language Coach application. Each lesson contains metadata and structured content sections with examples.",
+  "version": "1.0.0",
+  "type": "object",
+  "required": ["id", "title", "topic", "difficulty", "sections"],
+  "additionalProperties": false,
+  "definitions": {
+    "section": {
+      "type": "object",
+      "required": ["title", "content"],
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Title of the lesson section (e.g., 'Regular -ER Verbs', 'Conjugation Table')"
+        },
+        "content": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The main content/text of the section. Should be a complete explanation or description."
+        },
+        "examples": {
+          "type": "array",
+          "description": "List of example strings that illustrate the concept being taught. Each example should be a string.",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "default": []
+        }
+      }
+    },
+    "difficulty": {
+      "type": "string",
+      "description": "The difficulty level of the lesson, used for filtering and recommendation.",
+      "enum": ["beginner", "intermediate", "advanced"]
+    }
+  },
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "description": "Unique identifier for the lesson. Must be lowercase alphanumeric with hyphens, starting with a letter (e.g., 'present-tense', 'articles-basics')."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable title of the lesson (e.g., 'The Present Tense in French', 'French Articles: Definite and Indefinite')."
+    },
+    "topic": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The grammatical topic/category this lesson belongs to (e.g., 'Verbs', 'Nouns', 'Adjectives', 'Pronouns', 'Conjunctions')."
+    },
+    "difficulty": {
+      "$ref": "#/definitions/difficulty"
+    },
+    "sections": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Array of content sections that make up the lesson. Each section contains a title, content, and optional examples.",
+      "items": {
+        "$ref": "#/definitions/section"
+      }
+    }
+  }
+}

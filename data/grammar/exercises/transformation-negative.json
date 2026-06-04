@@ -1,0 +1,11 @@
+{
+  "$schema": "https://french-language-coach.github.io/schemas/grammar_exercise.json",
+  "id": "transformation-negative",
+  "type": "sentence-transformation",
+  "prompt": "Rewrite in negative form: Je parle français.",
+  "correct_answer": "Je ne parle pas français.",
+  "transformation_type": "negative",
+  "topic": "Sentence Structure",
+  "difficulty": "beginner",
+  "hint": "Use 'ne...pas' structure around the verb"
+}

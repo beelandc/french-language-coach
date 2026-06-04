@@ -1,0 +1,21 @@
+{
+  "id": "questions-inversion",
+  "term": "Questions (Inversion)",
+  "category": "Other",
+  "difficulty": "intermediate",
+  "definition": "Invert subject and verb. Add t between verb and subject if verb ends in vowel.",
+  "examples": [
+    "Parles-tu français ? (Do you speak French?)",
+    "A-t-il fini ? (Has he finished?) - t added",
+    "Avez-vous une question ? (Do you have a question?)"
+  ],
+  "common_pitfalls": [
+    "Subject + verb (with hyphen)",
+    "Add t for vowel sounds: a-t-il, va-t-elle",
+    "Formal, more common in written French"
+  ],
+  "related_terms": [
+    "questions-est-ce-que",
+    "question-formation"
+  ]
+}
