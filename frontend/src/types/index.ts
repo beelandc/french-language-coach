@@ -200,3 +200,88 @@ export interface ConfirmationModalProps {
   cancelText?: string
   isLoading?: boolean
 }
+
+// Lesson types for Grammar Lessons (Phase 2)
+// Matches backend schemas in schemas/grammar_lesson.py and schemas/grammar.py
+
+export type Difficulty = 'beginner' | 'intermediate' | 'advanced'
+
+// Section within a grammar lesson
+export interface LessonSection {
+  title: string
+  content: string
+  examples: string[]
+}
+
+// Full lesson with all content
+export interface Lesson {
+  id: string
+  title: string
+  topic: string
+  difficulty: Difficulty
+  sections: LessonSection[]
+}
+
+// Lesson summary for listings (without full content)
+export interface LessonSummary {
+  id: string
+  title: string
+  topic: string
+  difficulty: Difficulty
+}
+
+// Pagination info (matches backend PaginationInfo)
+export interface PaginationInfo {
+  total: number
+  page: number
+  per_page: number
+  total_pages: number
+}
+
+// Response for GET /grammar/lessons/ (list with pagination)
+export interface LessonListResponse {
+  lessons: LessonSummary[]
+  pagination: PaginationInfo
+}
+
+// Response for GET /grammar/lessons/{id} (single lesson)
+export interface LessonResponse extends Lesson {}
+
+// Props for LessonCard component
+export interface LessonCardProps {
+  lesson: LessonSummary
+  onClick: (lessonId: string) => void
+}
+
+// Props for LessonSearch component
+export interface LessonSearchProps {
+  onSearch: (query: string) => void
+  onTopicFilter: (topic: string) => void
+  onDifficultyFilter: (difficulty: Difficulty | '') => void
+  searchQuery: string
+  topicFilter: string
+  difficultyFilter: Difficulty | ''
+}
+
+// Props for LessonBrowser component
+export interface LessonBrowserProps {
+  // Optional initial filters
+  initialDifficulty?: Difficulty
+  initialTopic?: string
+  initialSearch?: string
+}
+
+// Props for LessonDetail component
+export interface LessonDetailProps {
+  lesson: Lesson
+}
+
+// Context type for lesson-related state (if needed in future)
+export interface LessonsContextType {
+  lessons: LessonSummary[]
+  isLoading: boolean
+  error: string | null
+  pagination: PaginationInfo
+  fetchLessons: (page?: number, perPage?: number, topic?: string, difficulty?: Difficulty) => Promise<void>
+  searchLessons: (query: string) => Promise<void>
+}

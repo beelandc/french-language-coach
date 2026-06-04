@@ -16,6 +16,8 @@ Users select a conversation scenario (e.g., ordering at a café, asking for dire
 6. **Review Session Details**: Navigate to `/sessions/{id}` to view full conversation transcript alongside feedback
 7. **Navigate**: Use the Back button to return to scenario selection or start a new session
 8. **Start Again**: Begin a new session with any scenario
+9. **Browse Grammar Lessons**: Navigate to `/lessons` to browse, search, and filter 20+ grammar lessons by topic and difficulty
+10. **Study Grammar Lessons**: Click on any lesson to view full content with sections and examples at `/lessons/{id}`
 
 ### Difficulty Levels
 
@@ -223,12 +225,20 @@ french-language-coach/
 │   │   │   ├── CorrectionItem.stories.tsx
 │   │   │   ├── ScenarioCard.tsx
 │   │   │   ├── ScenarioCard.stories.tsx
+│   │   │   ├── LessonCard.tsx        # Lesson card for browser (Phase 2)
+│   │   │   ├── LessonCard.stories.tsx
+│   │   │   ├── LessonSearch.tsx      # Search/filter controls (Phase 2)
+│   │   │   ├── LessonSearch.stories.tsx
+│   │   │   ├── LessonBrowser.tsx     # Main lessons browser (Phase 2)
+│   │   │   ├── LessonBrowser.stories.tsx
 │   │   │   └── index.ts
 │   │   ├── pages/           # Page-level components (React Router routes)
 │   │   │   ├── HomePage.tsx
 │   │   │   ├── ChatPage.tsx
 │   │   │   ├── FeedbackPage.tsx
-│   │   │   └── SessionDetailPage.tsx
+│   │   │   ├── SessionDetailPage.tsx
+│   │   │   ├── LessonPage.tsx        # Grammar lessons browser (Phase 2)
+│   │   │   └── LessonDetailPage.tsx  # Individual lesson viewer (Phase 2)
 │   │   ├── hooks/           # Custom React hooks
 │   │   │   ├── useSessions.tsx
 │   │   │   └── index.ts
@@ -281,6 +291,17 @@ french-language-coach/
 | GET | `/grammar/reference/` | Search grammar reference entries with pagination and filtering. Query parameters: `page` (default 1), `per_page` (default 10, max 100), `q` (search query - case-insensitive partial match on term, definition, examples, common_pitfalls), `category` (filter by grammatical category), `difficulty` (filter by level: beginner, intermediate, advanced). Returns full reference entries |
 | GET | `/grammar/progress/` | List lesson progress records with optional filtering. Query parameters: `lesson_id` (filter by lesson ID), `user_id` (filter by user ID), `completed` (filter by completion status: true/false). Returns list of progress records with id, user_id, lesson_id, completed, score, last_accessed, time_spent, created_at, updated_at. **user_id is nullable for Phase 1.5** |
 | POST | `/grammar/progress/` | Record a new lesson progress entry. Required: `lesson_id` (string, e.g., "articles"). Optional: `user_id` (integer, nullable), `completed` (boolean, default false), `score` (integer 0-100, default 0), `time_spent` (integer seconds >=0, default 0). Returns 201 with created progress record. Returns 422 for invalid score (<0 or >100) or time_spent (<0). **Validates: score must be 0-100, time_spent must be >=0** |
+
+### Frontend Routes
+
+| Path | Component | Description |
+|------|-----------|-------------|
+| `/` | HomePage | Scenario selection and app landing page |
+| `/chat/:sessionId` | ChatPage | Interactive chat interface for a session |
+| `/feedback/:sessionId` | FeedbackPage | Feedback report display for a completed session |
+| `/sessions/:sessionId` | SessionDetailPage | Full session details with transcript and feedback |
+| `/lessons` | LessonPage | Browse, search, and filter all grammar lessons (Phase 2) |
+| `/lessons/:lessonId` | LessonDetailPage | View full content of a specific grammar lesson (Phase 2) |
 
 ### Data Flow
 
