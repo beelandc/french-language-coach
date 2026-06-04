@@ -1,0 +1,22 @@
+{
+  "id": "noun-number",
+  "term": "Noun Number",
+  "category": "Nouns",
+  "difficulty": "beginner",
+  "definition": "Singular vs plural. Regular: add -s. Some irregular plurals.",
+  "examples": [
+    "Un chat / des chats",
+    "Une maison / des maisons",
+    "Un cheval / des chevaux (irregular)"
+  ],
+  "common_pitfalls": [
+    "Most: add -s",
+    "-s, -x, -z: no change in plural",
+    "-al → -aux: cheval → chevaux"
+  ],
+  "related_terms": [
+    "singular",
+    "plural",
+    "irregular-plurals"
+  ]
+}

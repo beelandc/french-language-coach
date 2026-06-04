@@ -1,0 +1,18 @@
+{
+  "id": "past-participle",
+  "term": "Past Participle",
+  "category": "Verbs",
+  "difficulty": "intermediate",
+  "definition": "Verb form used in compound tenses and as adjective.",
+  "examples": [
+    "J'ai mangé",
+    "La porte fermée"
+  ],
+  "common_pitfalls": [
+    "Regular ER: -é, IR: -i, RE: -u",
+    "Many irregular forms"
+  ],
+  "related_terms": [
+    "compound-tenses"
+  ]
+}

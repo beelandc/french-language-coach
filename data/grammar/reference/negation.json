@@ -1,0 +1,21 @@
+{
+  "id": "negation",
+  "term": "Negation",
+  "category": "Other",
+  "difficulty": "beginner",
+  "definition": "Surround verb with ne...pas. ne becomes n' before vowels. Other negatives: jamais, plus, rien.",
+  "examples": [
+    "Je ne parle pas (I don't speak)",
+    "Il n'a pas mangé (He didn't eat)",
+    "Je ne veux jamais (I never want)",
+    "Je n'ai rien (I have nothing)"
+  ],
+  "common_pitfalls": [
+    "Basic: ne + verb + pas",
+    "n' before vowels: n'ai pas, n'est pas",
+    "Other negatives: jamais, plus, rien, personne, nulle part"
+  ],
+  "related_terms": [
+    "negative-expressions"
+  ]
+}

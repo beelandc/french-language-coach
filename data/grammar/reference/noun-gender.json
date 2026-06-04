@@ -1,0 +1,22 @@
+{
+  "id": "noun-gender",
+  "term": "Noun Gender",
+  "category": "Nouns",
+  "difficulty": "beginner",
+  "definition": "All French nouns are masculine or feminine. Gender affects articles and adjectives.",
+  "examples": [
+    "Un livre (masculine)",
+    "Une table (feminine)",
+    "Le soleil (masculine)",
+    "La lune (feminine)"
+  ],
+  "common_pitfalls": [
+    "No strict rules - learn with article",
+    "-tion, -sion, -é often feminine",
+    "-ment, -age, -eau often masculine"
+  ],
+  "related_terms": [
+    "masculine-nouns",
+    "feminine-nouns"
+  ]
+}

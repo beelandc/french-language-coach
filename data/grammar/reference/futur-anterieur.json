@@ -1,0 +1,17 @@
+{
+  "id": "futur-anterieur",
+  "term": "Futur Antérieur",
+  "category": "Verbs",
+  "difficulty": "advanced",
+  "definition": "Future perfect for actions completed before another future action.",
+  "examples": [
+    "J'aurai fini",
+    "Il sera parti"
+  ],
+  "common_pitfalls": [
+    "Use futur simple of auxiliary + past participle"
+  ],
+  "related_terms": [
+    "futur-simple"
+  ]
+}

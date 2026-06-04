@@ -1,0 +1,18 @@
+{
+  "id": "impersonal-verbs",
+  "term": "Impersonal Verbs",
+  "category": "Verbs",
+  "difficulty": "intermediate",
+  "definition": "Verbs used with il for weather, necessity: falloir, pleuvoir.",
+  "examples": [
+    "Il pleut",
+    "Il faut"
+  ],
+  "common_pitfalls": [
+    "Always singular",
+    "Only used with il"
+  ],
+  "related_terms": [
+    "falloir"
+  ]
+}
