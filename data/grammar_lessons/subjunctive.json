@@ -1,0 +1,77 @@
+{
+  "$schema": "https://french-language-coach.github.io/schemas/grammar_lesson.json",
+  "id": "subjunctive",
+  "title": "Subjunctive Mood",
+  "topic": "Moods",
+  "difficulty": "intermediate",
+  "sections": [
+    {
+      "title": "Introduction to Subjunctive",
+      "content": "The subjunctive mood is used to express various states of unreality such as doubt, possibility, necessity, or action that has not yet occurred. It is most commonly found in subordinate clauses.",
+      "examples": [
+        "Il faut que je parte (I must leave)",
+        "Je doute qu'il vienne (I doubt that he is coming)",
+        "Bien qu'il soit fatigué, il continue (Although he is tired, he continues)"
+      ]
+    },
+    {
+      "title": "Formation",
+      "content": "The subjunctive is formed by taking the third person plural (ils/elles) form of the present tense, removing the -ent ending, and adding the subjunctive endings: -e, -es, -e, -ions, -iez, -ent.",
+      "examples": [
+        "Parler: ils parlent → parl- → que je parle, que tu parles, qu'il parle, que nous parlions, que vous parliez, qu'ils parlent",
+        "Finir: ils finissent → finiss- → que je finisse, que tu finisses, qu'il finisse, que nous finissions, que vous finissiez, qu'ils finissent",
+        "Vendre: ils vendent → vend- → que je vende, que tu vendes, qu'il vende, que nous vendions, que vous vendiez, qu'ils vendent"
+      ]
+    },
+    {
+      "title": "Irregular Subjunctive Stems",
+      "content": "Some common verbs have irregular stems in the subjunctive. The endings remain the same.",
+      "examples": [
+        "Être: so- → que je sois, que tu sois, qu'il soit, que nous soyons, que vous soyez, qu'ils soient",
+        "Avoir: ai- → que j'aie, que tu aies, qu'il ait, que nous ayons, que vous ayez, qu'ils aient",
+        "Aller: all- → que j'aille, que tu ailles, qu'il aille, que nous allions, que vous alliez, qu'ils aillent",
+        "Faire: fass- → que je fasse, que tu fasses, qu'il fasse, que nous fassions, que vous fassiez, qu'ils fassent",
+        "Pouvoir: puiss- → que je puisse, que tu puisses, qu'il puisse, que nous puissions, que vous puissiez, qu'ils puissent",
+        "Vouloir: veull- → que je veuille, que tu veuilles, qu'il veuille, que nous voulions, que vous vouliez, qu'ils veuillent",
+        "Savoir: sach- → que je sache, que tu saches, qu'il sache, que nous sachions, que vous sachiez, qu'ils sachent"
+      ]
+    },
+    {
+      "title": "Common Triggers for Subjunctive",
+      "content": "The subjunctive is triggered by certain expressions and conjunctions that express doubt, desire, emotion, necessity, or uncertainty.",
+      "examples": [
+        "Il faut que... (It is necessary that...) - necessity",
+        "Il est important que... (It is important that...) - importance",
+        "Je veux que... (I want that...) - desire",
+        "J'ai peur que... (I am afraid that...) - fear",
+        "Je doute que... (I doubt that...) - doubt",
+        "Bien que... (Although...) - concession",
+        "Pour que... (So that...) - purpose",
+        "À condition que... (Provided that...) - condition"
+      ]
+    },
+    {
+      "title": "Subjunctive vs Indicative",
+      "content": "Use subjunctive for subjectivity, doubt, or unreality. Use indicative for facts, certainty, or reality. Compare the difference with expressions that can use both.",
+      "examples": [
+        "Je crois qu'il vient (I believe he is coming) - indicative, certain",
+        "Je ne crois pas qu'il vienne (I don't believe he is coming) - subjunctive, doubt",
+        "Il est sûr qu'il vient (He is sure he is coming) - indicative",
+        "Il n'est pas sûr qu'il vienne (He is not sure he is coming) - subjunctive"
+      ]
+    },
+    {
+      "title": "Subjunctive in Relative Clauses",
+      "content": "The subjunctive is used in relative clauses when the antecedent is indefinite, non-existent, or hypothetical.",
+      "examples": [
+        "Je cherche un appartement qui soit grand (I'm looking for an apartment that is big) - indefinite antecedent",
+        "Il n'y a personne qui puisse m'aider (There is nobody who can help me) - non-existent",
+        "J'ai besoin d'un ami qui comprenne (I need a friend who understands) - hypothetical"
+      ]
+    },
+    {
+      "title": "Practice Exercise",
+      "content": "Conjugate these verbs in the subjunctive: parler, finir, vendre, être, avoir, aller, faire. Then write 5 sentences using the subjunctive with different trigger expressions."
+    }
+  ]
+}

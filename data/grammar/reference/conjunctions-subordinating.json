@@ -1,0 +1,22 @@
+{
+  "id": "conjunctions-subordinating",
+  "term": "Subordinating Conjunctions",
+  "category": "Conjunctions",
+  "difficulty": "intermediate",
+  "definition": "Introduce dependent clauses: que, si, quand, parce que, bien que (subjunctive).",
+  "examples": [
+    "Je pense qu'il viendra (I think that he will come)",
+    "Si tu étudies, tu réussiras (If you study, you will succeed)",
+    "Parce qu'il pleut, je reste (Because it's raining, I stay)",
+    "Bien qu'il soit fatigué (Although he is tired) - subjunctive"
+  ],
+  "common_pitfalls": [
+    "que = that, si = if, quand = when",
+    "parce que = because (two words)",
+    "Many trigger subjunctive: bien que, avant que"
+  ],
+  "related_terms": [
+    "dependent-clauses",
+    "subjunctive-mood"
+  ]
+}

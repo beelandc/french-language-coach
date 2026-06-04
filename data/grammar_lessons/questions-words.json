@@ -1,0 +1,103 @@
+{
+  "$schema": "https://french-language-coach.github.io/schemas/grammar_lesson.json",
+  "id": "questions-words",
+  "title": "Questions with Question Words",
+  "topic": "Questions",
+  "difficulty": "beginner",
+  "sections": [
+    {
+      "title": "Introduction to Question Words",
+      "content": "Question words allow you to ask for specific information. French question words include: qui (who), que/quoi (what), où (where), quand (when), comment (how), pourquoi (why), combien (how much/many).",
+      "examples": [
+        "Qui est là? (Who is there?)",
+        "Qu'est-ce que c'est? (What is it?)",
+        "Où vas-tu? (Where are you going?)",
+        "Quand arrives-tu? (When are you arriving?)",
+        "Comment ça va? (How are you?)",
+        "Pourquoi tu pleures? (Why are you crying?)",
+        "Combien ça coûte? (How much does it cost?)"
+      ]
+    },
+    {
+      "title": "Qui (Who)",
+      "content": "Qui means 'who' and is used to ask about people. As a subject, it doesn't require any other change to the sentence structure. As an object, it can be used with est-ce que or inversion.",
+      "examples": [
+        "Qui est là? (Who is there?) - subject",
+        "Qui parle? (Who is speaking?) - subject",
+        "Avec qui vas-tu? (With whom are you going?) - object with preposition",
+        "À qui est ce livre? (To whom does this book belong?) - object with preposition",
+        "Qui est-ce? (Who is it?) - common expression"
+      ]
+    },
+    {
+      "title": "Que/Quoi (What)",
+      "content": "Que and quoi both mean 'what', but they are used differently. Qu'est-ce que is a common phrase meaning 'what'.",
+      "examples": [
+        "Qu'est-ce que c'est? (What is it?)",
+        "Que fais-tu? (What are you doing?)",
+        "Quoi de neuf? (What's new?) - informal",
+        "À quoi penses-tu? (What are you thinking about?)",
+        "De quoi parles-tu? (What are you talking about?)"
+      ]
+    },
+    {
+      "title": "Où (Where)",
+      "content": "Où means 'where' and is used to ask about location or destination. It can also mean 'when' in certain contexts (replacing quand).",
+      "examples": [
+        "Où habites-tu? (Where do you live?)",
+        "Où vas-tu? (Where are you going?)",
+        "Où est la bibliothèque? (Where is the library?)",
+        "D'où viens-tu? (Where are you coming from?)",
+        "Par où passe-t-on? (Where do we go through?)"
+      ]
+    },
+    {
+      "title": "Quand (When)",
+      "content": "Quand means 'when' and is used to ask about time.",
+      "examples": [
+        "Quand arrives-tu? (When are you arriving?)",
+        "Quand part le train? (When does the train leave?)",
+        "Depuis quand étudies-tu le français? (Since when have you been studying French?)",
+        "Jusqu'à quand restez-vous? (Until when are you staying?)",
+        "À quelle heure? (At what time?) - more specific"
+      ]
+    },
+    {
+      "title": "Comment (How)",
+      "content": "Comment means 'how' and is used to ask about manner, method, or condition.",
+      "examples": [
+        "Comment ça va? (How are you? / How's it going?)",
+        "Comment tu t'appelles? (What's your name? - literally 'How do you call yourself?')",
+        "Comment fais-tu ça? (How do you do that?)",
+        "Comment aller à la gare? (How to get to the train station?)",
+        "Comment est-il? (What is he like? / How is he?)"
+      ]
+    },
+    {
+      "title": "Pourquoi (Why)",
+      "content": "Pourquoi means 'why' and is used to ask for reasons. The answer typically uses parce que (because).",
+      "examples": [
+        "Pourquoi pleures-tu? (Why are you crying?)",
+        "Pourquoi es-tu en retard? (Why are you late?)",
+        "Pourquoi il a fait ça? (Why did he do that?)",
+        "Pourquoi pas? (Why not?) - common expression",
+        "Pourquoi est-ce que...? (Why...?) - with est-ce que"
+      ]
+    },
+    {
+      "title": "Combien (How Much/How Many)",
+      "content": "Combien means 'how much' or 'how many' depending on whether the noun is countable or uncountable. De combien means 'by how much' or 'how much' in questions about quantities.",
+      "examples": [
+        "Combien ça coûte? (How much does it cost?)",
+        "Combien de livres as-tu? (How many books do you have?)",
+        "Combien de temps ça prend? (How much time does it take?)",
+        "De combien as-tu besoin? (How much do you need?)",
+        "Combien de personnes viennent? (How many people are coming?)"
+      ]
+    },
+    {
+      "title": "Practice Exercise",
+      "content": "Ask questions using the appropriate question words: 1) Ask someone's name. 2) Ask where the bathroom is. 3) Ask what time it is. 4) Ask why someone is happy. 5) Ask how many siblings someone has. 6) Ask what someone is doing. 7) Ask when a meeting starts."
+    }
+  ]
+}

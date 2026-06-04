@@ -1,0 +1,20 @@
+{
+  "id": "imperative",
+  "term": "Imperative",
+  "category": "Verbs",
+  "difficulty": "beginner",
+  "definition": "Commands: verb forms for tu, nous, vous. Subject pronoun omitted.",
+  "examples": [
+    "Parle ! (Speak!) - tu form",
+    "Mangeons ! (Let's eat!) - nous form",
+    "Attendez ! (Wait!) - vous form"
+  ],
+  "common_pitfalls": [
+    "ER verbs: tu form ends in -e (parle!)",
+    "Negative: Ne parle pas !"
+  ],
+  "related_terms": [
+    "commands",
+    "orders"
+  ]
+}
