@@ -276,6 +276,9 @@ french-language-coach/
 | POST | `/sessions/{id}/unlock` | Unlock a session to allow deletion. Requires matching `X-Client-ID` header unless lock has expired. Returns lock status. |
 | POST | `/sessions/{id}/messages` | Send a message, get AI reply. Uses session's difficulty level for system prompt |
 | POST | `/sessions/{id}/feedback` | Generate end-of-session feedback |
+| GET | `/grammar/lessons/` | List all grammar lessons with pagination and filtering. Query parameters: `page` (default 1), `per_page` (default 10, max 100), `topic` (filter by grammatical topic), `difficulty` (filter by level: beginner, intermediate, advanced). Returns summary: id, title, topic, difficulty |
+| GET | `/grammar/lessons/{id}` | Get a specific grammar lesson by ID. Returns full lesson content including sections with titles, content, and examples. Returns 404 if lesson not found |
+| GET | `/grammar/reference/` | Search grammar reference entries with pagination and filtering. Query parameters: `page` (default 1), `per_page` (default 10, max 100), `q` (search query - case-insensitive partial match on term, definition, examples, common_pitfalls), `category` (filter by grammatical category), `difficulty` (filter by level: beginner, intermediate, advanced). Returns full reference entries |
 
 ### Data Flow
 
@@ -471,6 +474,7 @@ pytest --cov=. --cov-report=term-missing
 - `tests/test_grammar_lesson_schema.py` - Tests for grammar lesson schema (Issue #28)
 - `tests/test_grammar_lessons_issue_30.py` - Tests for 20+ grammar lessons (Issue #30)
 - `tests/test_grammar_reference.py` - Tests for 50+ grammar reference entries (Issue #32)
+- `tests/test_grammar_router.py` - Tests for grammar router endpoints (Issue #36)
 
 ### Frontend Tests
 
