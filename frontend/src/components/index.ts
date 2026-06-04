@@ -12,8 +12,3 @@ export { default as ChatHeader } from './ChatHeader'
 export { default as ScoreCard } from './ScoreCard'
 export { default as CorrectionItem } from './CorrectionItem'
 export { default as ConfirmationModal } from './ConfirmationModal'
-
-// Lesson Browser Components (Phase 2)
-export { default as LessonCard } from './LessonCard'
-export { default as LessonSearch } from './LessonSearch'
-export { default as LessonBrowser } from './LessonBrowser'

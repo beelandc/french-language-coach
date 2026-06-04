@@ -1,13 +1,5 @@
 // API Client for French Language Coach
-import type { 
-  Feedback, 
-  Session, 
-  SessionLockResponse,
-  LessonListResponse, 
-  LessonResponse, 
-  LessonSummary, 
-  Difficulty 
-} from '../types/index'
+import type { Feedback, Session, SessionLockResponse } from '../types/index'
 
 // Use relative paths for development (Vite proxy handles routing)
 // Use same-origin for production
@@ -107,25 +99,6 @@ export const sessionApi = {
     }),
 }
 
-// Grammar API functions
-export const grammarApi = {
-  // Get list of lessons with optional filtering and pagination
-  listLessons: (
-    page: number = 1,
-    perPage: number = 10,
-    topic?: string,
-    difficulty?: Difficulty
-  ) => 
-    api<LessonListResponse>(
-      `/grammar/lessons/?page=${page}&per_page=${perPage}${topic ? `&topic=${encodeURIComponent(topic)}` : ''}${difficulty ? `&difficulty=${difficulty}` : ''}`,
-      { method: 'GET' }
-    ),
-
-  // Get a single lesson by ID
-  getLesson: (lessonId: string) =>
-    api<LessonResponse>(`/grammar/lessons/${lessonId}`, { method: 'GET' }),
-}
-
 // Re-export types for convenience
 export type {
   Scenario,
@@ -140,13 +113,4 @@ export type {
   SessionLockResponse,
   Difficulty,
   DifficultySelectorProps,
-  Lesson,
-  LessonSummary,
-  LessonSection,
-  LessonResponse,
-  LessonListResponse,
-  LessonCardProps,
-  LessonSearchProps,
-  LessonBrowserProps,
-  LessonDetailProps,
 } from '../types/index'

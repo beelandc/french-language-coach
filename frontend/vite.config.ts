@@ -20,11 +20,7 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      // Proxy API endpoints to backend server
       '/sessions': 'http://localhost:8000',
-      '/grammar': 'http://localhost:8000',
-      '/feedback': 'http://localhost:8000',
-      // Static files in development
       '/static': 'http://localhost:8000'
     }
   },
