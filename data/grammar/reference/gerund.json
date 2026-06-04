@@ -1,0 +1,17 @@
+{
+  "id": "gerund",
+  "term": "Gerund",
+  "category": "Verbs",
+  "difficulty": "beginner",
+  "definition": "Form en + present participle for simultaneous actions.",
+  "examples": [
+    "Il lit en mangeant",
+    "En travaillant"
+  ],
+  "common_pitfalls": [
+    "Always use en + present participle"
+  ],
+  "related_terms": [
+    "present-participle"
+  ]
+}

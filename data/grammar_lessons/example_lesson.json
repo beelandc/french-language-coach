@@ -1,0 +1,57 @@
+{
+  "$schema": "https://french-language-coach.github.io/schemas/grammar_lesson.json",
+  "id": "present-tense",
+  "title": "The Present Tense in French",
+  "topic": "Verbs",
+  "difficulty": "beginner",
+  "sections": [
+    {
+      "title": "Introduction to the Present Tense",
+      "content": "The present tense in French (le présent de l'indicatif) is used to describe actions that are happening now, habitual actions, and general truths. It is the most commonly used tense and is essential for basic communication.",
+      "examples": [
+        "Je parle français. (I speak French.)",
+        "Tu manges une pomme. (You eat an apple.)",
+        "Il travaille tous les jours. (He works every day.)"
+      ]
+    },
+    {
+      "title": "Regular -ER Verbs",
+      "content": "Most French verbs ending in -er follow a regular conjugation pattern. To conjugate these verbs, remove the -er ending (the infinitive suffix) to get the stem, then add the appropriate ending based on the subject pronoun.",
+      "examples": [
+        "Parler (to speak): je parle, tu parles, il/elle/on parle, nous parlons, vous parlez, ils/elles parlent",
+        "Manger (to eat): je mange, tu manges, il/elle/on mange, nous mangeons, vous mangez, ils/elles mangent",
+        "Danser (to dance): je danse, tu danses, il/elle/on danse, nous dansons, vous dansez, ils/elles dansent"
+      ]
+    },
+    {
+      "title": "Regular -IR Verbs",
+      "content": "Verbs ending in -ir form another group of regular verbs. The conjugation pattern is slightly different from -er verbs. Remove the -ir ending to get the stem, then add the -ir endings.",
+      "examples": [
+        "Finir (to finish): je finis, tu finis, il/elle/on finit, nous finissons, vous finissez, ils/elles finissent",
+        "Choisir (to choose): je choisis, tu choisis, il/elle/on choisit, nous choisissons, vous choisissez, ils/elles choisissent"
+      ]
+    },
+    {
+      "title": "Regular -RE Verbs",
+      "content": "Verbs ending in -re are also regular, though less common than -er and -ir verbs. Remove the -re ending to get the stem, then add the -re endings.",
+      "examples": [
+        "Vendre (to sell): je vends, tu vends, il/elle/on vend, nous vendons, vous vendez, ils/elles vendent",
+        "Attendre (to wait): j'attends, tu attends, il/elle/on attend, nous attendons, vous attendez, ils/elles attendent"
+      ]
+    },
+    {
+      "title": "Common Irregular Verbs",
+      "content": "Some verbs have irregular conjugations in the present tense. These need to be memorized individually as they do not follow the regular patterns.",
+      "examples": [
+        "Être (to be): je suis, tu es, il/elle/on est, nous sommes, vous êtes, ils/elles sont",
+        "Avoir (to have): j'ai, tu as, il/elle/on a, nous avons, vous avez, ils/elles ont",
+        "Aller (to go): je vais, tu vas, il/elle/on va, nous allons, vous allez, ils/elles vont",
+        "Faire (to do/make): je fais, tu fais, il/elle/on fait, nous faisons, vous faites, ils/elles font"
+      ]
+    },
+    {
+      "title": "Practice Exercise",
+      "content": "Conjugate the following verbs in the present tense for all subject pronouns: aimer, finir, vendre, être, avoir."
+    }
+  ]
+}

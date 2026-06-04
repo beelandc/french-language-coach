@@ -1,0 +1,20 @@
+{
+  "id": "adverbs-position",
+  "term": "Adverb Position",
+  "category": "Adverbs",
+  "difficulty": "intermediate",
+  "definition": "Short adverbs after verb. Compound tenses: between auxiliary and past participle.",
+  "examples": [
+    "Il parle bien (He speaks well)",
+    "J'ai bien mangé (I ate well)",
+    "Aujourd'hui, il fait beau (Today, it's nice)"
+  ],
+  "common_pitfalls": [
+    "Short adverbs: after conjugated verb",
+    "Compound tenses: between auxiliary and past participle",
+    "Time adverbs: beginning or end of sentence"
+  ],
+  "related_terms": [
+    "adverb-formation"
+  ]
+}

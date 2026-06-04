@@ -1,0 +1,95 @@
+{
+  "$schema": "https://french-language-coach.github.io/schemas/grammar_lesson.json",
+  "id": "prepositions-conjunctions-adverbs",
+  "title": "Prepositions, Conjunctions, and Adverbs",
+  "topic": "Sentence Structure",
+  "difficulty": "intermediate",
+  "sections": [
+    {
+      "title": "Introduction",
+      "content": "Prepositions, conjunctions, and adverbs are essential parts of speech that connect ideas, indicate relationships, and modify verbs, adjectives, and other adverbs. This lesson covers the most important ones in French.",
+      "examples": [
+        "Preposition: Je vais à Paris (I go to Paris)",
+        "Conjunction: J'aime le café et le thé (I like coffee and tea)",
+        "Adverb: Il parle lentement (He speaks slowly)"
+      ]
+    },
+    {
+      "title": "Common Prepositions",
+      "content": "Prepositions indicate relationships between nouns/pronouns and other words. They often indicate location, direction, time, or manner.",
+      "examples": [
+        "à (to, at): Je vais à l'école (I go to school), Je suis à la maison (I am at home)",
+        "de (of, from): Le livre de Marie (Marie's book), Je viens de Paris (I come from Paris)",
+        "en (in, to): Je suis en France (I am in France), Je vais en ville (I go to town)",
+        "dans (in, inside): Je suis dans la maison (I am inside the house), Je mets le livre dans le sac (I put the book in the bag)",
+        "sur (on, about): Le livre est sur la table (The book is on the table), Un livre sur l'histoire (A book about history)",
+        "sous (under): Le chat est sous la table (The cat is under the table)",
+        "entre (between): La bibliothèque est entre la banque et le café (The library is between the bank and the café)",
+        "pour (for): C'est pour toi (It's for you), Je travaille pour gagner de l'argent (I work to earn money)"
+      ]
+    },
+    {
+      "title": "Prepositions with Countries and Cities",
+      "content": "The preposition used with countries and cities depends on the gender of the country name and whether it's a city.",
+      "examples": [
+        "à + city: Je vais à Paris, à Lyon, à Marseille",
+        "en + feminine country: Je vais en France, en Espagne, en Italie",
+        "au + masculine country: Je vais au Canada, au Japon, au Brésil",
+        "aux + plural country: Je vais aux États-Unis, aux Pays-Bas",
+        "à + masculine country starting with vowel: Je vais à Cuba (but usually en Oman, en Iran)"
+      ]
+    },
+    {
+      "title": "Common Conjunctions",
+      "content": "Conjunctions connect words, phrases, or clauses. They can be coordinating (connecting equal elements) or subordinating (introducing subordinate clauses).",
+      "examples": [
+        "et (and): J'aime le café et le thé (I like coffee and tea)",
+        "ou (or): Tu veux du café ou du thé? (Do you want coffee or tea?)",
+        "mais (but): J'aime le café, mais je n'aime pas le thé (I like coffee, but I don't like tea)",
+        "car (because): Je suis fatigué, car j'ai travaillé toute la journée (I'm tired because I worked all day)",
+        "donc (therefore): Il pleut, donc je reste à la maison (It's raining, therefore I stay at home)",
+        "ni...ni (neither...nor): Je n'aime ni le café ni le thé (I like neither coffee nor tea)",
+        "que (that): Je crois qu'il vient (I believe that he is coming)",
+        "si (if): Si tu étudies, tu réussiras (If you study, you will succeed)"
+      ]
+    },
+    {
+      "title": "Common Adverbs",
+      "content": "Adverbs modify verbs, adjectives, or other adverbs. They often end in -ment (formed from adjectives).",
+      "examples": [
+        "Adverbs of manner: lentement (slowly), rapidement (quickly), bien (well), mal (badly)",
+        "Adverbs of frequency: souvent (often), rarement (rarely), toujours (always), jamais (never)",
+        "Adverbs of time: maintenant (now), hier (yesterday), demain (tomorrow), déjà (already), encore (still/again)",
+        "Adverbs of place: ici (here), là (there), partout (everywhere), nulle part (nowhere)",
+        "Adverbs of quantity: très (very), trop (too), assez (enough), peu (little)"
+      ]
+    },
+    {
+      "title": "Forming Adverbs from Adjectives",
+      "content": "Many adverbs are formed by adding -ment to the feminine form of an adjective. If the adjective ends in a vowel, just add -ment.",
+      "examples": [
+        "lent → lentement (slow → slowly)",
+        "rapide → rapidement (quick → quickly)",
+        "bon → bien (good → well) - irregular",
+        "facile → facilement (easy → easily)",
+        "heureux → heureux → heureuse → heureusement (happy → happily)",
+        "vrai → vraiment (true → truly) - from masculine form"
+      ]
+    },
+    {
+      "title": "Position of Adverbs",
+      "content": "Adverbs can be placed before or after the verb, depending on the adverb and the tense. Short adverbs of frequency often come before the verb.",
+      "examples": [
+        "Je parle souvent (I often speak) - adverb after verb",
+        "J'étudie toujours le soir (I always study in the evening)",
+        "Nous allons rarement au cinéma (We rarely go to the cinema)",
+        "Il a rapidement fini (He quickly finished) - adverb between auxiliary and past participle",
+        "Elle parle lentement (She speaks slowly) - adverb after verb"
+      ]
+    },
+    {
+      "title": "Practice Exercise",
+      "content": "Write sentences using: 1) 5 different prepositions, 2) 5 different conjunctions, 3) 5 different adverbs. Then create 5 sentences that combine prepositions, conjunctions, and adverbs."
+    }
+  ]
+}

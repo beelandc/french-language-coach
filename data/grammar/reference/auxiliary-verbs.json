@@ -1,0 +1,18 @@
+{
+  "id": "auxiliary-verbs",
+  "term": "Auxiliary Verbs",
+  "category": "Verbs",
+  "difficulty": "beginner",
+  "definition": "être and avoir used to form compound tenses.",
+  "examples": [
+    "J'ai mangé",
+    "Je suis parti"
+  ],
+  "common_pitfalls": [
+    "Use être for motion verbs",
+    "Agree participle with être"
+  ],
+  "related_terms": [
+    "compound-tenses"
+  ]
+}

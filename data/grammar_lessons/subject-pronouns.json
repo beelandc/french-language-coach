@@ -1,0 +1,73 @@
+{
+  "$schema": "https://french-language-coach.github.io/schemas/grammar_lesson.json",
+  "id": "subject-pronouns",
+  "title": "Subject Pronouns",
+  "topic": "Pronouns",
+  "difficulty": "beginner",
+  "sections": [
+    {
+      "title": "Introduction to Subject Pronouns",
+      "content": "Subject pronouns replace the subject of a sentence (the person or thing performing the action). In French, subject pronouns must be used with every conjugated verb.",
+      "examples": [
+        "Je parle (I speak)",
+        "Tu parles (You speak - informal singular)",
+        "Il/Elle/On parle (He/She/One speaks)",
+        "Nous parlons (We speak)",
+        "Vous parlez (You speak - formal or plural)",
+        "Ils/Elles parlent (They speak)"
+      ]
+    },
+    {
+      "title": "Singular Subject Pronouns",
+      "content": "Je (I), tu (you informal), il (he), elle (she), on (one/we/they). Note that on can refer to people in general, or be equivalent to nous in informal speech.",
+      "examples": [
+        "Je suis étudiant (I am a student)",
+        "Tu es sympa (You are nice)",
+        "Il a un chat (He has a cat)",
+        "Elle va au cinéma (She goes to the cinema)",
+        "On mange à 19h (We/They eat at 7pm)"
+      ]
+    },
+    {
+      "title": "Plural Subject Pronouns",
+      "content": "Nous (we), vous (you formal or plural), ils (they masculine or mixed), elles (they feminine).",
+      "examples": [
+        "Nous allons au parc (We go to the park)",
+        "Vous avez raison (You are right)",
+        "Ils jouent au football (They play football)",
+        "Elles sont parties (They left - feminine)"
+      ]
+    },
+    {
+      "title": "Formal vs Informal",
+      "content": "Tu is used for informal singular 'you' (friends, family, children). Vous is used for formal singular 'you' (strangers, elders, superiors) and for all plural 'you' (multiple people).",
+      "examples": [
+        "Tu vas bien? (Are you okay? - to a friend)",
+        "Vous allez bien, monsieur? (Are you okay, sir? - formal)",
+        "Vous allez où? (Where are you going? - to multiple people)"
+      ]
+    },
+    {
+      "title": "Pronouns with Verb Conjugation",
+      "content": "Each subject pronoun requires a different verb conjugation. This is why it's essential to memorize verb conjugations with their pronouns.",
+      "examples": [
+        "Parler: je parle, tu parles, il parle, nous parlons, vous parlez, ils parlent",
+        "Être: je suis, tu es, il est, nous sommes, vous êtes, ils sont",
+        "Avoir: j'ai, tu as, il a, nous avons, vous avez, ils ont"
+      ]
+    },
+    {
+      "title": "Omitting Subject Pronouns",
+      "content": "In French, subject pronouns cannot be omitted (unlike in some other languages). Every verb must have an explicit subject pronoun.",
+      "examples": [
+        "Correct: Je parle (I speak)",
+        "Incorrect: *Parle (Speak) - without subject",
+        "In imperative: Parle! (Speak!) - but this is a different mood"
+      ]
+    },
+    {
+      "title": "Practice Exercise",
+      "content": "Write a short dialogue between three people using different subject pronouns. Make sure each line has the correct pronoun and verb conjugation."
+    }
+  ]
+}

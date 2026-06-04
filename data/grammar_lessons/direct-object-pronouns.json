@@ -1,0 +1,80 @@
+{
+  "$schema": "https://french-language-coach.github.io/schemas/grammar_lesson.json",
+  "id": "direct-object-pronouns",
+  "title": "Direct Object Pronouns",
+  "topic": "Pronouns",
+  "difficulty": "intermediate",
+  "sections": [
+    {
+      "title": "Introduction to Direct Object Pronouns",
+      "content": "Direct object pronouns (COD - complément d'objet direct) replace the direct object of a verb (the person or thing directly receiving the action). They answer the question 'what?' or 'whom?' after the verb.",
+      "examples": [
+        "Je vois le chat → Je le vois (I see the cat → I see it)",
+        "Tu regardes la télé → Tu la regardes (You watch TV → You watch it)",
+        "Il achète des fleurs → Il en achète (He buys flowers → He buys some)"
+      ]
+    },
+    {
+      "title": "Direct Object Pronouns",
+      "content": "The direct object pronouns are: me, te, le, la, nous, vous, les. They replace specific direct objects and must agree in gender and number.",
+      "examples": [
+        "le → replaces masculine singular: Je vois le livre → Je le vois",
+        "la → replaces feminine singular: Je vois la voiture → Je la vois",
+        "les → replaces plural: Je vois les livres → Je les vois",
+        "me → replaces me (direct object): Tu vois moi → Tu me vois",
+        "te → replaces you: Je vois toi → Je te vois"
+      ]
+    },
+    {
+      "title": "Placement with Conjugated Verbs",
+      "content": "With conjugated verbs, direct object pronouns come BEFORE the verb (except in affirmative imperative commands).",
+      "examples": [
+        "Je le vois (I see it)",
+        "Tu la manges (You eat it)",
+        "Il nous regarde (He watches us)",
+        "Nous vous appelons (We call you)",
+        "Ils les achètent (They buy them)"
+      ]
+    },
+    {
+      "title": "Placement with Infinitives",
+      "content": "When the verb is in the infinitive (after another verb), the direct object pronoun can come either before the conjugated verb or after the infinitive.",
+      "examples": [
+        "Je veux le voir (I want to see it) - before conjugated verb",
+        "Je veux voir le chat → Je veux le voir OR Je veux voir le",
+        "Il peut la finirs (He can finish it) - before conjugated verb",
+        "Il peut finir la → less common"
+      ]
+    },
+    {
+      "title": "Y as Direct Object Pronoun",
+      "content": "Y replaces a place or thing introduced by 'à' (indirect object) but can also replace certain direct objects referring to places.",
+      "examples": [
+        "Je vais à Paris → J'y vais (I go to Paris → I go there)",
+        "Tu penses à ton travail → Tu y penses (You think about your work → You think about it)"
+      ]
+    },
+    {
+      "title": "En as Direct Object Pronoun",
+      "content": "En replaces a direct object introduced by 'de' (partitive or quantity). It can mean 'some', 'any', or refer to a quantity.",
+      "examples": [
+        "Je veux du pain → J'en veux (I want some bread → I want some)",
+        "Tu as des livres → Tu en as (You have books → You have some)",
+        "Il a trois pommes → Il en a trois (He has three apples → He has three of them)"
+      ]
+    },
+    {
+      "title": "Negation with Direct Object Pronouns",
+      "content": "In negation, the structure is: ne + pronoun + verb + pas. The pronoun comes before the verb.",
+      "examples": [
+        "Je ne le vois pas (I don't see it)",
+        "Tu ne la manges pas (You don't eat it)",
+        "Il ne nous appelle pas (He doesn't call us)"
+      ]
+    },
+    {
+      "title": "Practice Exercise",
+      "content": "Rewrite these sentences replacing the direct objects with pronouns: 1) Je vois Marie. 2) Tu achètes des fleurs. 3) Il regarde la télévision. 4) Nous appelons nos amis. 5) Vous attendez le bus."
+    }
+  ]
+}

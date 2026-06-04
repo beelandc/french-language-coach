@@ -1,0 +1,85 @@
+{
+  "$schema": "https://french-language-coach.github.io/schemas/grammar_lesson.json",
+  "id": "questions-inversion",
+  "title": "Questions with Inversion",
+  "topic": "Questions",
+  "difficulty": "beginner",
+  "sections": [
+    {
+      "title": "Introduction to Inversion Questions",
+      "content": "Inversion is the most formal way to ask questions in French. It involves inverting the order of the subject pronoun and the verb, adding a hyphen between them. This is similar to forming questions in English by changing word order.",
+      "examples": [
+        "Tu parles → Parles-tu? (You speak → Do you speak?)",
+        "Il va → Va-t-il? (He goes → Does he go?)",
+        "Nous avons → Avons-nous? (We have → Do we have?)"
+      ]
+    },
+    {
+      "title": "Formation with Subject Pronouns",
+      "content": "With subject pronouns, simply invert the pronoun and verb and add a hyphen. Note that je becomes j' in inversion, and il/elle/on add -t- for pronunciation.",
+      "examples": [
+        "Je parle → Parle-je? (Do I speak?)",
+        "Tu manges → Manges-tu? (Do you eat?)",
+        "Il finit → Finit-il? (Does he finish?)",
+        "Elle veut → Veut-elle? (Does she want?)",
+        "On peut → Peut-on? (Can one/we?)",
+        "Nous allons → Allons-nous? (Are we going?)",
+        "Vous avez → Avez-vous? (Do you have?)",
+        "Ils partent → Partent-ils? (Are they leaving?)"
+      ]
+    },
+    {
+      "title": "Inversion with Être",
+      "content": "When the verb is être, inversion works the same way. Note that the -t- is added for il/elle/on for pronunciation.",
+      "examples": [
+        "Je suis → Suis-je? (Am I?)",
+        "Tu es → Es-tu? (Are you?)",
+        "Il est → Est-il? (Is he?)",
+        "Elle est → Est-elle? (Is she?)",
+        "Nous sommes → Sommes-nous? (Are we?)"
+      ]
+    },
+    {
+      "title": "Inversion with Avoir",
+      "content": "Inversion with avoir follows the same pattern as other verbs.",
+      "examples": [
+        "J'ai → Ai-je? (Do I have?)",
+        "Tu as → As-tu? (Do you have?)",
+        "Il a → A-t-il? (Does he have?)",
+        "Nous avons → Avons-nous? (Do we have?)"
+      ]
+    },
+    {
+      "title": "Inversion in Different Tenses",
+      "content": "Inversion can be used in all tenses, though it's more common in present tense for formal questions.",
+      "examples": [
+        "Passé composé: As-tu mangé? (Did you eat?)",
+        "Imparfait: Parliez-vous? (Were you speaking?)",
+        "Future simple: Viendras-tu? (Will you come?)",
+        "Conditional: Voudriez-vous? (Would you like?)"
+      ]
+    },
+    {
+      "title": "Inversion with Noun Subjects",
+      "content": "When the subject is a noun (not a pronoun), you cannot invert. Instead, you must repeat the subject with a pronoun after the verb. This is less common in spoken French.",
+      "examples": [
+        "Marie parle → Marie parle-t-elle? (Does Marie speak?)",
+        "Le chat dort → Le chat dort-il? (Is the cat sleeping?)",
+        "Les enfants jouent → Les enfants jouent-ils? (Are the children playing?)"
+      ]
+    },
+    {
+      "title": "Formal vs Informal Questions",
+      "content": "Inversion is more formal. In informal speech, French speakers often use intonation alone (like in English) or est-ce que. Inversion is common in writing and formal speech.",
+      "examples": [
+        "Formal: Parlez-vous français? (Do you speak French?)",
+        "Informal: Vous parlez français? (You speak French?) - intonation",
+        "Neutral: Est-ce que vous parlez français? (Do you speak French?) - est-ce que"
+      ]
+    },
+    {
+      "title": "Practice Exercise",
+      "content": "Transform these statements into inversion questions: 1) Tu es prêt. 2) Il a un livre. 3) Nous allons au cinéma. 4) Vous parlez anglais. 5) Ils ont fini. 6) Elle veut partir. 7) Tu peux m'aider."
+    }
+  ]
+}

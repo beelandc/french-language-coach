@@ -1,0 +1,65 @@
+{
+  "$schema": "https://french-language-coach.github.io/schemas/grammar_lesson.json",
+  "id": "future-simple",
+  "title": "Future Simple (Simple Future)",
+  "topic": "Future Tenses",
+  "difficulty": "intermediate",
+  "sections": [
+    {
+      "title": "Introduction to Future Simple",
+      "content": "The future simple tense expresses actions that will happen in the future. For most verbs, it is formed by adding specific endings directly to the infinitive form of the verb.",
+      "examples": [
+        "Je parlerai (I will speak)",
+        "Tu finirás (You will finish)",
+        "Il vendra (He will sell)"
+      ]
+    },
+    {
+      "title": "Formation for Regular Verbs",
+      "content": "For regular -ER, -IR, and -RE verbs, the future simple is formed by adding the endings -ai, -as, -a, -ons, -ez, -ont to the infinitive. Note that -RE verbs drop the final -e.",
+      "examples": [
+        "Parler: je parlerai, tu parleras, il parlera, nous parlerons, vous parlerez, ils parleront",
+        "Finir: je finirai, tu finiras, il finira, nous finirons, vous finirez, ils finiront",
+        "Vendre: je vendrai, tu vendras, il vendra, nous vendrons, vous vendrez, ils vendront"
+      ]
+    },
+    {
+      "title": "Irregular Future Stems",
+      "content": "Some common verbs have irregular stems in the future simple. The endings remain the same, but the stem changes.",
+      "examples": [
+        "Être: ser- → je serai, tu seras, il sera, nous serons, vous serez, ils seront",
+        "Avoir: aur- → j'aurai, tu auras, il aura, nous aurons, vous aurez, ils auront",
+        "Aller: ir- → j'irai, tu iras, il ira, nous irons, vous irez, ils iront",
+        "Faire: fer- → je ferai, tu feras, il fera, nous ferons, vous ferez, ils feront",
+        "Vouloir: voudr- → je voudrai, tu voudras, il voudra, nous voudrons, vous voudrez, ils voudront",
+        "Pouvoir: pourr- → je pourrai, tu pourras, il pourra, nous pourrons, vous pourrez, ils pourront",
+        "Savoir: saur- → je saurai, tu sauras, il saura, nous saurons, vous saurez, ils sauront",
+        "Devoir: devr- → je devrai, tu devras, il devra, nous devrons, vous devrez, ils devront"
+      ]
+    },
+    {
+      "title": "Uses of Future Simple",
+      "content": "The future simple is used for: 1) Simple future actions, 2) Predictions, 3) Promises, 4) Spontaneous decisions, 5) Facts that will be true in the future.",
+      "examples": [
+        "Je partirai demain (I will leave tomorrow) - simple action",
+        "Il pleuvra cet après-midi (It will rain this afternoon) - prediction",
+        "Je te promets que je viendrai (I promise I will come) - promise",
+        "J'achèterai ce livre! (I'll buy that book!) - spontaneous decision",
+        "Tu auras 20 ans l'année prochaine (You will be 20 years old next year) - future fact"
+      ]
+    },
+    {
+      "title": "Negation",
+      "content": "To negate the future simple, place ne/n' before the verb and pas after: ne + verb + pas.",
+      "examples": [
+        "Je ne parlerai pas (I will not speak)",
+        "Tu ne finiras pas (You will not finish)",
+        "Il ne viendra pas (He will not come)"
+      ]
+    },
+    {
+      "title": "Practice Exercise",
+      "content": "Conjugate these verbs in the future simple: parler, finir, vendre, être, avoir, aller. Write 5 sentences about what you will do next weekend."
+    }
+  ]
+}
