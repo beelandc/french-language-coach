@@ -129,7 +129,7 @@ Example header:
 
 ## Current SPDD Artifacts
 
-### SPDD Artifacts Capture (Issue #6)
+### Session Listing (Issue #6)
 - Analysis: `spdd/analysis/FLC-001-202605120000-[Analysis]-spdd-artifacts-capture.md`
 - Prompt: `spdd/prompt/FLC-001-202605120030-[Feat]-spdd-artifacts-capture.md`
 
@@ -137,10 +137,6 @@ Example header:
 - Analysis: `spdd/analysis/FLC-002-202605121600-[Analysis]-issue-121-react-migration.md`
 - Prompt: `spdd/prompt/FLC-002-202605121630-[Feat]-issue-121-react-migration.md`
 - Issue Comment Template: `spdd/issue-121-comment.md` (copy to GitHub issue)
-
-### Grammar Reference Guide (Issue #32)
-- Analysis: `spdd/analysis/FLC-018-202606031200-[Analysis]-issue-32-grammar-reference.md`
-- Prompt: `spdd/prompt/FLC-018-202606031230-[Feat]-issue-32-grammar-reference.md`
 
 ## Reference
 

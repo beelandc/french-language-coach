@@ -3,8 +3,6 @@ import HomePage from './pages/HomePage'
 import ChatPage from './pages/ChatPage'
 import FeedbackPage from './pages/FeedbackPage'
 import SessionDetailPage from './pages/SessionDetailPage'
-import LessonPage from './pages/LessonPage'
-import LessonDetailPage from './pages/LessonDetailPage'
 
 function App() {
   return (
@@ -19,9 +17,6 @@ function App() {
           <Route path="/chat/:sessionId" element={<ChatPage />} />
           <Route path="/feedback/:sessionId" element={<FeedbackPage />} />
           <Route path="/sessions/:sessionId" element={<SessionDetailPage />} />
-          {/* Grammar Lessons Routes (Phase 2) */}
-          <Route path="/lessons" element={<LessonPage />} />
-          <Route path="/lessons/:lessonId" element={<LessonDetailPage />} />
         </Routes>
       </main>
     </div>

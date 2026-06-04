@@ -1,7 +1,5 @@
 from .sessions import router as sessions_router
 from .messages import router as messages_router
 from .feedback import router as feedback_router
-from .grammar import router as grammar_router
-from .grammar_progress import router as grammar_progress_router
 
-__all__ = ["sessions_router", "messages_router", "feedback_router", "grammar_router", "grammar_progress_router"]
+__all__ = ["sessions_router", "messages_router", "feedback_router"]
