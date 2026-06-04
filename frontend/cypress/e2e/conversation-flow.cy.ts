@@ -548,35 +548,6 @@ describe('Conversation Flow - Issue #27', () => {
         pagination: { total: 0, page: 1, per_page: 10, total_pages: 0 },
       })
 
-      // Mock the session GET endpoint to avoid 404/502 errors
-      cy.intercept('GET', `/sessions/${SESSION_ID}`, {
-        id: SESSION_ID,
-        scenario_id: SCENARIO_ID,
-        scenario_name: 'Ordering at a Café',
-        difficulty: 'intermediate',
-        created_at: '2024-01-01T00:00:00Z',
-        ended_at: '2024-01-01T00:05:00Z',
-        messages: [],
-        feedback: {
-          grammar_score: 85,
-          vocabulary_score: 90,
-          fluency_score: 80,
-          overall_score: 85,
-          strengths: ['Good vocabulary usage', 'Clear sentence structure'],
-          focus_area: 'grammar',
-          example_corrections: [
-            {
-              original: 'Je vais au cafe',
-              corrected: 'Je vais au café',
-              explanation: 'Accent needed on café',
-            },
-          ],
-        },
-        is_locked: false,
-        locked_at: null,
-        locked_by: null,
-      }).as('getSession')
-
       // Mock the feedback POST endpoint (FeedbackView calls getFeedback on mount)
       cy.intercept('POST', `/sessions/${SESSION_ID}/feedback/`, {
         grammar_score: 85,
@@ -598,7 +569,7 @@ describe('Conversation Flow - Issue #27', () => {
 
       // Then: Feedback page is displayed
       cy.shouldBeOnPage('feedback')
-      cy.wait(['@getSession', '@getFeedback'])
+      cy.wait('@getFeedback')
     })
   })
 })
