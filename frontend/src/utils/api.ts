@@ -1,5 +1,13 @@
 // API Client for French Language Coach
-import type { Feedback, Session, SessionLockResponse } from '../types/index'
+import type { 
+  Feedback, 
+  Session, 
+  SessionLockResponse,
+  LessonListResponse, 
+  LessonResponse, 
+  LessonSummary, 
+  Difficulty 
+} from '../types/index'
 
 // Use relative paths for development (Vite proxy handles routing)
 // Use same-origin for production
@@ -100,8 +108,6 @@ export const sessionApi = {
 }
 
 // Grammar API functions
-import type { LessonListResponse, LessonResponse, LessonSummary, Difficulty } from '../types/index'
-
 export const grammarApi = {
   // Get list of lessons with optional filtering and pagination
   listLessons: (
