@@ -385,4 +385,37 @@ data/
 
 ---
 
+## Implementation Notes
+
+**Status**: ✅ COMPLETE - All acceptance criteria met
+
+**Implementation Summary**:
+- Created `routers/grammar.py` with 3 REST endpoints
+- Created `schemas/grammar.py` with response models
+- Updated `routers/__init__.py` and `main.py` for integration
+- Created comprehensive test suite with 45 tests
+- Achieved 98% test coverage (exceeds 80% requirement)
+- Updated README.md with new endpoints
+
+**Files Created**:
+- `routers/grammar.py` - Grammar router with 3 endpoints
+- `schemas/grammar.py` - Response schemas for grammar endpoints
+- `tests/test_grammar_router.py` - 45 tests covering all functionality
+- `spdd/analysis/FLC-020-202606031500-[Analysis]-issue-36-grammar-router.md` - This analysis
+- `spdd/prompt/FLC-020-202606031530-[Feat]-issue-36-grammar-router.md` - Implementation prompt
+
+**Files Modified**:
+- `routers/__init__.py` - Added grammar_router import
+- `main.py` - Added grammar_router include
+- `schemas/__init__.py` - Added new schema exports
+- `README.md` - Added new endpoints to API table
+
+**Git Branch**: `feature/issue-36-grammar-router`
+
+**All Acceptance Criteria Met**:
+- [x] All endpoints implemented
+- [x] Proper error handling (404, etc.)
+- [x] Pagination support for list endpoints
+- [x] Filtering by topic and difficulty
+
 *Analysis based on SPDD practice from [Martin Fowler](https://martinfowler.com/articles/structured-prompt-driven.html)*
