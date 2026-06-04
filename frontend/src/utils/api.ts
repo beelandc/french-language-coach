@@ -99,6 +99,27 @@ export const sessionApi = {
     }),
 }
 
+// Grammar API functions
+import type { LessonListResponse, LessonResponse, LessonSummary, Difficulty } from '../types/index'
+
+export const grammarApi = {
+  // Get list of lessons with optional filtering and pagination
+  listLessons: (
+    page: number = 1,
+    perPage: number = 10,
+    topic?: string,
+    difficulty?: Difficulty
+  ) => 
+    api<LessonListResponse>(
+      `/grammar/lessons/?page=${page}&per_page=${perPage}${topic ? `&topic=${encodeURIComponent(topic)}` : ''}${difficulty ? `&difficulty=${difficulty}` : ''}`,
+      { method: 'GET' }
+    ),
+
+  // Get a single lesson by ID
+  getLesson: (lessonId: string) =>
+    api<LessonResponse>(`/grammar/lessons/${lessonId}`, { method: 'GET' }),
+}
+
 // Re-export types for convenience
 export type {
   Scenario,
@@ -113,4 +134,13 @@ export type {
   SessionLockResponse,
   Difficulty,
   DifficultySelectorProps,
+  Lesson,
+  LessonSummary,
+  LessonSection,
+  LessonResponse,
+  LessonListResponse,
+  LessonCardProps,
+  LessonSearchProps,
+  LessonBrowserProps,
+  LessonDetailProps,
 } from '../types/index'
