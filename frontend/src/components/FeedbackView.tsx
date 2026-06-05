@@ -47,7 +47,8 @@ export default function FeedbackView({ sessionId }: FeedbackViewProps) {
   }
 
   const handleNewSession = () => {
-    navigate('/')
+    // Navigate to scenarios page (moved from / to /scenarios in issue #177)
+    navigate('/scenarios')
   }
 
   const handleExportToPDF = useCallback(async () => {

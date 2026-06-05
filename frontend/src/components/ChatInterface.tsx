@@ -136,7 +136,8 @@ export default function ChatInterface({ sessionId }: ChatInterfaceProps) {
   }
 
   const handleBack = () => {
-    navigate('/')
+    // Navigate to scenarios page (moved from / to /scenarios in issue #177)
+    navigate('/scenarios')
   }
 
   const scenarioName = getScenarioName()
