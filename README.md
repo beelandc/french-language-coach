@@ -1,17 +1,32 @@
 # French Language Coach
 
-An immersive French conversation practice web application with AI-powered feedback.
+A comprehensive French language learning platform built end-to-end with Mistral Vibe and Mistral API, combining immersive AI conversation practice with structured grammar lessons, a searchable reference guide, and interactive exercises.
 
 ## What it does
 
-Users select a conversation scenario (e.g., ordering at a café, asking for directions, job interview in French), then conduct an immersive conversation entirely in French with an AI tutor. At the end of the session, they receive a structured feedback report scoring their grammar, vocabulary, and fluency, with one prioritized focus area for improvement.
+Users start at a modern central navigation hub that provides access to all application features. From there, they can:
 
-Users can also study grammar through:
+**Conversation Practice**: Select a scenario (e.g., ordering at a café, asking for directions, job interview in French), then conduct an immersive conversation entirely in French with an AI tutor. At the end of the session, they receive a structured feedback report scoring their grammar, vocabulary, and fluency, with one prioritized focus area for improvement.
+
+**Grammar Mastery**: Study through:
 - **Grammar Lessons**: 20+ interactive lessons covering core French grammar topics
 - **Grammar Reference Guide**: 50+ searchable reference entries for quick lookup of grammar terms and concepts
 - **Grammar Exercises**: 5 interactive exercises with 5 types (fill-in-the-blank, multiple-choice, translation, conjugation, sentence transformation) for practicing grammar skills
 
+The landing page also features a Quick Access section showing recent sessions with resume capability.
+
 ## Usage
+
+### From the Central Navigation Hub (Landing Page):
+
+1. **Explore Features**: The landing page displays cards for all major features - click any to get started
+2. **Start Conversation Practice**: Click "Conversation Practice" or "Get Started" to select from 10 built-in scenarios
+3. **Browse Grammar Lessons**: Click "Grammar Lessons" to browse, search, and filter 20+ interactive lessons
+4. **Search Grammar Reference**: Click "Grammar Reference" to access 50+ searchable reference entries
+5. **Practice Exercises**: Click "Grammar Exercises" to practice with fill-in-the-blank, multiple-choice, translation, conjugation, and sentence transformation exercises
+6. **Resume Recent Session**: Use the Quick Access section to resume any of your last 5 sessions
+
+### Conversation Practice Flow:
 
 1. **Select a Scenario**: Choose from 10 built-in conversation scenarios
 2. **Select Difficulty**: Choose your difficulty level (Beginner, Intermediate, or Advanced) to tailor the AI's responses to your proficiency
@@ -19,13 +34,7 @@ Users can also study grammar through:
 4. **End Session**: Click "End Session" to receive detailed feedback
 5. **Review Feedback**: See scores for grammar, vocabulary, fluency, and overall performance with specific corrections
 6. **Review Session Details**: Navigate to `/sessions/{id}` to view full conversation transcript alongside feedback
-7. **Navigate**: Use the Back button to return to scenario selection or start a new session
-8. **Start Again**: Begin a new session with any scenario
-9. **Browse Grammar Lessons**: Navigate to `/lessons` to browse, search, and filter 20+ grammar lessons by topic and difficulty
-10. **Study Grammar Lessons**: Click on any lesson to view full content with sections and examples at `/lessons/{id}`
-11. **Search Grammar Reference**: Navigate to `/reference` to search and filter 50+ grammar reference entries by term, category, and difficulty
-12. **Browse Exercises**: Navigate to `/exercises` to browse and filter all grammar exercises
-13. **Practice Exercises**: Navigate to `/exercises/{exerciseId}` to practice a specific grammar exercise with immediate feedback and scoring
+7. **Navigate Back**: Use the Back button to return to scenario selection or start a new session
 
 ### Difficulty Levels
 
@@ -49,12 +58,12 @@ Each scenario supports three difficulty levels that affect the AI's system promp
 
 ## Features
 
-- AI stays strictly in character and responds only in French
-- Conversation history stored in SQLite
-- Structured feedback with grammar, vocabulary, fluency scores
-- Example corrections with explanations
-- Session detail view combining transcript and feedback
-- Clean, responsive single-page interface
+- **Central Navigation Hub**: Modern landing page with feature cards for all application functionality and Quick Access to recent sessions
+- **Conversation Practice**: AI stays strictly in character and responds only in French
+- **Session Management**: Conversation history stored in SQLite with resume capability
+- **Structured Feedback**: Grammar, vocabulary, and fluency scores with example corrections and explanations
+- **Session Detail View**: Full conversation transcript alongside feedback
+- **Clean, Responsive Interface**: Single-page application with modern UI/UX
 - **Grammar Lessons**: 20+ interactive lessons covering core French grammar topics (Phase 2)
 - **Grammar Reference Guide**: 50+ searchable reference entries for quick lookup of grammar terms and concepts (Phase 2)
 - **Grammar Exercises**: 5 interactive exercises with 5 types: fill-in-the-blank, multiple-choice, translation, conjugation, and sentence transformation (Phase 2)
@@ -220,6 +229,12 @@ french-language-coach/
 ├── frontend/                # React SPA frontend (Vite + TypeScript)
 │   ├── src/
 │   │   ├── components/      # Reusable UI components + Storybook stories
+│   │   │   ├── FeatureCard.tsx       # Feature navigation card for landing page (Issue #177)
+│   │   │   ├── FeatureCard.stories.tsx
+│   │   │   ├── FeatureCard.test.tsx
+│   │   │   ├── QuickAccessSession.tsx # Compact session card for landing page (Issue #177)
+│   │   │   ├── QuickAccessSession.stories.tsx
+│   │   │   ├── QuickAccessSession.test.tsx
 │   │   │   ├── DifficultySelector.tsx
 │   │   │   ├── DifficultySelector.stories.tsx
 │   │   │   ├── DifficultySelector.test.tsx
@@ -258,7 +273,9 @@ french-language-coach/
 │   │   │   │   └── SentenceTransformationExercise.tsx
 │   │   │   └── index.ts
 │   │   ├── pages/           # Page-level components (React Router routes)
-│   │   │   ├── HomePage.tsx
+│   │   │   ├── IndexPage.tsx         # Modern landing page with central navigation hub (Issue #177)
+│   │   │   ├── ScenarioPage.tsx      # Scenario selection interface (Issue #177)
+│   │   │   ├── HomePage.tsx          # Legacy scenario selection page (kept for backward compatibility)
 │   │   │   ├── ChatPage.tsx
 │   │   │   ├── FeedbackPage.tsx
 │   │   │   ├── SessionDetailPage.tsx
@@ -326,7 +343,8 @@ french-language-coach/
 
 | Path | Component | Description |
 |------|-----------|-------------|
-| `/` | HomePage | Scenario selection and app landing page |
+| `/` | IndexPage | Modern landing page with central navigation hub (Issue #177) |
+| `/scenarios` | ScenarioPage | Scenario selection interface |
 | `/chat/:sessionId` | ChatPage | Interactive chat interface for a session |
 | `/feedback/:sessionId` | FeedbackPage | Feedback report display for a completed session |
 | `/sessions/:sessionId` | SessionDetailPage | Full session details with transcript and feedback |
