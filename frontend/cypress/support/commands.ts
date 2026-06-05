@@ -44,7 +44,7 @@ Cypress.Commands.add('waitForRoute', (route: string) => {
 })
 
 // Command to verify we're on a specific page
-Cypress.Commands.add('shouldBeOnPage', (page: 'home' | 'chat' | 'feedback' | 'scenarios' | 'index') => {
+Cypress.Commands.add('shouldBeOnPage', (page: 'home' | 'chat' | 'feedback' | 'scenario' | 'index') => {
   cy.getByTestId(`${page}-page`).should('exist')
 })
 
@@ -105,7 +105,7 @@ declare global {
       endSession(): Chainable<Element>
       getFeedbackScore(scoreType: 'grammar' | 'vocabulary' | 'fluency' | 'overall'): Chainable<Element>
       waitForRoute(route: string): Chainable<Element>
-      shouldBeOnPage(page: 'home' | 'chat' | 'feedback' | 'scenarios' | 'index'): Chainable<Element>
+      shouldBeOnPage(page: 'home' | 'chat' | 'feedback' | 'scenario' | 'index'): Chainable<Element>
       waitForLoadingComplete(): Chainable<Element>
       mockSessionCreation(sessionId?: number, scenarioId?: string): Chainable<void>
       mockMessageResponse(sessionId?: number, content?: string): Chainable<void>

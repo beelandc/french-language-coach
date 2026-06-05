@@ -18,7 +18,7 @@ describe('Conversation Flow', () => {
     // Visit the scenarios page before each test (scenario selector moved from / to /scenarios in issue #177)
     cy.visit('/scenarios')
     
-    // Wait for scenarios to load
+    // Wait for scenario selector to load
     cy.getByTestId('scenario-selector', { timeout: 10000 }).should('exist')
     
     // Mock API endpoints
@@ -98,8 +98,8 @@ describe('Conversation Flow', () => {
   // AC-1: Test scenario selection
   describe('AC-1: Scenario Selection', () => {
     it('should navigate to chat page when user selects a scenario', () => {
-      // Given: User is on the scenarios page
-      cy.shouldBeOnPage('scenarios')
+      // Given: User is on the scenario page
+      cy.shouldBeOnPage('scenario')
       cy.getByTestId('scenario-selector').should('exist')
       cy.getByTestId('scenarios-grid').should('exist')
 
@@ -114,8 +114,8 @@ describe('Conversation Flow', () => {
     })
 
     it('should display all available scenarios', () => {
-      // Given: User is on the scenarios page
-      cy.shouldBeOnPage('scenarios')
+      // Given: User is on the scenario page
+      cy.shouldBeOnPage('scenario')
 
       // When/Then: All scenarios are visible
       cy.getByTestId('scenario-cafe_order').should('exist')
@@ -127,8 +127,8 @@ describe('Conversation Flow', () => {
   // AC-2: Test starting a session
   describe('AC-2: Starting a Session', () => {
     it('should create a new session when scenario is selected', () => {
-      // Given: User is on the scenarios page
-      cy.shouldBeOnPage('scenarios')
+      // Given: User is on the scenario page
+      cy.shouldBeOnPage('scenario')
 
       // When: User selects a scenario
       cy.getByTestId(`scenario-${SCENARIO_ID}`).click()
@@ -409,8 +409,8 @@ describe('Conversation Flow', () => {
 
   describe('Complete Conversation Flow', () => {
     it('should complete the entire flow: scenario selection -> chat -> feedback', () => {
-      // Step 1: User is on scenarios page
-      cy.shouldBeOnPage('scenarios')
+      // Step 1: User is on scenario page
+      cy.shouldBeOnPage('scenario')
 
       // Step 2: User selects a scenario
       cy.getByTestId(`scenario-${SCENARIO_ID}`).click()
@@ -477,8 +477,8 @@ describe('Conversation Flow', () => {
       // When: User clicks back
       cy.getByTestId('back-button').click()
 
-      // Then: User returns to scenarios page (HomePage with ScenarioSelector moved to /scenarios)
-      cy.shouldBeOnPage('scenarios')
+      // Then: User returns to scenario page (ScenarioSelector now at /scenarios)
+      cy.shouldBeOnPage('scenario')
     })
 
     it('should display session scenario name correctly', () => {
