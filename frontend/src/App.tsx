@@ -1,5 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import HomePage from './pages/HomePage'
+import IndexPage from './pages/IndexPage'
+import ScenarioPage from './pages/ScenarioPage'
 import ChatPage from './pages/ChatPage'
 import FeedbackPage from './pages/FeedbackPage'
 import SessionDetailPage from './pages/SessionDetailPage'
@@ -18,7 +20,15 @@ function App() {
       
       <main>
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          {/* Modern landing page with central navigation hub (Issue #177) */}
+          <Route path="/" element={<IndexPage />} />
+          
+          {/* Conversation Practice / Scenario Selection Route */}
+          <Route path="/scenarios" element={<ScenarioPage />} />
+          
+          {/* Legacy HomePage kept for backward compatibility */}
+          <Route path="/home" element={<HomePage />} />
+          
           <Route path="/chat/:sessionId" element={<ChatPage />} />
           <Route path="/feedback/:sessionId" element={<FeedbackPage />} />
           <Route path="/sessions/:sessionId" element={<SessionDetailPage />} />

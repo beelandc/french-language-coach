@@ -548,3 +548,42 @@ export interface ExerciseSession {
   total: number
   completed: boolean
 }
+
+// ============================================================================
+// Index Page / Landing Page Types (Issue #177)
+// ============================================================================
+
+/**
+ * Props for FeatureCard component
+ */
+export interface FeatureCardProps {
+  icon: string;          // Emoji or icon character
+  title: string;        // Feature name
+  description: string;   // Brief description
+  ctaText: string;      // CTA button/link text
+  onClick?: () => void; // Click handler (optional for disabled cards)
+  disabled?: boolean;    // Whether card is disabled
+  comingSoon?: boolean;  // Whether to show "Coming Soon" badge
+}
+
+/**
+ * Props for QuickAccessSession component
+ */
+export interface QuickAccessSessionProps {
+  session: SessionSummary; // From existing SessionSummary type
+  onClick: (sessionId: string) => void; // Resume session handler
+}
+
+/**
+ * Feature card configuration for the landing page
+ */
+export interface FeatureConfig {
+  id: string;
+  icon: string;
+  title: string;
+  description: string;
+  ctaText: string;
+  path?: string; // Navigation path for enabled features
+  disabled?: boolean;
+  comingSoon?: boolean;
+}
