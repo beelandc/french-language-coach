@@ -109,7 +109,8 @@ export default function SessionDetail({ sessionId }: SessionDetailProps) {
   }, [sessionId])
 
   const handleBack = () => {
-    navigate('/')
+    // Navigate to scenarios page (moved from / to /scenarios in issue #177)
+    navigate('/scenarios')
   }
 
   // Handle continue session button click - navigate to chat interface
@@ -134,8 +135,8 @@ export default function SessionDetail({ sessionId }: SessionDetailProps) {
 
     try {
       await sessionApi.deleteSession(sessionId)
-      // On success, redirect to home page
-      navigate('/')
+      // On success, redirect to scenarios page (moved from / to /scenarios in issue #177)
+      navigate('/scenarios')
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to delete session'
       setDeleteError(errorMessage)
