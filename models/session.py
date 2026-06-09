@@ -3,19 +3,17 @@ from datetime import datetime, timedelta
 
 from sqlalchemy import Column, DateTime, Integer, String, Text, Boolean
 
-from database import Base
+from models.base import BaseModel
 
 # Lock TTL in minutes - locks automatically expire after this duration
 LOCK_TTL_MINUTES = 10
 
 
-class Session(Base):
+class Session(BaseModel):
     __tablename__ = "sessions"
 
-    id = Column(Integer, primary_key=True, index=True)
     scenario_id = Column(String(50), nullable=False)
     difficulty = Column(String(20), default="intermediate")
-    created_at = Column(DateTime, default=datetime.utcnow)
     ended_at = Column(DateTime, nullable=True)
     messages = Column(Text, default="[]")
     feedback = Column(Text, nullable=True)

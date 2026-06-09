@@ -50,6 +50,7 @@ from .grammar_reference import (
     validate_reference_data,
     validate_reference_json,
 )
+from .base import BaseSchema
 from .lesson_progress import (
     LessonProgressCreate,
     LessonProgressResponse,
@@ -65,6 +66,8 @@ from .session import (
 )
 
 __all__ = [
+    # Base Schema
+    "BaseSchema",
     # Grammar Router Schema
     "LessonListResponse",
     "LessonResponse",
