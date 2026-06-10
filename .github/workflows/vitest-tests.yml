@@ -65,6 +65,7 @@ jobs:
         working-directory: frontend
         run: |
           npm run test -- --reporter=junit --outputFile=junit.xml
+        continue-on-error: true
       
       - name: Run Vitest Tests with Coverage
         working-directory: frontend
