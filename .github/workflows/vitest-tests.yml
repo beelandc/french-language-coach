@@ -47,6 +47,11 @@ jobs:
         run: |
           npm ci
       
+      - name: Install Playwright Browsers
+        working-directory: frontend
+        run: |
+          npx playwright install --with-deps
+      
       - name: Run Vitest Tests
         working-directory: frontend
         run: |
