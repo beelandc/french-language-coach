@@ -29,6 +29,10 @@ frontend/
 │   │   ├── pdfExport.ts   # PDF generation utility (Issue #23)
 │   │   └── storybookMocks.tsx
 │   ├── types/            # TypeScript type definitions
+│   └── mocks/            # MSW mock handlers (Issue #26)
+│       ├── handlers.ts   # Request handlers for API endpoints
+│       ├── server.ts     # MSW server setup for Node.js
+│       └── browser.ts    # MSW worker setup for browser
 │   │   └── index.ts
 │   ├── styles/           # CSS files
 │   │   └── global.css
@@ -44,6 +48,9 @@ frontend/
 │   └── support/
 │       ├── commands.ts   # Custom Cypress commands
 │       └── index.ts       # Support file with type definitions
+├── jest.config.cjs           # Jest configuration (Issue #26)
+├── babel.config.cjs         # Babel configuration for Jest (Issue #26)
+├── tsconfig.jest.json       # TypeScript config for Jest (Issue #26)
 ├── .storybook/           # Storybook configuration
 │   ├── main.ts           # Storybook main configuration
 │   └── preview.tsx       # Storybook preview configuration
@@ -118,6 +125,108 @@ The FastAPI backend already serves static files from the `static/` directory. Af
 | `npm run e2e:run` | Run Cypress tests headlessly |
 | `npm run e2e:run:headed` | Run Cypress tests with browser visible |
 | `npm run e2e:run:ci` | Run Cypress tests for CI environment |
+| `npm run test:jest` | Run Jest unit tests |
+| `npm run test:jest:watch` | Run Jest tests in watch mode |
+| `npm run test:jest:coverage` | Run Jest tests with coverage report |
+
+## Unit Testing with Jest (Issue #26)
+
+This project uses **Jest** with **@testing-library/react** and **MSW (Mock Service Worker)** for unit testing React components and API interactions.
+
+### Setup
+
+Jest is configured with:
+- **Test Runner**: Jest v29
+- **React Testing**: @testing-library/react v16
+- **TypeScript Support**: ts-jest v29
+- **DOM Environment**: jsdom
+- **API Mocking**: MSW v2.6
+
+### Running Tests
+
+#### Run All Tests
+```bash
+npm run test:jest
+```
+
+#### Watch Mode
+Run tests in watch mode for development:
+```bash
+npm run test:jest:watch
+```
+
+#### With Coverage
+Generate coverage report:
+```bash
+npm run test:jest:coverage
+```
+
+### File Patterns
+
+To distinguish Jest tests from Vitest tests:
+- **Jest tests**: Use `.jest.test.ts` or `.jest.test.tsx` extension
+- **Vitest tests**: Use `.test.ts` or `.test.tsx` extension
+
+Example:
+```
+src/
+├── component.test.tsx          # Vitest test
+└── component.jest.test.tsx     # Jest test
+```
+
+### MSW API Mocking
+
+MSW is set up for API mocking with the following files:
+
+```
+src/
+└── mocks/
+    ├── handlers.ts    # Request handlers for all API endpoints
+    ├── server.ts      # MSW server setup for Node.js environment
+    └── browser.ts     # MSW worker setup for browser environment
+```
+
+The handlers mock the following API endpoints:
+- `GET /sessions/:sessionId` - Get session details
+- `GET /sessions/` - List all sessions
+- `POST /sessions/` - Create a new session
+- `POST /sessions/:sessionId/messages/` - Send message in session
+- `POST /sessions/:sessionId/feedback/` - Get session feedback
+- `DELETE /sessions/:sessionId` - Delete a session
+- `GET /grammar/lessons/` - List grammar lessons
+- `GET /grammar/lessons/:lessonId` - Get lesson details
+- `GET /grammar/reference/` - Search grammar reference
+
+### Configuration Files
+
+- `jest.config.cjs` - Jest configuration for TypeScript and React
+- `tsconfig.jest.json` - TypeScript configuration for Jest
+- `babel.config.cjs` - Babel configuration for transpiling ESM packages
+- `src/setupTests.ts` - Test setup file (jest-dom, MSW server setup)
+
+### Current Tests
+
+**Issue #26: Set up jest + MSW for frontend**
+
+All acceptance criteria are met:
+
+| AC # | Description | Status |
+|------|-------------|--------|
+| AC-1 | jest configured in package.json | ✅ |
+| AC-2 | @testing-library/react installed | ✅ |
+| AC-3 | MSW set up for API mocking | ✅ |
+| AC-4 | jest.config.js created | ✅ |
+| AC-5 | Sample test file works | ✅ |
+| AC-6 | CI runs tests on PR | ✅ |
+
+**Sample Test File**: `src/sample.jest.test.tsx`
+
+Tests 12 scenarios:
+- Jest configuration verification
+- @testing-library/react rendering
+- React component testing
+- Package dependency verification
+- MSW file availability
 
 ## E2E Testing with Cypress (Issue #27)
 
