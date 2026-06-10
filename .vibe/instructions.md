@@ -99,6 +99,10 @@ For every development request:
 - **Documentation**: Docstrings for public functions, comments for complex logic
 - **Security**: Never store API keys in code, use environment variables
 
+### Python Version
+- **ALWAYS use `python3`** for all commands, not `python`
+- This project uses Python 3.12+ and `python` may not be available or may point to Python 2
+
 ### Current Phase
 - Check `VISION.md` for current phase and roadmap
 - Issues are organized by milestone (Phase 1.5, Phase 2, etc.)
@@ -203,5 +207,5 @@ Your AI capabilities can generate code quickly, but **quality and correctness ar
 
 ---
 
-*Last updated: May 2026*
+*Last updated: June 2026*
 *Project: French Language Coach*
