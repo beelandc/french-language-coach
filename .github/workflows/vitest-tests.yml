@@ -1,0 +1,82 @@
+name: Vitest Unit Tests
+
+# Run Vitest unit tests for the frontend
+# This workflow tests React components with Vitest + @testing-library/react + MSW
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/vitest-tests.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/vitest-tests.yml'
+
+jobs:
+  vitest-tests:
+    name: Vitest Unit Tests
+    runs-on: ubuntu-latest
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        # Run tests on different Node versions
+        node-version: [20, 22]
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          # Fetch all history for git info
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+      
+      - name: Cache Playwright Browsers
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+      
+      - name: Install Frontend Dependencies
+        working-directory: frontend
+        run: |
+          npm ci
+      
+      - name: Install Playwright Browsers
+        working-directory: frontend
+        run: |
+          npx playwright install --with-deps
+      
+      - name: Run Vitest Tests
+        working-directory: frontend
+        run: |
+          npm run test
+      
+      - name: Run Vitest Tests with Coverage
+        working-directory: frontend
+        run: |
+          npm run test:coverage
+        if: matrix.node-version == 20  # Only run coverage on one Node version to save time
+            
+      - name: Upload Coverage Report
+        if: always() && matrix.node-version == 20
+        uses: actions/upload-artifact@v4
+        with:
+          name: vitest-coverage
+          path: |
+            frontend/coverage/
+          retention-days: 7
