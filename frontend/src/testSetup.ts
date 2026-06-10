@@ -80,12 +80,42 @@ const mockSessionApi = {
 // Mock the utils/api module
 vi.mock('./utils/api', () => ({
   sessionApi: mockSessionApi,
+  grammarApi: {
+    listLessons: vi.fn(),
+    getLesson: vi.fn(),
+    searchReferences: vi.fn(),
+    getReference: vi.fn(),
+    listExercises: vi.fn(),
+    getExercise: vi.fn(),
+  },
   api: vi.fn(),
 }))
 
 // Also mock the @ alias import path
 vi.mock('@/utils/api', () => ({
   sessionApi: mockSessionApi,
+  grammarApi: {
+    listLessons: vi.fn(),
+    getLesson: vi.fn(),
+    searchReferences: vi.fn(),
+    getReference: vi.fn(),
+    listExercises: vi.fn(),
+    getExercise: vi.fn(),
+  },
+  api: vi.fn(),
+}))
+
+// Also mock the absolute path import
+vi.mock('/src/utils/api', () => ({
+  sessionApi: mockSessionApi,
+  grammarApi: {
+    listLessons: vi.fn(),
+    getLesson: vi.fn(),
+    searchReferences: vi.fn(),
+    getReference: vi.fn(),
+    listExercises: vi.fn(),
+    getExercise: vi.fn(),
+  },
   api: vi.fn(),
 }))
 
