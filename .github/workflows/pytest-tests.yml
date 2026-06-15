@@ -55,6 +55,8 @@ jobs:
           pip install -r requirements.txt
       
       - name: Run Pytest
+        env:
+          MISTRAL_API_KEY: dummy_test_key
         run: |
           python3 -m pytest tests/ -v --tb=short
       
