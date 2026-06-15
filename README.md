@@ -557,10 +557,12 @@ pytest --cov=. --cov-report=term-missing
 
 ### Frontend Tests
 
-The frontend uses **Vitest** for unit and component testing.
+The frontend uses **Vitest** for most unit and component testing, and **Jest** for specific tests (e.g., MSW-related tests).
 
 **Prerequisites:**
 - Frontend dependencies installed (`cd frontend && npm install`)
+
+#### Vitest (Primary Test Framework)
 
 **To run all frontend tests:**
 ```bash
@@ -586,7 +588,31 @@ cd frontend
 npm run test:storybook
 ```
 
+#### Jest (For MSW and Specific Tests)
+
+The project also uses Jest for certain tests, particularly those involving MSW (Mock Service Worker).
+
+**To run Jest tests:**
+```bash
+cd frontend
+npm run test:jest
+```
+
+**To run Jest tests with coverage:**
+```bash
+cd frontend
+npm run test:jest:coverage
+```
+
+**To run Jest tests in watch mode:**
+```bash
+cd frontend
+npm run test:jest:watch
+```
+
 > **Note:** Frontend test scripts are defined in `frontend/package.json`. If Vitest is not yet configured, you can add it with: `cd frontend && npm install -D vitest @testing-library/react @testing-library/jest-dom`
+>
+> **Jest Coverage Note:** Due to TypeScript compilation errors in some source files, Jest coverage collection currently excludes certain directories (styles, mocks, hooks, pages, utils, types, ExerciseTypes) and files (main.tsx, App.tsx, setupTests.ts, testSetup.ts). These exclusions are configured in `frontend/jest.config.cjs` and can be reduced as TypeScript errors are fixed.
 
 ## License
 
