@@ -69,3 +69,24 @@ jobs:
             pytest.xml
             .pytest_cache/
           retention-days: 7
+
+  # All Clear Gateway Job - always runs and checks dependent job statuses
+  # This serves as the single required check for branch protection rules
+  # instead of requiring all conditional jobs individually.
+  # Pattern: https://github.com/beelandc/french-language-coach/issues/190
+  status-check:
+    name: Status Check Gateway
+    runs-on: ubuntu-latest
+    needs: [pytest]
+    if: always()
+    steps:
+      - name: Check dependent job results
+        run: |
+          RESULT="${{ needs.pytest.result }}"
+          if [ "$RESULT" = "success" ] || [ "$RESULT" = "skipped" ]; then
+            echo "All essential jobs passed or were intentionally skipped."
+            exit 0
+          else
+            echo "One or more required jobs failed."
+            exit 1
+          fi

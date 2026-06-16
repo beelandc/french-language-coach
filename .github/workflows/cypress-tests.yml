@@ -129,3 +129,32 @@ jobs:
         working-directory: frontend
         run: |
           npx cypress run --browser ${{ matrix.browser }} --spec 'cypress/e2e/conversation-flow.cy.ts'
+
+  # All Clear Gateway Job - always runs and checks dependent job statuses
+  # This serves as the single required check for branch protection rules
+  # instead of requiring all conditional jobs individually.
+  # Pattern: https://github.com/beelandc/french-language-coach/issues/190
+  status-check:
+    name: Status Check Gateway
+    runs-on: ubuntu-latest
+    needs: [cypress-e2e, cypress-browser-matrix]
+    if: always()
+    steps:
+      - name: Check dependent job results
+        run: |
+          # Check all dependent jobs
+          FAILED=0
+          for JOB in cypress-e2e cypress-browser-matrix; do
+            RESULT="${{ needs.$JOB.result }}"
+            if [ "$RESULT" != "success" ] && [ "$RESULT" != "skipped" ]; then
+              echo "Job $JOB failed with result: $RESULT"
+              FAILED=1
+            fi
+          done
+          if [ $FAILED -eq 0 ]; then
+            echo "All essential jobs passed or were intentionally skipped."
+            exit 0
+          else
+            echo "One or more required jobs failed."
+            exit 1
+          fi

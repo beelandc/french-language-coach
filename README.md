@@ -614,6 +614,79 @@ npm run test:jest:watch
 >
 > **Jest Coverage Note:** Due to TypeScript compilation errors in some source files, Jest coverage collection currently excludes certain directories (styles, mocks, hooks, pages, utils, types, ExerciseTypes) and files (main.tsx, App.tsx, setupTests.ts, testSetup.ts). These exclusions are configured in `frontend/jest.config.cjs` and can be reduced as TypeScript errors are fixed.
 
+## GitHub Actions CI/CD
+
+This project uses GitHub Actions for Continuous Integration with the following workflows:
+
+### Workflow Files
+
+- **pytest-tests.yml** - Runs backend pytest tests when backend files change
+- **jest-tests.yml** - Runs frontend Jest tests when frontend files change
+- **vitest-tests.yml** - Runs frontend Vitest tests when frontend files change
+- **cypress-tests.yml** - Runs end-to-end Cypress tests when frontend files change
+
+### All Clear Gateway Job Pattern
+
+All workflows implement the **All Clear Gateway Job** pattern (see [Issue #190](https://github.com/beelandc/french-language-coach/issues/190)) to support branch protection rules with conditional job execution.
+
+**How it works:**
+- Each workflow includes a final `status-check` job that always runs (`if: always()`)
+- The gateway job checks the result of all dependent jobs using `${{ needs.<job>.result }}`
+- It returns success (exit 0) if all jobs either succeeded or were skipped
+- It returns failure (exit 1) if any job failed or was cancelled
+
+**For branch protection:** Only require the `status-check` job in your ruleset, not the individual conditional jobs.
+
+**Example for new workflows:**
+```yaml
+jobs:
+  my-conditional-job:
+    runs-on: ubuntu-latest
+    # ... your job steps ...
+    
+  status-check:
+    name: Status Check Gateway
+    runs-on: ubuntu-latest
+    needs: [my-conditional-job]
+    if: always()
+    steps:
+      - name: Check dependent job results
+        run: |
+          RESULT="${{ needs.my-conditional-job.result }}"
+          if [ "$RESULT" = "success" ] || [ "$RESULT" = "skipped" ]; then
+            echo "All essential jobs passed or were intentionally skipped."
+            exit 0
+          else
+            echo "One or more required jobs failed."
+            exit 1
+          fi
+```
+
+For workflows with multiple jobs, use a loop to check all dependencies:
+```yaml
+status-check:
+  name: Status Check Gateway
+  runs-on: ubuntu-latest
+  needs: [job1, job2, job3]
+  if: always()
+  steps:
+    - name: Check dependent job results
+      run: |
+        FAILED=0
+        for JOB in job1 job2 job3; do
+          RESULT="${{ needs.$JOB.result }}"
+          if [ "$RESULT" != "success" ] && [ "$RESULT" != "skipped" ]; then
+            echo "Job $JOB failed with result: $RESULT"
+            FAILED=1
+          fi
+        done
+        if [ $FAILED -eq 0 ]; then
+          exit 0
+        else
+          exit 1
+        fi
+```
+
 ## License
 
 MIT License
