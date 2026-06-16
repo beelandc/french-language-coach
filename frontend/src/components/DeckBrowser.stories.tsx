@@ -23,13 +23,6 @@ const meta = {
     layout: 'padded',
   },
   tags: ['autodocs'],
-  decorators: [
-    (Story) => (
-      <MemoryRouter>
-        <Story />
-      </MemoryRouter>
-    ),
-  ],
 } satisfies Meta<typeof DeckBrowser>
 
 export default meta
