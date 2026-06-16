@@ -771,3 +771,67 @@ export interface DueCardsResponse {
   cards: DueCard[];
   pagination: DeckPaginationInfo;
 }
+
+// ============================================================================
+// Flashcard and ReviewSession Types (Issue #69)
+// ============================================================================
+
+/**
+ * Data for a single flashcard, extracted from DueCard or CardSummary
+ * Used by Flashcard component to display card content
+ */
+export interface CardData {
+  id: number;
+  deck_id: number;
+  deck_name?: string;
+  card_id: string;
+  front: string;
+  back: string;
+  example?: string | null;
+  next_review_date?: string;
+}
+
+/**
+ * Rating values for spaced repetition (maps to SM-2 ease factor)
+ * 1 = Again (card was forgotten)
+ * 2 = Hard (card was recalled with difficulty)
+ * 3 = Good (card was recalled correctly)
+ * 4 = Easy (card was recalled easily)
+ */
+export type Rating = 1 | 2 | 3 | 4
+
+/**
+ * Rating button configuration for ReviewSession
+ */
+export interface RatingButton {
+  label: string;      // Display text ("Again", "Hard", "Good", "Easy")
+  value: Rating;     // Numeric rating (1-4)
+  color: string;     // CSS color class or value
+}
+
+/**
+ * Props for Flashcard component
+ */
+export interface FlashcardProps {
+  card: CardData;
+  flipped?: boolean;           // Controlled flip state (optional)
+  onFlip?: (flipped: boolean) => void;  // Callback when flip state changes (optional)
+}
+
+/**
+ * Statistics for session summary
+ */
+export interface SessionStats {
+  totalCards: number;
+  ratings: Record<string, number>;  // {"Again": 2, "Hard": 1, "Good": 3, "Easy": 1}
+  completedAt: string;
+}
+
+/**
+ * Props for ReviewSession component
+ */
+export interface ReviewSessionProps {
+  deckId?: number;           // Optional: filter to specific deck
+  onComplete?: (stats: SessionStats) => void;  // Callback when session completes
+  onError?: (error: string) => void;  // Callback for API errors
+}

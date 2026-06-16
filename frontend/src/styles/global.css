@@ -3075,3 +3075,419 @@ header h1 {
         align-self: flex-end;
     }
 }
+
+/* ============================================================================
+   Flashcard Component Styles (Issue #69)
+   ============================================================================ */
+
+.flashcard {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    height: 400px;
+    perspective: 1000px;
+    margin: 0 auto;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.2s;
+}
+
+.flashcard:hover {
+    transform: translateY(-4px);
+}
+
+/* Flip animation */
+.flashcard .flashcard-side {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    backface-visibility: hidden;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+    transition: transform 0.6s, opacity 0.2s;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.flashcard .flashcard-side-front {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border: 1px solid #e0e0e0;
+}
+
+.flashcard .flashcard-side-back {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border: 1px solid #e0e0e0;
+    transform: rotateY(180deg);
+}
+
+/* Flipped state - show back side */
+.flashcard.flipped .flashcard-side-front {
+    transform: rotateY(-180deg);
+    opacity: 0;
+}
+
+.flashcard.flipped .flashcard-side-back {
+    transform: rotateY(0deg);
+    opacity: 1;
+}
+
+/* Card content */
+.flashcard-front-content,
+.flashcard-back-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.flashcard-front-main,
+.flashcard-back-main {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.flashcard-text {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #2c3e50;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+/* Back side specific styles */
+.flashcard-back-content {
+    text-align: center;
+}
+
+.flashcard-example {
+    margin-top: 20px;
+    padding: 12px;
+    background: rgba(74, 144, 226, 0.1);
+    border-radius: 8px;
+    color: #555;
+    font-size: 0.95rem;
+    border-left: 4px solid #4a90e2;
+}
+
+.flashcard-deck-name {
+    margin-top: 15px;
+    font-size: 0.85rem;
+    color: #888;
+    font-style: italic;
+}
+
+/* ============================================================================
+   ReviewSession Component Styles (Issue #69)
+   ============================================================================ */
+
+.review-session {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Loading state */
+.review-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.review-loading .spinner-large {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 20px;
+}
+
+/* Empty state */
+.review-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.review-empty-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+}
+
+.review-empty-title {
+    color: #2c3e50;
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+}
+
+.review-empty-message {
+    color: #666;
+    margin-bottom: 30px;
+    max-width: 400px;
+}
+
+/* Error state */
+.review-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.review-error-message {
+    color: #d32f2f;
+    margin-bottom: 20px;
+}
+
+/* Progress indicator */
+.review-progress {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.review-progress-text {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 1rem;
+    color: #666;
+    font-weight: 500;
+}
+
+.review-progress-bar {
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    appearance: none;
+    background: #e0e0e0;
+}
+
+.review-progress-bar::-webkit-progress-value {
+    background: #4a90e2;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.review-progress-bar::-moz-progress-bar {
+    background: #4a90e2;
+    border-radius: 4px;
+}
+
+/* Card container */
+.review-card-container {
+    margin: 20px 0;
+    perspective: 1000px;
+}
+
+/* Rating buttons */
+.review-ratings {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.review-ratings-title {
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+    color: #333;
+    font-weight: 500;
+}
+
+.review-ratings-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.review-rating-button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    min-width: 100px;
+}
+
+.review-rating-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.16);
+}
+
+.review-rating-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.review-rating-button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.rating-loading {
+    display: inline-block;
+    margin-left: 6px;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Submit error */
+.review-submit-error {
+    margin-top: 20px;
+    padding: 15px;
+    background: #fff3f3;
+    border: 1px solid #ffcdd2;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.review-submit-error .error-message {
+    color: #d32f2f;
+    display: block;
+    margin-bottom: 12px;
+}
+
+.review-submit-error-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+/* Hint */
+.review-hint {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.review-hint p {
+    color: #888;
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+/* Session summary */
+.session-summary {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+    background: #f8f9fa;
+    border-radius: 12px;
+}
+
+.session-summary-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+}
+
+.session-summary-title {
+    color: #2c3e50;
+    margin-bottom: 10px;
+    font-size: 1.8rem;
+}
+
+.session-summary-message {
+    color: #666;
+    margin-bottom: 30px;
+    font-size: 1.1rem;
+}
+
+.session-summary-stats {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.session-summary-stats h3 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+}
+
+.session-summary-stats ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.session-summary-stats li {
+    padding: 8px 0;
+    font-size: 1rem;
+    color: #555;
+}
+
+.session-summary-actions {
+    display: flex;
+    gap: 12px;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .flashcard {
+        height: 350px;
+    }
+    
+    .flashcard-text {
+        font-size: 1.6rem;
+    }
+    
+    .review-ratings-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .review-rating-button {
+        width: 100%;
+        max-width: 200px;
+        margin-bottom: 8px;
+    }
+    
+    .review-session {
+        padding: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .flashcard {
+        height: 300px;
+    }
+    
+    .flashcard-text {
+        font-size: 1.4rem;
+    }
+    
+    .review-rating-button {
+        padding: 10px 16px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Animation for card flip on mobile */
+@media (hover: none) and (pointer: coarse) {
+    .flashcard {
+        transition: transform 0.3s ease;
+    }
+    
+    .flashcard.flipped {
+        transform: translateY(-4px);
+    }
+}
