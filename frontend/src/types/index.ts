@@ -587,3 +587,187 @@ export interface FeatureConfig {
   disabled?: boolean;
   comingSoon?: boolean;
 }
+
+// ============================================================================
+// Vocabulary Types (Issue #67 - DeckBrowser Component)
+// ============================================================================
+
+/**
+ * Sort options for deck browsing
+ */
+export type DeckSortOption = 
+  | 'name-asc'
+  | 'name-desc'
+  | 'created-asc'
+  | 'created-desc'
+  | 'cards-asc'
+  | 'cards-desc'
+  | 'progress-asc'
+  | 'progress-desc'
+
+/**
+ * Vocabulary deck summary (matches backend DeckSummary schema)
+ * From schemas/vocabulary.py
+ */
+export interface DeckSummary {
+  id: number;
+  name: string;
+  description: string | null;
+  created_at: string;
+  updated_at: string;
+  card_count: number;
+}
+
+/**
+ * Vocabulary deck with progress information (client-side enrichment)
+ */
+export interface DeckWithProgress extends DeckSummary {
+  learned_count: number;
+  progress_percent: number;
+  tags: string[]; // Aggregated tags from all cards in this deck
+}
+
+/**
+ * Pagination info for deck lists (reuses existing PaginationInfo)
+ */
+export interface DeckPaginationInfo {
+  total: number;
+  page: number;
+  per_page: number;
+  total_pages: number;
+}
+
+/**
+ * Response for GET /vocabulary/decks/ (list with pagination)
+ * Matches DeckListResponse in schemas/vocabulary.py
+ */
+export interface DeckListResponse {
+  decks: DeckSummary[];
+  pagination: DeckPaginationInfo;
+}
+
+/**
+ * Card summary for deck browsing (matches backend CardSummary schema)
+ * From schemas/vocabulary.py
+ */
+export interface CardSummary {
+  id: number;
+  deck_id: number;
+  card_id: string;
+  front: string;
+  back: string;
+  example: string | null;
+  tags: string[] | null;
+  context: string | null;
+  difficulty: number;
+  next_review_date: string;
+  interval: number;
+  ease_factor: number;
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * Response for GET /vocabulary/decks/{id}/cards/ (list with pagination)
+ * Matches CardListResponse in schemas/vocabulary.py
+ */
+export interface CardListResponse {
+  cards: CardSummary[];
+  pagination: DeckPaginationInfo;
+}
+
+// Component prop types for DeckBrowser
+
+/**
+ * Props for DeckCard component
+ */
+export interface DeckCardProps {
+  deck: DeckWithProgress;
+  onClick: (deckId: number) => void;
+}
+
+/**
+ * Props for DeckSearch component
+ */
+export interface DeckSearchProps {
+  searchQuery: string;
+  tagFilter: string;
+  sortBy: DeckSortOption;
+  availableTags: string[];
+  onSearch: (query: string) => void;
+  onTagFilter: (tag: string) => void;
+  onSort: (sortBy: DeckSortOption) => void;
+  onClearFilters: () => void;
+}
+
+/**
+ * Props for DeckBrowser component
+ */
+export interface DeckBrowserProps {
+  // Optional initial filters
+  initialSearch?: string;
+  initialTag?: string;
+  initialSort?: DeckSortOption;
+}
+
+// Vocabulary API response types
+
+/**
+ * Response for GET /vocabulary/decks/{id} (single deck)
+ * Matches DeckResponse in schemas/vocabulary.py
+ */
+export interface DeckResponse extends DeckSummary {}
+
+/**
+ * Request body for POST /vocabulary/decks/
+ * Matches DeckCreate in schemas/vocabulary.py
+ */
+export interface DeckCreateRequest {
+  name: string;
+  description?: string | null;
+}
+
+/**
+ * Request body for POST /vocabulary/review/
+ * Matches ReviewSubmit in schemas/vocabulary.py
+ */
+export interface ReviewSubmitRequest {
+  card_id: number;
+  deck_id: number;
+  ease: number; // 1=Again, 2=Hard, 3=Good, 4=Easy
+}
+
+/**
+ * Response for POST /vocabulary/review/
+ * Matches ReviewResponse in schemas/vocabulary.py
+ */
+export interface ReviewResponse {
+  success: boolean;
+  message: string;
+  next_review_date: string;
+  new_interval: number;
+  new_ease_factor: number;
+}
+
+/**
+ * Card due for review (matches backend DueCardResponse schema)
+ * From schemas/vocabulary.py
+ */
+export interface DueCard {
+  id: number;
+  deck_id: number;
+  deck_name: string;
+  card_id: string;
+  front: string;
+  back: string;
+  next_review_date: string;
+}
+
+/**
+ * Response for GET /vocabulary/due/ (cards due for review)
+ * Matches DueCardsResponse in schemas/vocabulary.py
+ */
+export interface DueCardsResponse {
+  cards: DueCard[];
+  pagination: DeckPaginationInfo;
+}
