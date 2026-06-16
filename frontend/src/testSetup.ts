@@ -88,6 +88,38 @@ vi.mock('./utils/api', () => ({
     listExercises: vi.fn(),
     getExercise: vi.fn(),
   },
+  vocabularyApi: {
+    listDecks: vi.fn(),
+    listDeckCards: vi.fn(),
+    getDeck: vi.fn(),
+    listDueCards: vi.fn(),
+    submitReview: vi.fn(),
+    createDeck: vi.fn(),
+    createCard: vi.fn(),
+  },
+  api: vi.fn(),
+}))
+
+// Mock with .ts extension for Vite resolution
+vi.mock('./utils/api.ts', () => ({
+  sessionApi: mockSessionApi,
+  grammarApi: {
+    listLessons: vi.fn(),
+    getLesson: vi.fn(),
+    searchReferences: vi.fn(),
+    getReference: vi.fn(),
+    listExercises: vi.fn(),
+    getExercise: vi.fn(),
+  },
+  vocabularyApi: {
+    listDecks: vi.fn(),
+    listDeckCards: vi.fn(),
+    getDeck: vi.fn(),
+    listDueCards: vi.fn(),
+    submitReview: vi.fn(),
+    createDeck: vi.fn(),
+    createCard: vi.fn(),
+  },
   api: vi.fn(),
 }))
 
@@ -101,6 +133,38 @@ vi.mock('@/utils/api', () => ({
     getReference: vi.fn(),
     listExercises: vi.fn(),
     getExercise: vi.fn(),
+  },
+  vocabularyApi: {
+    listDecks: vi.fn(),
+    listDeckCards: vi.fn(),
+    getDeck: vi.fn(),
+    listDueCards: vi.fn(),
+    submitReview: vi.fn(),
+    createDeck: vi.fn(),
+    createCard: vi.fn(),
+  },
+  api: vi.fn(),
+}))
+
+// Mock @ alias with .ts extension
+vi.mock('@/utils/api.ts', () => ({
+  sessionApi: mockSessionApi,
+  grammarApi: {
+    listLessons: vi.fn(),
+    getLesson: vi.fn(),
+    searchReferences: vi.fn(),
+    getReference: vi.fn(),
+    listExercises: vi.fn(),
+    getExercise: vi.fn(),
+  },
+  vocabularyApi: {
+    listDecks: vi.fn(),
+    listDeckCards: vi.fn(),
+    getDeck: vi.fn(),
+    listDueCards: vi.fn(),
+    submitReview: vi.fn(),
+    createDeck: vi.fn(),
+    createCard: vi.fn(),
   },
   api: vi.fn(),
 }))
@@ -128,8 +192,54 @@ vi.mock('/src/utils/api', () => ({
   api: vi.fn(),
 }))
 
+// Mock with .ts extension for Vite resolution
+vi.mock('/src/utils/api.ts', () => ({
+  sessionApi: mockSessionApi,
+  grammarApi: {
+    listLessons: vi.fn(),
+    getLesson: vi.fn(),
+    searchReferences: vi.fn(),
+    getReference: vi.fn(),
+    listExercises: vi.fn(),
+    getExercise: vi.fn(),
+  },
+  vocabularyApi: {
+    listDecks: vi.fn(),
+    listDeckCards: vi.fn(),
+    getDeck: vi.fn(),
+    listDueCards: vi.fn(),
+    submitReview: vi.fn(),
+    createDeck: vi.fn(),
+    createCard: vi.fn(),
+  },
+  api: vi.fn(),
+}))
+
 // Mock relative imports from components directory
 vi.mock('../utils/api', () => ({
+  sessionApi: mockSessionApi,
+  grammarApi: {
+    listLessons: vi.fn(),
+    getLesson: vi.fn(),
+    searchReferences: vi.fn(),
+    getReference: vi.fn(),
+    listExercises: vi.fn(),
+    getExercise: vi.fn(),
+  },
+  vocabularyApi: {
+    listDecks: vi.fn(),
+    listDeckCards: vi.fn(),
+    getDeck: vi.fn(),
+    listDueCards: vi.fn(),
+    submitReview: vi.fn(),
+    createDeck: vi.fn(),
+    createCard: vi.fn(),
+  },
+  api: vi.fn(),
+}))
+
+// Mock relative imports with .ts extension
+vi.mock('../utils/api.ts', () => ({
   sessionApi: mockSessionApi,
   grammarApi: {
     listLessons: vi.fn(),
