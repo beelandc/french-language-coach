@@ -202,6 +202,53 @@ async def list_decks(
 
 
 # ============================================================================
+# Endpoint: GET /vocabulary/decks/{id}
+# ============================================================================
+
+@router.get("/decks/{deck_id}", response_model=DeckResponse)
+async def get_deck(
+    deck_id: int,
+    db: AsyncSession = Depends(get_db)
+) -> DeckResponse:
+    """Get a single vocabulary deck by ID.
+    
+    Returns detailed information about a specific deck including its metadata
+    and card count.
+    
+    Path Parameters:
+        deck_id: The ID of the deck to retrieve
+        
+    Returns:
+        DeckResponse with deck details including card_count
+        
+    Raises:
+        HTTPException 404: If deck not found
+    """
+    # Verify deck exists
+    deck = await db.get(DeckModel, deck_id)
+    if not deck:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Deck with ID {deck_id} not found"
+        )
+    
+    # Count cards in this deck
+    card_count_result = await db.execute(
+        select(func.count(CardModel.id)).where(CardModel.deck_id == deck.id)
+    )
+    card_count = card_count_result.scalar() or 0
+    
+    return DeckResponse(
+        id=deck.id,
+        name=deck.name,
+        description=deck.description,
+        created_at=deck.created_at,
+        updated_at=deck.updated_at,
+        card_count=card_count
+    )
+
+
+# ============================================================================
 # Endpoint: POST /vocabulary/decks/
 # ============================================================================
 

@@ -204,8 +204,6 @@ export interface ConfirmationModalProps {
 // Lesson types for Grammar Lessons (Phase 2)
 // Matches backend schemas in schemas/grammar_lesson.py and schemas/grammar.py
 
-export type Difficulty = 'beginner' | 'intermediate' | 'advanced'
-
 // Section within a grammar lesson
 export interface LessonSection {
   title: string
@@ -835,3 +833,88 @@ export interface ReviewSessionProps {
   onComplete?: (stats: SessionStats) => void;  // Callback when session completes
   onError?: (error: string) => void;  // Callback for API errors
 }
+
+// ============================================================================
+// Deck Detail and Cards Page Types (Issue #201)
+// ============================================================================
+
+/**
+ * Breadcrumb item for navigation
+ */
+export interface BreadcrumbItem {
+  label: string;
+  path?: string;  // Optional: if provided, clicking navigates to this path
+}
+
+/**
+ * Props for Breadcrumb component
+ */
+export interface BreadcrumbProps {
+  items: BreadcrumbItem[];
+}
+
+/**
+ * Sort options for card list in deck
+ */
+export type CardSortOption = 
+  | 'front-asc'
+  | 'front-desc'
+  | 'back-asc'
+  | 'back-desc'
+  | 'difficulty-asc'
+  | 'difficulty-desc'
+  | 'next-review-asc'
+  | 'next-review-desc'
+
+/**
+ * Card with metadata for display in deck cards list
+ * Extends CardSummary with deck-specific display fields
+ */
+export interface CardForDisplay extends CardSummary {
+  deck_name?: string;  // Added for display purposes
+}
+
+/**
+ * Props for DeckDetailPage component
+ */
+export interface DeckDetailPageProps {
+  // No props needed - deck ID comes from URL params
+}
+
+/**
+ * Deck detail with cards for the detail page
+ */
+export interface DeckDetail extends DeckSummary {
+  cards?: CardSummary[];  // Cards for preview on detail page
+}
+
+/**
+ * Props for DeckCardsPage component
+ */
+export interface DeckCardsPageProps {
+  // No props needed - deck ID comes from URL params
+}
+
+/**
+ * Card list state for filtering and sorting
+ */
+export interface CardListState {
+  searchQuery: string;
+  tagFilter: string;
+  difficultyFilter: string;
+  sortBy: CardSortOption;
+}
+
+/**
+ * Sort options for card list with labels
+ */
+export const CARD_SORT_OPTIONS: { value: CardSortOption; label: string }[] = [
+  { value: 'front-asc', label: 'Front (A-Z)' },
+  { value: 'front-desc', label: 'Front (Z-A)' },
+  { value: 'back-asc', label: 'Back (A-Z)' },
+  { value: 'back-desc', label: 'Back (Z-A)' },
+  { value: 'difficulty-asc', label: 'Difficulty (Easy-Hard)' },
+  { value: 'difficulty-desc', label: 'Difficulty (Hard-Easy)' },
+  { value: 'next-review-asc', label: 'Next Review (Soon-Later)' },
+  { value: 'next-review-desc', label: 'Next Review (Later-Soon)' },
+];
