@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "to_cancel",
+  "front": "annuler",
+  "back": "to cancel",
+  "example": "J'ai dû annuler mon voyage.",
+  "tags": [
+    "action",
+    "intermediate"
+  ],
+  "context": "deck:travel",
+  "difficulty": 2
+}

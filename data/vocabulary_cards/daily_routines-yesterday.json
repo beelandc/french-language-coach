@@ -1,0 +1,13 @@
+{
+  "deck_id": "daily_routines",
+  "card_id": "yesterday",
+  "front": "hier",
+  "back": "yesterday",
+  "example": "Hier, j'étais fatigué.",
+  "tags": [
+    "time",
+    "beginner"
+  ],
+  "context": "deck:daily_routines",
+  "difficulty": 1
+}

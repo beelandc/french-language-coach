@@ -1,0 +1,13 @@
+{
+  "deck_id": "education",
+  "card_id": "to_revise",
+  "front": "réviser",
+  "back": "to revise",
+  "example": "Je révise mes leçons.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:education",
+  "difficulty": 1
+}

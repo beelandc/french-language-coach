@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "taxi",
+  "front": "taxi",
+  "back": "taxi",
+  "example": "Prenons un taxi pour aller à l'hôtel.",
+  "tags": [
+    "transport",
+    "beginner"
+  ],
+  "context": "deck:travel",
+  "difficulty": 1
+}

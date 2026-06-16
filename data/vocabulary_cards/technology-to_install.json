@@ -1,0 +1,13 @@
+{
+  "deck_id": "technology",
+  "card_id": "to_install",
+  "front": "installer",
+  "back": "to install",
+  "example": "J'installe le nouveau logiciel.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:technology",
+  "difficulty": 1
+}

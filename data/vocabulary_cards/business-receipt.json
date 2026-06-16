@@ -1,0 +1,13 @@
+{
+  "deck_id": "business",
+  "card_id": "receipt",
+  "front": "reçu",
+  "back": "receipt",
+  "example": "J'ai besoin du reçu pour mes frais.",
+  "tags": [
+    "document",
+    "beginner"
+  ],
+  "context": "deck:business",
+  "difficulty": 1
+}

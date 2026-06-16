@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "hat",
+  "front": "chapeau",
+  "back": "hat",
+  "example": "Le chapeau de paille est idéal pour l'été.",
+  "tags": [
+    "clothing",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

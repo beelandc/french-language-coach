@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "shopping_cart",
+  "front": "chariot",
+  "back": "shopping cart",
+  "example": "Le chariot est plein de produits.",
+  "tags": [
+    "item",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

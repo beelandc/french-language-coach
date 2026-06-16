@@ -1,0 +1,13 @@
+{
+  "deck_id": "daily_routines",
+  "card_id": "to_wash_dishes",
+  "front": "faire la vaisselle",
+  "back": "to wash dishes",
+  "example": "Je fais la vaisselle.",
+  "tags": [
+    "evening",
+    "beginner"
+  ],
+  "context": "deck:daily_routines",
+  "difficulty": 1
+}

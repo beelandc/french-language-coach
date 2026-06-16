@@ -1,0 +1,13 @@
+{
+  "deck_id": "technology",
+  "card_id": "keyboard",
+  "front": "clavier",
+  "back": "keyboard",
+  "example": "Le clavier est ergonomique.",
+  "tags": [
+    "device",
+    "beginner"
+  ],
+  "context": "deck:technology",
+  "difficulty": 1
+}

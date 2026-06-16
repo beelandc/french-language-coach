@@ -1,0 +1,13 @@
+{
+  "deck_id": "technology",
+  "card_id": "setting",
+  "front": "paramètre",
+  "back": "setting",
+  "example": "Changez les paramètres.",
+  "tags": [
+    "security",
+    "intermediate"
+  ],
+  "context": "deck:technology",
+  "difficulty": 2
+}

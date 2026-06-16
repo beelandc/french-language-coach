@@ -1,0 +1,13 @@
+{
+  "deck_id": "hobbies",
+  "card_id": "to_play_video_games",
+  "front": "jouer aux jeux vidéo",
+  "back": "to play video games",
+  "example": "Mon frère joue aux jeux vidéo.",
+  "tags": [
+    "indoor",
+    "beginner"
+  ],
+  "context": "deck:hobbies",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "visa",
+  "front": "visa",
+  "back": "visa",
+  "example": "J'ai besoin d'un visa pour voyager.",
+  "tags": [
+    "document",
+    "intermediate"
+  ],
+  "context": "deck:travel",
+  "difficulty": 2
+}

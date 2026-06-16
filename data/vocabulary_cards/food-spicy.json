@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "spicy",
+  "front": "épicé",
+  "back": "spicy",
+  "example": "Ce plat est épicé.",
+  "tags": [
+    "adjective",
+    "beginner"
+  ],
+  "context": "deck:food",
+  "difficulty": 1
+}

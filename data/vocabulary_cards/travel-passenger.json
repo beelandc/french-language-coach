@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "passenger",
+  "front": "passager",
+  "back": "passenger",
+  "example": "Tous les passagers doivent être à bord.",
+  "tags": [
+    "people",
+    "beginner"
+  ],
+  "context": "deck:travel",
+  "difficulty": 1
+}

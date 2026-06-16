@@ -1,0 +1,13 @@
+{
+  "deck_id": "education",
+  "card_id": "to_take_notes",
+  "front": "prendre des notes",
+  "back": "to take notes",
+  "example": "Je prends des notes pendant le cours.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:education",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "suitcase",
+  "front": "valise",
+  "back": "suitcase",
+  "example": "Ma valise est très lourde.",
+  "tags": [
+    "accommodation",
+    "beginner"
+  ],
+  "context": "deck:travel",
+  "difficulty": 1
+}

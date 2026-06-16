@@ -1,0 +1,13 @@
+{
+  "deck_id": "hobbies",
+  "card_id": "to_do_sudoku",
+  "front": "faire du sudoku",
+  "back": "to do sudoku",
+  "example": "Le sudoku est bon pour le cerveau.",
+  "tags": [
+    "indoor",
+    "intermediate"
+  ],
+  "context": "deck:hobbies",
+  "difficulty": 2
+}

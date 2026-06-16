@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "to_fit",
+  "front": "aller",
+  "back": "to fit",
+  "example": "Ce pull me va parfaitement.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

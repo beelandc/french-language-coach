@@ -1,0 +1,13 @@
+{
+  "deck_id": "technology",
+  "card_id": "error",
+  "front": "erreur",
+  "back": "error",
+  "example": "Il y a une erreur.",
+  "tags": [
+    "problem",
+    "beginner"
+  ],
+  "context": "deck:technology",
+  "difficulty": 1
+}

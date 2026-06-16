@@ -1,0 +1,13 @@
+{
+  "deck_id": "technology",
+  "card_id": "program",
+  "front": "programme",
+  "back": "program",
+  "example": "Le programme est en cours d'exécution.",
+  "tags": [
+    "software",
+    "beginner"
+  ],
+  "context": "deck:technology",
+  "difficulty": 1
+}

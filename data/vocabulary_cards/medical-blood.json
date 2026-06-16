@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "blood",
+  "front": "sang",
+  "back": "blood",
+  "example": "Le médecin prend du sang pour analyse.",
+  "tags": [
+    "body",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

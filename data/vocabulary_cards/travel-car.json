@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "car",
+  "front": "voiture",
+  "back": "car",
+  "example": "Il conduit sa voiture au travail.",
+  "tags": [
+    "transport",
+    "beginner"
+  ],
+  "context": "deck:travel",
+  "difficulty": 1
+}

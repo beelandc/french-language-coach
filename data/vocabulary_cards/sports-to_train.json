@@ -1,0 +1,13 @@
+{
+  "deck_id": "sports",
+  "card_id": "to_train",
+  "front": "s'entraîner",
+  "back": "to train",
+  "example": "Je m'entraîner tous les jours.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:sports",
+  "difficulty": 1
+}

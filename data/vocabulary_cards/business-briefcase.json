@@ -1,0 +1,13 @@
+{
+  "deck_id": "business",
+  "card_id": "briefcase",
+  "front": "serviette",
+  "back": "briefcase",
+  "example": "Ma serviette contient mon ordinateur portable.",
+  "tags": [
+    "item",
+    "beginner"
+  ],
+  "context": "deck:business",
+  "difficulty": 1
+}

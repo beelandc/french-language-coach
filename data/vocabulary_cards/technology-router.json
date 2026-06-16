@@ -1,0 +1,13 @@
+{
+  "deck_id": "technology",
+  "card_id": "router",
+  "front": "routeur",
+  "back": "router",
+  "example": "Le routeur est dans le salon.",
+  "tags": [
+    "device",
+    "beginner"
+  ],
+  "context": "deck:technology",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "education",
+  "card_id": "to_do_homework",
+  "front": "faire ses devoirs",
+  "back": "to do homework",
+  "example": "Je fais mes devoirs après l'école.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:education",
+  "difficulty": 1
+}

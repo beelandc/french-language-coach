@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "to_examine",
+  "front": "examiner",
+  "back": "to examine",
+  "example": "Le médecin va m'examiner.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

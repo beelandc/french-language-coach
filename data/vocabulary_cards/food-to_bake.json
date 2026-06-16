@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "to_bake",
+  "front": "faire cuire au four",
+  "back": "to bake",
+  "example": "Je fais cuire un gâteau.",
+  "tags": [
+    "verb",
+    "intermediate"
+  ],
+  "context": "deck:food",
+  "difficulty": 2
+}

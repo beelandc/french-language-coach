@@ -1,0 +1,13 @@
+{
+  "deck_id": "sports",
+  "card_id": "volleyball",
+  "front": "volleyball",
+  "back": "volleyball",
+  "example": "Le volleyball est un sport d'équipe.",
+  "tags": [
+    "sport",
+    "beginner"
+  ],
+  "context": "deck:sports",
+  "difficulty": 1
+}

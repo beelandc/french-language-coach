@@ -1,0 +1,13 @@
+{
+  "deck_id": "sports",
+  "card_id": "gym",
+  "front": "gymnase",
+  "back": "gym",
+  "example": "Le gymnase est grand.",
+  "tags": [
+    "place",
+    "beginner"
+  ],
+  "context": "deck:sports",
+  "difficulty": 1
+}

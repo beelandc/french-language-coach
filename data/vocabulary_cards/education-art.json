@@ -1,0 +1,13 @@
+{
+  "deck_id": "education",
+  "card_id": "art",
+  "front": "art",
+  "back": "art",
+  "example": "L'art est créatif.",
+  "tags": [
+    "subject",
+    "beginner"
+  ],
+  "context": "deck:education",
+  "difficulty": 1
+}

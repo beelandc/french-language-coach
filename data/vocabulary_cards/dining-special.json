@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "special",
+  "front": "spécialité",
+  "back": "special",
+  "example": "La spécialité de la maison est le canard à l'orange.",
+  "tags": [
+    "food",
+    "intermediate"
+  ],
+  "context": "deck:dining",
+  "difficulty": 2
+}

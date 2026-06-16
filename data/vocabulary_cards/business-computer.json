@@ -1,0 +1,13 @@
+{
+  "deck_id": "business",
+  "card_id": "computer",
+  "front": "ordinateur",
+  "back": "computer",
+  "example": "L'ordinateur portable est plus pratique.",
+  "tags": [
+    "office",
+    "beginner"
+  ],
+  "context": "deck:business",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "soup",
+  "front": "soupe",
+  "back": "soup",
+  "example": "La soupe du jour est à la tomate.",
+  "tags": [
+    "food",
+    "beginner"
+  ],
+  "context": "deck:dining",
+  "difficulty": 1
+}

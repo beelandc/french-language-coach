@@ -1,0 +1,13 @@
+{
+  "deck_id": "technology",
+  "card_id": "internet",
+  "front": "internet",
+  "back": "internet",
+  "example": "L'internet est lent aujourd'hui.",
+  "tags": [
+    "internet",
+    "beginner"
+  ],
+  "context": "deck:technology",
+  "difficulty": 1
+}

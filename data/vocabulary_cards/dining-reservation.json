@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "reservation",
+  "front": "réservation",
+  "back": "reservation",
+  "example": "J'ai fait une réservation pour ce soir à 20h.",
+  "tags": [
+    "restaurant",
+    "beginner"
+  ],
+  "context": "deck:dining",
+  "difficulty": 1
+}

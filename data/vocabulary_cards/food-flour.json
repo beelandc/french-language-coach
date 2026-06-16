@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "flour",
+  "front": "farine",
+  "back": "flour",
+  "example": "La farine est nécessaire pour le pain.",
+  "tags": [
+    "grain",
+    "beginner"
+  ],
+  "context": "deck:food",
+  "difficulty": 1
+}

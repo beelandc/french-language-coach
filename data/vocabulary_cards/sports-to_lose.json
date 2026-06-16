@@ -1,0 +1,13 @@
+{
+  "deck_id": "sports",
+  "card_id": "to_lose",
+  "front": "perdre",
+  "back": "to lose",
+  "example": "J'ai perdu le match.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:sports",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "sports",
+  "card_id": "to_win",
+  "front": "gagner",
+  "back": "to win",
+  "example": "J'ai gagné le match!",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:sports",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "foot",
+  "front": "pied",
+  "back": "foot",
+  "example": "Mon pied est gonflé.",
+  "tags": [
+    "body",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

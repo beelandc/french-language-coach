@@ -1,0 +1,13 @@
+{
+  "deck_id": "business",
+  "card_id": "pencil",
+  "front": "crayon",
+  "back": "pencil",
+  "example": "J'utilise un crayon pour dessiner.",
+  "tags": [
+    "item",
+    "beginner"
+  ],
+  "context": "deck:business",
+  "difficulty": 1
+}

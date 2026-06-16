@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "ear",
+  "front": "oreille",
+  "back": "ear",
+  "example": "J'ai mal à l'oreille.",
+  "tags": [
+    "body",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

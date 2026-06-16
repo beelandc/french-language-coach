@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "favorite",
+  "front": "préféré",
+  "back": "favorite",
+  "example": "C'est mon plat préféré.",
+  "tags": [
+    "adjective",
+    "beginner"
+  ],
+  "context": "deck:dining",
+  "difficulty": 1
+}

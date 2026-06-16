@@ -1,0 +1,13 @@
+{
+  "deck_id": "sports",
+  "card_id": "net",
+  "front": "filet",
+  "back": "net",
+  "example": "Le filet est tendu.",
+  "tags": [
+    "equipment",
+    "beginner"
+  ],
+  "context": "deck:sports",
+  "difficulty": 1
+}

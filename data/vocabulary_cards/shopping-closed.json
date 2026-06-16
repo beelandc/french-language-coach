@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "closed",
+  "front": "fermé",
+  "back": "closed",
+  "example": "Le magasin est fermé le dimanche.",
+  "tags": [
+    "term",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

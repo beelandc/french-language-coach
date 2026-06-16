@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "dish",
+  "front": "plat",
+  "back": "dish",
+  "example": "Le plat du chef est toujours excellent.",
+  "tags": [
+    "food",
+    "beginner"
+  ],
+  "context": "deck:dining",
+  "difficulty": 1
+}

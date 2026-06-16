@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "wine",
+  "front": "vin",
+  "back": "wine",
+  "example": "Le vin rouge de Bordeaux accompagne bien la viande.",
+  "tags": [
+    "drink",
+    "beginner"
+  ],
+  "context": "deck:dining",
+  "difficulty": 1
+}

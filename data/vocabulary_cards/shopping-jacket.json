@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "jacket",
+  "front": "veste",
+  "back": "jacket",
+  "example": "La veste en cuir est très élégante.",
+  "tags": [
+    "clothing",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

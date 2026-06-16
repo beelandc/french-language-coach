@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "to_choose",
+  "front": "choisir",
+  "back": "to choose",
+  "example": "J'ai du mal à choisir entre ces deux modèles.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

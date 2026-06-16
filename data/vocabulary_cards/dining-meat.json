@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "meat",
+  "front": "viande",
+  "back": "meat",
+  "example": "La viande est cuite à la perfection.",
+  "tags": [
+    "food",
+    "beginner"
+  ],
+  "context": "deck:dining",
+  "difficulty": 1
+}

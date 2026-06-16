@@ -1,0 +1,13 @@
+{
+  "deck_id": "business",
+  "card_id": "desk",
+  "front": "bureau",
+  "back": "desk",
+  "example": "Mon bureau est toujours bien rangé.",
+  "tags": [
+    "office",
+    "beginner"
+  ],
+  "context": "deck:business",
+  "difficulty": 1
+}

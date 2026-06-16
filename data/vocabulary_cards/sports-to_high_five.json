@@ -1,0 +1,13 @@
+{
+  "deck_id": "sports",
+  "card_id": "to_high_five",
+  "front": "faire un check",
+  "back": "to high five",
+  "example": "Nous faisons un check après le but.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:sports",
+  "difficulty": 1
+}

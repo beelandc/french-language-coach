@@ -1,0 +1,13 @@
+{
+  "deck_id": "sports",
+  "card_id": "to_rest",
+  "front": "se reposer",
+  "back": "to rest",
+  "example": "Je me repose après le sport.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:sports",
+  "difficulty": 1
+}

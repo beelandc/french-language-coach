@@ -1,0 +1,13 @@
+{
+  "deck_id": "technology",
+  "card_id": "to_charge",
+  "front": "charger",
+  "back": "to charge",
+  "example": "Je charge mon téléphone.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:technology",
+  "difficulty": 1
+}

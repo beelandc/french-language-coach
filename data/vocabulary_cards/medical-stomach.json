@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "stomach",
+  "front": "estomac",
+  "back": "stomach",
+  "example": "J'ai mal à l'estomac.",
+  "tags": [
+    "body",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

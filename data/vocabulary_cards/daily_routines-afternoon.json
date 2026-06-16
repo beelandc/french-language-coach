@@ -1,0 +1,13 @@
+{
+  "deck_id": "daily_routines",
+  "card_id": "afternoon",
+  "front": "après-midi",
+  "back": "afternoon",
+  "example": "L'après-midi, je me repose.",
+  "tags": [
+    "time",
+    "beginner"
+  ],
+  "context": "deck:daily_routines",
+  "difficulty": 1
+}

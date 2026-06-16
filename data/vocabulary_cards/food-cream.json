@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "cream",
+  "front": "crème",
+  "back": "cream",
+  "example": "La crème est fraîche.",
+  "tags": [
+    "dairy",
+    "beginner"
+  ],
+  "context": "deck:food",
+  "difficulty": 1
+}

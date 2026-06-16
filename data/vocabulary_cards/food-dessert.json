@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "dessert",
+  "front": "dessert",
+  "back": "dessert",
+  "example": "Le dessert est sucré.",
+  "tags": [
+    "prepared",
+    "beginner"
+  ],
+  "context": "deck:food",
+  "difficulty": 1
+}

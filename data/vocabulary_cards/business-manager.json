@@ -1,0 +1,13 @@
+{
+  "deck_id": "business",
+  "card_id": "manager",
+  "front": "responsable",
+  "back": "manager",
+  "example": "Le responsable est en réunion.",
+  "tags": [
+    "job",
+    "beginner"
+  ],
+  "context": "deck:business",
+  "difficulty": 1
+}

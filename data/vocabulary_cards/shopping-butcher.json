@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "butcher",
+  "front": "boucherie",
+  "back": "butcher shop",
+  "example": "La boucherie propose de la viande de qualité.",
+  "tags": [
+    "store",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

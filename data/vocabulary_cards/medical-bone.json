@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "bone",
+  "front": "os",
+  "back": "bone",
+  "example": "J'ai un os cassé.",
+  "tags": [
+    "body",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

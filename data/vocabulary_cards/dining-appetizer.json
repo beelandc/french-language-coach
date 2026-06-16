@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "appetizer",
+  "front": "entrée",
+  "back": "appetizer",
+  "example": "L'entrée était une soupe à l'oignon délicieuse.",
+  "tags": [
+    "food",
+    "beginner"
+  ],
+  "context": "deck:dining",
+  "difficulty": 1
+}

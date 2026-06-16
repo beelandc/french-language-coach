@@ -1,0 +1,13 @@
+{
+  "deck_id": "sports",
+  "card_id": "gymnastics",
+  "front": "gymnastique",
+  "back": "gymnastics",
+  "example": "La gymnastique est difficile.",
+  "tags": [
+    "sport",
+    "intermediate"
+  ],
+  "context": "deck:sports",
+  "difficulty": 2
+}

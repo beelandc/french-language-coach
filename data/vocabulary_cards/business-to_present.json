@@ -1,0 +1,13 @@
+{
+  "deck_id": "business",
+  "card_id": "to_present",
+  "front": "présenter",
+  "back": "to present",
+  "example": "Je présente les résultats à l'équipe.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:business",
+  "difficulty": 1
+}

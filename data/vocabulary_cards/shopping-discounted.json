@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "discounted",
+  "front": "réduit",
+  "back": "discounted",
+  "example": "L'article est réduit de 50%.",
+  "tags": [
+    "term",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

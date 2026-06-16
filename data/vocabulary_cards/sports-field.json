@@ -1,0 +1,13 @@
+{
+  "deck_id": "sports",
+  "card_id": "field",
+  "front": "terrain",
+  "back": "field",
+  "example": "Le terrain est vert.",
+  "tags": [
+    "equipment",
+    "beginner"
+  ],
+  "context": "deck:sports",
+  "difficulty": 1
+}

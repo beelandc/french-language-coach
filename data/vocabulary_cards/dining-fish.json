@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "fish",
+  "front": "poisson",
+  "back": "fish",
+  "example": "Le poisson grillé est mon plat préféré.",
+  "tags": [
+    "food",
+    "beginner"
+  ],
+  "context": "deck:dining",
+  "difficulty": 1
+}

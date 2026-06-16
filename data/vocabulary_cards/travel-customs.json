@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "customs",
+  "front": "douane",
+  "back": "customs",
+  "example": "La douane vérifie les passeports.",
+  "tags": [
+    "place",
+    "intermediate"
+  ],
+  "context": "deck:travel",
+  "difficulty": 2
+}

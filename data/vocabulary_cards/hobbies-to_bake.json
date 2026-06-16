@@ -1,0 +1,13 @@
+{
+  "deck_id": "hobbies",
+  "card_id": "to_bake",
+  "front": "faire de la pâtisserie",
+  "back": "to bake",
+  "example": "J'adore faire de la pâtisserie.",
+  "tags": [
+    "indoor",
+    "intermediate"
+  ],
+  "context": "deck:hobbies",
+  "difficulty": 2
+}

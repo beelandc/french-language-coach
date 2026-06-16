@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "fitting_room",
+  "front": "cabine d'essayage",
+  "back": "fitting room",
+  "example": "La cabine d'essayage est libre.",
+  "tags": [
+    "store",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

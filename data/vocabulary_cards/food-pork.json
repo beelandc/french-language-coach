@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "pork",
+  "front": "porc",
+  "back": "pork",
+  "example": "Le porc est populaire en France.",
+  "tags": [
+    "meat",
+    "beginner"
+  ],
+  "context": "deck:food",
+  "difficulty": 1
+}

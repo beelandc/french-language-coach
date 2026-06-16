@@ -1,0 +1,13 @@
+{
+  "deck_id": "hobbies",
+  "card_id": "newspaper",
+  "front": "journal",
+  "back": "newspaper",
+  "example": "Je lis le journal.",
+  "tags": [
+    "reading",
+    "beginner"
+  ],
+  "context": "deck:hobbies",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "sports",
+  "card_id": "medal",
+  "front": "médaille",
+  "back": "medal",
+  "example": "La médaille est en or.",
+  "tags": [
+    "term",
+    "beginner"
+  ],
+  "context": "deck:sports",
+  "difficulty": 1
+}

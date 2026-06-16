@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "main_course",
+  "front": "plat principal",
+  "back": "main course",
+  "example": "Le plat principal était un boeuf bourguignon.",
+  "tags": [
+    "food",
+    "beginner"
+  ],
+  "context": "deck:dining",
+  "difficulty": 1
+}

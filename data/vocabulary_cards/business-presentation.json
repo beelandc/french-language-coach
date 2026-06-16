@@ -1,0 +1,13 @@
+{
+  "deck_id": "business",
+  "card_id": "presentation",
+  "front": "présentation",
+  "back": "presentation",
+  "example": "La présentation est prête.",
+  "tags": [
+    "meeting",
+    "beginner"
+  ],
+  "context": "deck:business",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "sports",
+  "card_id": "racket",
+  "front": "raquette",
+  "back": "racket",
+  "example": "La raquette est légère.",
+  "tags": [
+    "equipment",
+    "beginner"
+  ],
+  "context": "deck:sports",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "fatigue",
+  "front": "fatigue",
+  "back": "fatigue",
+  "example": "Je suis très fatigué.",
+  "tags": [
+    "symptom",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

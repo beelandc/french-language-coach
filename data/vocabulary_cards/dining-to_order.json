@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "to_order",
+  "front": "commander",
+  "back": "to order",
+  "example": "Je commande le menu dégustation.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:dining",
+  "difficulty": 1
+}

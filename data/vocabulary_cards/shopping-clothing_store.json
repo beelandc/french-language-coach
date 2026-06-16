@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "clothing_store",
+  "front": "magasin de vêtements",
+  "back": "clothing store",
+  "example": "Le magasin de vêtements fait des soldes deux fois par an.",
+  "tags": [
+    "store",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

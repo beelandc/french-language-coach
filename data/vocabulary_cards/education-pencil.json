@@ -1,0 +1,13 @@
+{
+  "deck_id": "education",
+  "card_id": "pencil",
+  "front": "crayon",
+  "back": "pencil",
+  "example": "J'utilise un crayon.",
+  "tags": [
+    "material",
+    "beginner"
+  ],
+  "context": "deck:education",
+  "difficulty": 1
+}

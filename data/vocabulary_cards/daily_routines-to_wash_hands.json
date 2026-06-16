@@ -1,0 +1,13 @@
+{
+  "deck_id": "daily_routines",
+  "card_id": "to_wash_hands",
+  "front": "se laver les mains",
+  "back": "to wash hands",
+  "example": "Lavez-vous les mains avant de manger.",
+  "tags": [
+    "morning",
+    "beginner"
+  ],
+  "context": "deck:daily_routines",
+  "difficulty": 1
+}

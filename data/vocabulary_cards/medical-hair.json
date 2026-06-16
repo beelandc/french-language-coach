@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "hair",
+  "front": "cheveux",
+  "back": "hair",
+  "example": "Mes cheveux sont longs.",
+  "tags": [
+    "body",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

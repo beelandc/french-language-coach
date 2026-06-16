@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "cough",
+  "front": "toux",
+  "back": "cough",
+  "example": "J'ai la toux.",
+  "tags": [
+    "symptom",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

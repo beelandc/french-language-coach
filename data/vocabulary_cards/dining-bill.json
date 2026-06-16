@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "bill",
+  "front": "addition",
+  "back": "bill",
+  "example": "L'addition, s'il vous plaît, nous partons.",
+  "tags": [
+    "restaurant",
+    "beginner"
+  ],
+  "context": "deck:dining",
+  "difficulty": 1
+}

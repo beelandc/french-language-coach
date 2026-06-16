@@ -1,0 +1,13 @@
+{
+  "deck_id": "business",
+  "card_id": "email",
+  "front": "courriel",
+  "back": "email",
+  "example": "J'envoie un courriel à l'équipe.",
+  "tags": [
+    "document",
+    "beginner"
+  ],
+  "context": "deck:business",
+  "difficulty": 1
+}

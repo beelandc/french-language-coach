@@ -1,0 +1,13 @@
+{
+  "deck_id": "hobbies",
+  "card_id": "music",
+  "front": "musique",
+  "back": "music",
+  "example": "J'aime la musique.",
+  "tags": [
+    "creative",
+    "beginner"
+  ],
+  "context": "deck:hobbies",
+  "difficulty": 1
+}

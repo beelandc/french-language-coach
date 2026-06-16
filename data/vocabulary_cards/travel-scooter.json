@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "scooter",
+  "front": "scooter",
+  "back": "scooter",
+  "example": "Le scooter est pratique en ville.",
+  "tags": [
+    "transport",
+    "beginner"
+  ],
+  "context": "deck:travel",
+  "difficulty": 1
+}

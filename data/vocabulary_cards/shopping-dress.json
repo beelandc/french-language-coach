@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "dress",
+  "front": "robe",
+  "back": "dress",
+  "example": "La robe rouge est parfaite pour la soirée.",
+  "tags": [
+    "clothing",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

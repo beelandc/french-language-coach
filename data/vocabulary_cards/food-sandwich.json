@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "sandwich",
+  "front": "sandwich",
+  "back": "sandwich",
+  "example": "Le sandwich est prêt.",
+  "tags": [
+    "prepared",
+    "beginner"
+  ],
+  "context": "deck:food",
+  "difficulty": 1
+}

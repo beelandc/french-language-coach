@@ -1,0 +1,13 @@
+{
+  "deck_id": "sports",
+  "card_id": "basketball",
+  "front": "basketball",
+  "back": "basketball",
+  "example": "Le basketball est amusant.",
+  "tags": [
+    "sport",
+    "beginner"
+  ],
+  "context": "deck:sports",
+  "difficulty": 1
+}

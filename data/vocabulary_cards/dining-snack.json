@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "snack",
+  "front": "en-cas",
+  "back": "snack",
+  "example": "J'ai un en-cas dans mon sac.",
+  "tags": [
+    "food",
+    "beginner"
+  ],
+  "context": "deck:dining",
+  "difficulty": 1
+}

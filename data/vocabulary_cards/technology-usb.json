@@ -1,0 +1,13 @@
+{
+  "deck_id": "technology",
+  "card_id": "usb",
+  "front": "clé USB",
+  "back": "USB drive",
+  "example": "J'ai une clé USB avec mes fichiers.",
+  "tags": [
+    "device",
+    "beginner"
+  ],
+  "context": "deck:technology",
+  "difficulty": 1
+}

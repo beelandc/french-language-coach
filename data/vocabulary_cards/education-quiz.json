@@ -1,0 +1,13 @@
+{
+  "deck_id": "education",
+  "card_id": "quiz",
+  "front": "interrogation",
+  "back": "quiz",
+  "example": "L'interrogation est courte.",
+  "tags": [
+    "test",
+    "beginner"
+  ],
+  "context": "deck:education",
+  "difficulty": 1
+}

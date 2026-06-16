@@ -1,0 +1,13 @@
+{
+  "deck_id": "education",
+  "card_id": "history",
+  "front": "histoire",
+  "back": "history",
+  "example": "L'histoire est intéressante.",
+  "tags": [
+    "subject",
+    "beginner"
+  ],
+  "context": "deck:education",
+  "difficulty": 1
+}

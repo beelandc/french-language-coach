@@ -1,0 +1,13 @@
+{
+  "deck_id": "hobbies",
+  "card_id": "novel",
+  "front": "roman",
+  "back": "novel",
+  "example": "Le roman est captivant.",
+  "tags": [
+    "reading",
+    "beginner"
+  ],
+  "context": "deck:hobbies",
+  "difficulty": 1
+}

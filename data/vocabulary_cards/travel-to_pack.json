@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "to_pack",
+  "front": "faire ses valises",
+  "back": "to pack",
+  "example": "Je fais mes valises pour le voyage.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:travel",
+  "difficulty": 1
+}

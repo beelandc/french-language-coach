@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "potato",
+  "front": "pomme de terre",
+  "back": "potato",
+  "example": "La pomme de terre est polyvalente.",
+  "tags": [
+    "vegetable",
+    "beginner"
+  ],
+  "context": "deck:food",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "cereal",
+  "front": "céréales",
+  "back": "cereal",
+  "example": "Les céréales sont pour le petit déjeuner.",
+  "tags": [
+    "grain",
+    "beginner"
+  ],
+  "context": "deck:food",
+  "difficulty": 1
+}

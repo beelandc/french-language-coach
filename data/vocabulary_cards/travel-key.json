@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "key",
+  "front": "clé",
+  "back": "key",
+  "example": "Où est la clé de ma chambre?",
+  "tags": [
+    "accommodation",
+    "beginner"
+  ],
+  "context": "deck:travel",
+  "difficulty": 1
+}

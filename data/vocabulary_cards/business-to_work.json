@@ -1,0 +1,13 @@
+{
+  "deck_id": "business",
+  "card_id": "to_work",
+  "front": "travailler",
+  "back": "to work",
+  "example": "Je travaille sur ce projet.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:business",
+  "difficulty": 1
+}

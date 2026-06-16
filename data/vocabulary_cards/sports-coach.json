@@ -1,0 +1,13 @@
+{
+  "deck_id": "sports",
+  "card_id": "coach",
+  "front": "entraîneur",
+  "back": "coach",
+  "example": "L'entraîneur donne des conseils.",
+  "tags": [
+    "people",
+    "beginner"
+  ],
+  "context": "deck:sports",
+  "difficulty": 1
+}

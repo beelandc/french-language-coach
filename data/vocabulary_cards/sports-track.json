@@ -1,0 +1,13 @@
+{
+  "deck_id": "sports",
+  "card_id": "track",
+  "front": "piste",
+  "back": "track",
+  "example": "La piste est longue.",
+  "tags": [
+    "equipment",
+    "intermediate"
+  ],
+  "context": "deck:sports",
+  "difficulty": 2
+}

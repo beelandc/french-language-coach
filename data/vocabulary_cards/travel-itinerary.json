@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "itinerary",
+  "front": "itinéraire",
+  "back": "itinerary",
+  "example": "L'itinéraire détaillé est dans le guide.",
+  "tags": [
+    "plan",
+    "intermediate"
+  ],
+  "context": "deck:travel",
+  "difficulty": 2
+}

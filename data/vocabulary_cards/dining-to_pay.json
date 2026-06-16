@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "to_pay",
+  "front": "payer",
+  "back": "to pay",
+  "example": "Je paie par carte bancaire.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:dining",
+  "difficulty": 1
+}

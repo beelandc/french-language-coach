@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "exchange",
+  "front": "échange",
+  "back": "exchange",
+  "example": "Je veux échanger ce pull.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

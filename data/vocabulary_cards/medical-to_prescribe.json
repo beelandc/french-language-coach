@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "to_prescribe",
+  "front": "prescrire",
+  "back": "to prescribe",
+  "example": "Le médecin prescrit des médicaments.",
+  "tags": [
+    "action",
+    "intermediate"
+  ],
+  "context": "deck:medical",
+  "difficulty": 2
+}

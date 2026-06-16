@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "dizziness",
+  "front": "étourdissement",
+  "back": "dizziness",
+  "example": "J'ai des étourdissements.",
+  "tags": [
+    "symptom",
+    "intermediate"
+  ],
+  "context": "deck:medical",
+  "difficulty": 2
+}

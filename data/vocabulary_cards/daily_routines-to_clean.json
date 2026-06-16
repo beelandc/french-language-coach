@@ -1,0 +1,13 @@
+{
+  "deck_id": "daily_routines",
+  "card_id": "to_clean",
+  "front": "nettoyer",
+  "back": "to clean",
+  "example": "Je nettoie la maison.",
+  "tags": [
+    "evening",
+    "beginner"
+  ],
+  "context": "deck:daily_routines",
+  "difficulty": 1
+}

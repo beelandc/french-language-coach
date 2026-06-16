@@ -1,0 +1,13 @@
+{
+  "deck_id": "technology",
+  "card_id": "link",
+  "front": "lien",
+  "back": "link",
+  "example": "Cliquez sur le lien.",
+  "tags": [
+    "internet",
+    "beginner"
+  ],
+  "context": "deck:technology",
+  "difficulty": 1
+}

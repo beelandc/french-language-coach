@@ -1,0 +1,13 @@
+{
+  "deck_id": "daily_routines",
+  "card_id": "to_brush_teeth",
+  "front": "se brosser les dents",
+  "back": "to brush teeth",
+  "example": "Je me brosse les dents.",
+  "tags": [
+    "morning",
+    "beginner"
+  ],
+  "context": "deck:daily_routines",
+  "difficulty": 1
+}

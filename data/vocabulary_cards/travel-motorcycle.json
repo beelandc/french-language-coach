@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "motorcycle",
+  "front": "moto",
+  "back": "motorcycle",
+  "example": "Il adore faire de la moto.",
+  "tags": [
+    "transport",
+    "intermediate"
+  ],
+  "context": "deck:travel",
+  "difficulty": 2
+}

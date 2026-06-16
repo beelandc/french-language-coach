@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "clinic",
+  "front": "clinique",
+  "back": "clinic",
+  "example": "La clinique est ouverte.",
+  "tags": [
+    "place",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "luggage",
+  "front": "bagage",
+  "back": "luggage",
+  "example": "J'ai beaucoup de bagages pour ce voyage.",
+  "tags": [
+    "accommodation",
+    "beginner"
+  ],
+  "context": "deck:travel",
+  "difficulty": 1
+}

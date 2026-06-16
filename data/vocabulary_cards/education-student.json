@@ -1,0 +1,13 @@
+{
+  "deck_id": "education",
+  "card_id": "student",
+  "front": "élève",
+  "back": "student",
+  "example": "L'élève est intelligent.",
+  "tags": [
+    "school",
+    "beginner"
+  ],
+  "context": "deck:education",
+  "difficulty": 1
+}

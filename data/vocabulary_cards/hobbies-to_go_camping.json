@@ -1,0 +1,13 @@
+{
+  "deck_id": "hobbies",
+  "card_id": "to_go_camping",
+  "front": "aller camper",
+  "back": "to go camping",
+  "example": "Nous allons camper dans les montagnes.",
+  "tags": [
+    "outdoor",
+    "intermediate"
+  ],
+  "context": "deck:hobbies",
+  "difficulty": 2
+}

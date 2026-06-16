@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "cooked",
+  "front": "cuit",
+  "back": "cooked",
+  "example": "Le poulet est bien cuit.",
+  "tags": [
+    "adjective",
+    "beginner"
+  ],
+  "context": "deck:food",
+  "difficulty": 1
+}

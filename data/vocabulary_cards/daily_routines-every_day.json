@@ -1,0 +1,13 @@
+{
+  "deck_id": "daily_routines",
+  "card_id": "every_day",
+  "front": "tous les jours",
+  "back": "every day",
+  "example": "Je fais ça tous les jours.",
+  "tags": [
+    "frequency",
+    "beginner"
+  ],
+  "context": "deck:daily_routines",
+  "difficulty": 1
+}

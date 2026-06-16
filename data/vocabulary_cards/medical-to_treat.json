@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "to_treat",
+  "front": "soigner",
+  "back": "to treat",
+  "example": "On peut soigner cette maladie.",
+  "tags": [
+    "action",
+    "intermediate"
+  ],
+  "context": "deck:medical",
+  "difficulty": 2
+}

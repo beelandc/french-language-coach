@@ -1,0 +1,13 @@
+{
+  "deck_id": "hobbies",
+  "card_id": "to_climb",
+  "front": "escalader",
+  "back": "to climb",
+  "example": "Nous escaladons la montagne.",
+  "tags": [
+    "outdoor",
+    "intermediate"
+  ],
+  "context": "deck:hobbies",
+  "difficulty": 2
+}

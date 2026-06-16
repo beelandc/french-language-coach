@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "safe",
+  "front": "coffre-fort",
+  "back": "safe",
+  "example": "Je mets mes valeurs dans le coffre-fort.",
+  "tags": [
+    "accommodation",
+    "beginner"
+  ],
+  "context": "deck:travel",
+  "difficulty": 1
+}

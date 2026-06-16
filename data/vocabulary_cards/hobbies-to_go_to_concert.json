@@ -1,0 +1,13 @@
+{
+  "deck_id": "hobbies",
+  "card_id": "to_go_to_concert",
+  "front": "aller à un concert",
+  "back": "to go to concert",
+  "example": "Nous allons à un concert ce soir.",
+  "tags": [
+    "music",
+    "beginner"
+  ],
+  "context": "deck:hobbies",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "doctor",
+  "front": "médecin",
+  "back": "doctor",
+  "example": "Le médecin m'examine.",
+  "tags": [
+    "professional",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

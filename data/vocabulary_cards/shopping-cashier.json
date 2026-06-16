@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "cashier",
+  "front": "caissier",
+  "back": "cashier",
+  "example": "Le caissier scanne mes articles.",
+  "tags": [
+    "people",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

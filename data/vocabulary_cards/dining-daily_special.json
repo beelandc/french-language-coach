@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "daily_special",
+  "front": "plat du jour",
+  "back": "daily special",
+  "example": "Le plat du jour est affiché à l'entrée.",
+  "tags": [
+    "food",
+    "beginner"
+  ],
+  "context": "deck:dining",
+  "difficulty": 1
+}

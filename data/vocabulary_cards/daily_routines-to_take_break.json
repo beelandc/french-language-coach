@@ -1,0 +1,13 @@
+{
+  "deck_id": "daily_routines",
+  "card_id": "to_take_break",
+  "front": "faire une pause",
+  "back": "to take break",
+  "example": "Je fais une pause de 10 minutes.",
+  "tags": [
+    "day",
+    "beginner"
+  ],
+  "context": "deck:daily_routines",
+  "difficulty": 1
+}

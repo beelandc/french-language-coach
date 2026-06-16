@@ -1,0 +1,13 @@
+{
+  "deck_id": "hobbies",
+  "card_id": "to_paint",
+  "front": "peindre",
+  "back": "to paint",
+  "example": "J'aime peindre.",
+  "tags": [
+    "creative",
+    "beginner"
+  ],
+  "context": "deck:hobbies",
+  "difficulty": 1
+}

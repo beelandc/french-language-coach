@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "mouth",
+  "front": "bouche",
+  "back": "mouth",
+  "example": "Ouvrez la bouche, s'il vous plaît.",
+  "tags": [
+    "body",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

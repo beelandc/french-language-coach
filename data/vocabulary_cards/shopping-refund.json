@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "refund",
+  "front": "remboursement",
+  "back": "refund",
+  "example": "Je demande un remboursement.",
+  "tags": [
+    "term",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

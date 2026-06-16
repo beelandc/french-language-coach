@@ -1,0 +1,13 @@
+{
+  "deck_id": "sports",
+  "card_id": "glove",
+  "front": "gant",
+  "back": "glove",
+  "example": "Le gant protège la main.",
+  "tags": [
+    "equipment",
+    "beginner"
+  ],
+  "context": "deck:sports",
+  "difficulty": 1
+}

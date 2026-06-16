@@ -1,0 +1,6052 @@
+{
+  "travel": [
+    [
+      "airplane",
+      "avion",
+      "airplane",
+      "Je prends l'avion pour Paris.",
+      [
+        "transport",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "train",
+      "train",
+      "train",
+      "Le train part à 8h.",
+      [
+        "transport",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "bus",
+      "bus",
+      "bus",
+      "Je prends le bus tous les matins.",
+      [
+        "transport",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "taxi",
+      "taxi",
+      "taxi",
+      "Prenons un taxi pour aller à l'hôtel.",
+      [
+        "transport",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "subway",
+      "métro",
+      "subway",
+      "Le métro est rapide à Paris.",
+      [
+        "transport",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "car",
+      "voiture",
+      "car",
+      "Il conduit sa voiture au travail.",
+      [
+        "transport",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "bicycle",
+      "vélo",
+      "bicycle",
+      "Je fais du vélo le week-end.",
+      [
+        "transport",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "motorcycle",
+      "moto",
+      "motorcycle",
+      "Il adore faire de la moto.",
+      [
+        "transport",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "boat",
+      "bateau",
+      "boat",
+      "Le bateau part à midi.",
+      [
+        "transport",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "scooter",
+      "scooter",
+      "scooter",
+      "Le scooter est pratique en ville.",
+      [
+        "transport",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "passport",
+      "passeport",
+      "passport",
+      "J'ai oublié mon passeport à la maison.",
+      [
+        "document",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "visa",
+      "visa",
+      "visa",
+      "J'ai besoin d'un visa pour voyager.",
+      [
+        "document",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "id_card",
+      "carte d'identité",
+      "ID card",
+      "Ma carte d'identité est dans mon sac.",
+      [
+        "document",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "boarding_pass",
+      "carte d'embarquement",
+      "boarding pass",
+      "Voici ma carte d'embarquement.",
+      [
+        "document",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "ticket",
+      "billet",
+      "ticket",
+      "J'ai acheté mon billet de train.",
+      [
+        "document",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "reservation",
+      "réservation",
+      "reservation",
+      "J'ai fait une réservation d'hôtel.",
+      [
+        "document",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "hotel",
+      "hôtel",
+      "hotel",
+      "Nous séjournerons à l'hôtel.",
+      [
+        "accommodation",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "room",
+      "chambre",
+      "room",
+      "Ma chambre a vue sur la mer.",
+      [
+        "accommodation",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "key",
+      "clé",
+      "key",
+      "Où est la clé de ma chambre?",
+      [
+        "accommodation",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "reception",
+      "réception",
+      "reception",
+      "La réception est ouverte 24h/24.",
+      [
+        "accommodation",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "luggage",
+      "bagage",
+      "luggage",
+      "J'ai beaucoup de bagages pour ce voyage.",
+      [
+        "accommodation",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "suitcase",
+      "valise",
+      "suitcase",
+      "Ma valise est très lourde.",
+      [
+        "accommodation",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "backpack",
+      "sac à dos",
+      "backpack",
+      "Il porte toujours un sac à dos.",
+      [
+        "accommodation",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "airport",
+      "aéroport",
+      "airport",
+      "L'aéroport est très grand et moderne.",
+      [
+        "place",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "station",
+      "gare",
+      "station",
+      "La gare est au centre-ville.",
+      [
+        "place",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "terminal",
+      "terminal",
+      "terminal",
+      "Le terminal est bondé de voyageurs.",
+      [
+        "place",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "customs",
+      "douane",
+      "customs",
+      "La douane vérifie les passeports.",
+      [
+        "place",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "baggage_claim",
+      "réclamation des bagages",
+      "baggage claim",
+      "La réclamation des bagages est par là.",
+      [
+        "place",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "to_travel",
+      "voyager",
+      "to travel",
+      "J'adore voyager à l'étranger.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "trip",
+      "voyage",
+      "trip",
+      "Notre voyage en Italie était merveilleux.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "vacation",
+      "vacances",
+      "vacation",
+      "Les vacances d'été durent deux mois.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_book",
+      "réserver",
+      "to book",
+      "J'ai réservé une chambre à l'avance.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_explore",
+      "explorer",
+      "to explore",
+      "Explorons la vieille ville ensemble.",
+      [
+        "action",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "to_cancel",
+      "annuler",
+      "to cancel",
+      "J'ai dû annuler mon voyage.",
+      [
+        "action",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "tourist",
+      "touriste",
+      "tourist",
+      "Les touristes visitent souvent la Tour Eiffel.",
+      [
+        "people",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "guide",
+      "guide",
+      "guide",
+      "Le guide touristique connaît bien la ville.",
+      [
+        "people",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "map",
+      "carte",
+      "map",
+      "La carte touristique montre tous les monuments.",
+      [
+        "item",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "delay",
+      "retard",
+      "delay",
+      "Le train a 15 minutes de retard.",
+      [
+        "problem",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "arrival",
+      "arrivée",
+      "arrival",
+      "L'arrivée est prévue à 14h30.",
+      [
+        "time",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "departure",
+      "départ",
+      "departure",
+      "Le départ de notre vol est à 8h.",
+      [
+        "time",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "destination",
+      "destination",
+      "destination",
+      "Notre destination finale est Rome.",
+      [
+        "place",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "itinerary",
+      "itinéraire",
+      "itinerary",
+      "L'itinéraire détaillé est dans le guide.",
+      [
+        "plan",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "passenger",
+      "passager",
+      "passenger",
+      "Tous les passagers doivent être à bord.",
+      [
+        "people",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "hotel_room",
+      "chambre d'hôtel",
+      "hotel room",
+      "Notre chambre d'hôtel a une belle vue.",
+      [
+        "accommodation",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "room_service",
+      "service en chambre",
+      "room service",
+      "J'ai commandé le service en chambre.",
+      [
+        "accommodation",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "minibar",
+      "minibar",
+      "minibar",
+      "Le minibar contient des boissons.",
+      [
+        "accommodation",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "safe",
+      "coffre-fort",
+      "safe",
+      "Je mets mes valeurs dans le coffre-fort.",
+      [
+        "accommodation",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "tour",
+      "visite guidée",
+      "guided tour",
+      "Nous faisons une visite guidée de la ville.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "sightseeing",
+      "tourisme",
+      "sightseeing",
+      "Nous faisons du tourisme aujourd'hui.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_pack",
+      "faire ses valises",
+      "to pack",
+      "Je fais mes valises pour le voyage.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ]
+  ],
+  "dining": [
+    [
+      "appetizer",
+      "entrée",
+      "appetizer",
+      "L'entrée était une soupe à l'oignon délicieuse.",
+      [
+        "food",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "main_course",
+      "plat principal",
+      "main course",
+      "Le plat principal était un boeuf bourguignon.",
+      [
+        "food",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "dessert",
+      "dessert",
+      "dessert",
+      "Pour le dessert, j'ai pris une tarte tatin.",
+      [
+        "food",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "salad",
+      "salade",
+      "salad",
+      "La salade niçoise est parfaite pour l'été.",
+      [
+        "food",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "soup",
+      "soupe",
+      "soup",
+      "La soupe du jour est à la tomate.",
+      [
+        "food",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "bread",
+      "pain",
+      "bread",
+      "Le pain frais de la boulangerie est incomparable.",
+      [
+        "food",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "cheese",
+      "fromage",
+      "cheese",
+      "Le plateau de fromages français est varié.",
+      [
+        "food",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "meat",
+      "viande",
+      "meat",
+      "La viande est cuite à la perfection.",
+      [
+        "food",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "fish",
+      "poisson",
+      "fish",
+      "Le poisson grillé est mon plat préféré.",
+      [
+        "food",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "chicken",
+      "poulet",
+      "chicken",
+      "Le poulet rôti aux herbes est excellent.",
+      [
+        "food",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "water",
+      "eau",
+      "water",
+      "Je voudrais de l'eau plate, s'il vous plaît.",
+      [
+        "drink",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "wine",
+      "vin",
+      "wine",
+      "Le vin rouge de Bordeaux accompagne bien la viande.",
+      [
+        "drink",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "beer",
+      "bière",
+      "beer",
+      "Une bière pression, c'est parfait par ce temps.",
+      [
+        "drink",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "coffee",
+      "café",
+      "coffee",
+      "Un café expresso, s'il vous plaît.",
+      [
+        "drink",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "tea",
+      "thé",
+      "tea",
+      "Je préfère le thé vert au café noir.",
+      [
+        "drink",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "juice",
+      "jus",
+      "juice",
+      "Un jus d'orange fraîchement pressé, s'il vous plaît.",
+      [
+        "drink",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "menu",
+      "menu",
+      "menu",
+      "Le menu propose des plats traditionnels français.",
+      [
+        "restaurant",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "waiter",
+      "serveur",
+      "waiter",
+      "Le serveur nous a recommandé la spécialité du chef.",
+      [
+        "restaurant",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "table",
+      "table",
+      "table",
+      "Nous avons réservé une table pour 4 personnes.",
+      [
+        "restaurant",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "bill",
+      "addition",
+      "bill",
+      "L'addition, s'il vous plaît, nous partons.",
+      [
+        "restaurant",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_order",
+      "commander",
+      "to order",
+      "Je commande le menu dégustation.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_serve",
+      "servir",
+      "to serve",
+      "Le serveur va nous servir le dessert.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_recommend",
+      "recommander",
+      "to recommend",
+      "Que nous recommandez-vous comme plat du jour?",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_eat",
+      "manger",
+      "to eat",
+      "J'aime manger dans de bons restaurants.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_drink",
+      "boire",
+      "to drink",
+      "Je vais boire un verre de vin rouge.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_pay",
+      "payer",
+      "to pay",
+      "Je paie par carte bancaire.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_taste",
+      "goûter",
+      "to taste",
+      "Goûtez ce plat, c'est délicieux.",
+      [
+        "action",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "special",
+      "spécialité",
+      "special",
+      "La spécialité de la maison est le canard à l'orange.",
+      [
+        "food",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "daily_special",
+      "plat du jour",
+      "daily special",
+      "Le plat du jour est affiché à l'entrée.",
+      [
+        "food",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "vegetarian",
+      "végétarien",
+      "vegetarian",
+      "Je suis végétarien, je ne mange pas de viande.",
+      [
+        "diet",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "delicious",
+      "délicieux",
+      "delicious",
+      "Ce plat est absolument délicieux!",
+      [
+        "adjective",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "restaurant",
+      "restaurant",
+      "restaurant",
+      "C'est un restaurant étoilé au guide Michelin.",
+      [
+        "restaurant",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "reservation",
+      "réservation",
+      "reservation",
+      "J'ai fait une réservation pour ce soir à 20h.",
+      [
+        "restaurant",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "tip",
+      "pourboire",
+      "tip",
+      "Le pourboire est inclus dans l'addition.",
+      [
+        "restaurant",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "spicy",
+      "épicé",
+      "spicy",
+      "Attention, ce plat est très épicé.",
+      [
+        "adjective",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "allergy",
+      "allergie",
+      "allergy",
+      "J'ai une allergie aux fruits de mer.",
+      [
+        "health",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "appetizing",
+      "appétissant",
+      "appetizing",
+      "Ce plat a l'air très appétissant.",
+      [
+        "adjective",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "chef",
+      "chef",
+      "chef",
+      "Le chef cuisinier a 20 ans d'expérience.",
+      [
+        "people",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "cook",
+      "cuisinier",
+      "cook",
+      "Le cuisinier prépare nos plats devant nous.",
+      [
+        "people",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "dish",
+      "plat",
+      "dish",
+      "Le plat du chef est toujours excellent.",
+      [
+        "food",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "breakfast",
+      "petit déjeuner",
+      "breakfast",
+      "Le petit déjeuner est servi à 7h.",
+      [
+        "food",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "lunch",
+      "déjeuner",
+      "lunch",
+      "Le déjeuner est à midi.",
+      [
+        "food",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "dinner",
+      "dîner",
+      "dinner",
+      "Le dîner est prêt.",
+      [
+        "food",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "snack",
+      "en-cas",
+      "snack",
+      "J'ai un en-cas dans mon sac.",
+      [
+        "food",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_taste_food",
+      "goûter",
+      "to taste",
+      "Goûtez ce plat, c'est délicieux.",
+      [
+        "action",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "to_share",
+      "partager",
+      "to share",
+      "Nous partageons un dessert.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_try",
+      "essayer",
+      "to try",
+      "Essayez la spécialité du chef.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "favorite",
+      "préféré",
+      "favorite",
+      "C'est mon plat préféré.",
+      [
+        "adjective",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "very_delicious",
+      "délicieux",
+      "delicious",
+      "Ce plat est délicieux!",
+      [
+        "adjective",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "fresh",
+      "frais",
+      "fresh",
+      "Les ingrédients sont frais.",
+      [
+        "adjective",
+        "beginner"
+      ],
+      1
+    ]
+  ],
+  "shopping": [
+    [
+      "mall",
+      "centre commercial",
+      "mall",
+      "Le centre commercial a plus de 200 boutiques.",
+      [
+        "store",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "supermarket",
+      "supermarché",
+      "supermarket",
+      "Le supermarché est ouvert jusqu'à 22h.",
+      [
+        "store",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "bakery",
+      "boulangerie",
+      "bakery",
+      "La boulangerie vend du pain frais tous les jours.",
+      [
+        "store",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "butcher",
+      "boucherie",
+      "butcher shop",
+      "La boucherie propose de la viande de qualité.",
+      [
+        "store",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "pharmacy",
+      "pharmacie",
+      "pharmacy",
+      "La pharmacie de garde est ouverte le dimanche.",
+      [
+        "store",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "clothing_store",
+      "magasin de vêtements",
+      "clothing store",
+      "Le magasin de vêtements fait des soldes deux fois par an.",
+      [
+        "store",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "shoe_store",
+      "magasin de chaussures",
+      "shoe store",
+      "Ce magasin de chaussures a un grand choix.",
+      [
+        "store",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "bookstore",
+      "librairie",
+      "bookstore",
+      "La librairie a une section dédiée aux livres en français.",
+      [
+        "store",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "jewelry_store",
+      "bijouterie",
+      "jewelry store",
+      "La bijouterie propose des pièces uniques.",
+      [
+        "store",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "electronics_store",
+      "magasin d'électronique",
+      "electronics store",
+      "Le magasin d'électronique vend des ordinateurs.",
+      [
+        "store",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "shirt",
+      "chemise",
+      "shirt",
+      "Cette chemise en coton est très confortable.",
+      [
+        "clothing",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "pants",
+      "pantalon",
+      "pants",
+      "Le pantalon noir va avec tout.",
+      [
+        "clothing",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "dress",
+      "robe",
+      "dress",
+      "La robe rouge est parfaite pour la soirée.",
+      [
+        "clothing",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "coat",
+      "manteau",
+      "coat",
+      "Il me faut un manteau chaud pour l'hiver.",
+      [
+        "clothing",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "shoes",
+      "chaussures",
+      "shoes",
+      "Ces chaussures sont confortables pour la marche.",
+      [
+        "clothing",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "hat",
+      "chapeau",
+      "hat",
+      "Le chapeau de paille est idéal pour l'été.",
+      [
+        "clothing",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "jacket",
+      "veste",
+      "jacket",
+      "La veste en cuir est très élégante.",
+      [
+        "clothing",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "cash",
+      "espèces",
+      "cash",
+      "Je paie en espèces quand j'ai assez de monnaie.",
+      [
+        "money",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "credit_card",
+      "carte de crédit",
+      "credit card",
+      "Ma carte de crédit a une limite de 5000 euros.",
+      [
+        "money",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "price",
+      "prix",
+      "price",
+      "Le prix est-il négociable ou fixe?",
+      [
+        "money",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "discount",
+      "réduction",
+      "discount",
+      "Il y a une réduction de 30% sur ce produit.",
+      [
+        "money",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "change",
+      "monnaie",
+      "change",
+      "J'ai besoin de monnaie pour le parking.",
+      [
+        "money",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "receipt",
+      "reçu",
+      "receipt",
+      "Je veux un reçu pour mon achat, s'il vous plaît.",
+      [
+        "money",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "total",
+      "total",
+      "total",
+      "Le total s'élève à 150 euros.",
+      [
+        "money",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_buy",
+      "acheter",
+      "to buy",
+      "Je veux acheter ce pull, il est magnifique.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_sell",
+      "vendre",
+      "to sell",
+      "Ils vendent des produits locaux au marché.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_try_on",
+      "essayer",
+      "to try on",
+      "Puis-je essayer ce jean en taille 32?",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_fit",
+      "aller",
+      "to fit",
+      "Ce pull me va parfaitement.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_choose",
+      "choisir",
+      "to choose",
+      "J'ai du mal à choisir entre ces deux modèles.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "size",
+      "taille",
+      "size",
+      "Quelle taille faites-vous?",
+      [
+        "clothing",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "color",
+      "couleur",
+      "color",
+      "J'aime cette couleur bleu marine.",
+      [
+        "clothing",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "open",
+      "ouvert",
+      "open",
+      "Le magasin est ouvert de 9h à 19h.",
+      [
+        "term",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "closed",
+      "fermé",
+      "closed",
+      "Le magasin est fermé le dimanche.",
+      [
+        "term",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "sale",
+      "solde",
+      "sale",
+      "Les soldes d'hiver commencent demain.",
+      [
+        "term",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "customer",
+      "client",
+      "customer",
+      "Le client a toujours raison.",
+      [
+        "people",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "seller",
+      "vendeur",
+      "seller",
+      "Le vendeur est très connaisseur.",
+      [
+        "people",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "bag",
+      "sac",
+      "bag",
+      "Le sac en papier est gratuit dans ce magasin.",
+      [
+        "item",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "fitting_room",
+      "cabine d'essayage",
+      "fitting room",
+      "La cabine d'essayage est libre.",
+      [
+        "store",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "price_tag",
+      "étiquette de prix",
+      "price tag",
+      "L'étiquette de prix montre 20 euros.",
+      [
+        "store",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "shopping_bag",
+      "sac de courses",
+      "shopping bag",
+      "J'ai plusieurs sacs de courses.",
+      [
+        "item",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "shopping_cart",
+      "chariot",
+      "shopping cart",
+      "Le chariot est plein de produits.",
+      [
+        "item",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "cashier",
+      "caissier",
+      "cashier",
+      "Le caissier scanne mes articles.",
+      [
+        "people",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "checkout",
+      "caisse",
+      "checkout",
+      "La caisse est par là.",
+      [
+        "store",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "on_sale",
+      "en solde",
+      "on sale",
+      "Ce produit est en solde.",
+      [
+        "term",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "discounted",
+      "réduit",
+      "discounted",
+      "L'article est réduit de 50%.",
+      [
+        "term",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_return",
+      "rapporter",
+      "to return",
+      "Je veux rapporter ce produit.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "refund",
+      "remboursement",
+      "refund",
+      "Je demande un remboursement.",
+      [
+        "term",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "exchange",
+      "échange",
+      "exchange",
+      "Je veux échanger ce pull.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "warranty",
+      "garantie",
+      "warranty",
+      "Le produit a une garantie de 2 ans.",
+      [
+        "term",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "barcode",
+      "code-barres",
+      "barcode",
+      "Le code-barres est sur l'emballage.",
+      [
+        "item",
+        "beginner"
+      ],
+      1
+    ]
+  ],
+  "business": [
+    [
+      "desk",
+      "bureau",
+      "desk",
+      "Mon bureau est toujours bien rangé.",
+      [
+        "office",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "computer",
+      "ordinateur",
+      "computer",
+      "L'ordinateur portable est plus pratique.",
+      [
+        "office",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "laptop",
+      "ordinateur portable",
+      "laptop",
+      "J'utilise un ordinateur portable.",
+      [
+        "office",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "phone",
+      "téléphone",
+      "phone",
+      "Le téléphone sonne souvent au bureau.",
+      [
+        "office",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "printer",
+      "imprimante",
+      "printer",
+      "L'imprimante est en panne aujourd'hui.",
+      [
+        "office",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "chair",
+      "chaise",
+      "chair",
+      "La chaise ergonomique est confortable.",
+      [
+        "office",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "office",
+      "bureau",
+      "office",
+      "Notre bureau est au centre-ville.",
+      [
+        "office",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "meeting",
+      "réunion",
+      "meeting",
+      "Nous avons une réunion à 14h.",
+      [
+        "meeting",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "agenda",
+      "ordre du jour",
+      "agenda",
+      "L'ordre du jour est envoyé par email.",
+      [
+        "meeting",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "presentation",
+      "présentation",
+      "presentation",
+      "La présentation est prête.",
+      [
+        "meeting",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "slide",
+      "diapositive",
+      "slide",
+      "La diapositive montre les résultats.",
+      [
+        "meeting",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "contract",
+      "contrat",
+      "contract",
+      "Le contrat doit être signé.",
+      [
+        "document",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "invoice",
+      "facture",
+      "invoice",
+      "La facture est envoyée mensuellement.",
+      [
+        "document",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "receipt",
+      "reçu",
+      "receipt",
+      "J'ai besoin du reçu pour mes frais.",
+      [
+        "document",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "report",
+      "rapport",
+      "report",
+      "Le rapport annuel est dû vendredi.",
+      [
+        "document",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "email",
+      "courriel",
+      "email",
+      "J'envoie un courriel à l'équipe.",
+      [
+        "document",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "manager",
+      "responsable",
+      "manager",
+      "Le responsable est en réunion.",
+      [
+        "job",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "director",
+      "directeur",
+      "director",
+      "Le directeur a validé le projet.",
+      [
+        "job",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "employee",
+      "employé",
+      "employee",
+      "Les employés travaillent dur.",
+      [
+        "job",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "client",
+      "client",
+      "client",
+      "Le client est satisfait.",
+      [
+        "job",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "colleague",
+      "collègue",
+      "colleague",
+      "Mon collègue est compétent.",
+      [
+        "job",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_work",
+      "travailler",
+      "to work",
+      "Je travaille sur ce projet.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_call",
+      "appeler",
+      "to call",
+      "J'appelle le client.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_write",
+      "écrire",
+      "to write",
+      "J'écris un email.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_sign",
+      "signer",
+      "to sign",
+      "J'ai signé le contrat.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_negotiate",
+      "négocier",
+      "to negotiate",
+      "Nous négocions le prix.",
+      [
+        "action",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "deadline",
+      "date limite",
+      "deadline",
+      "La date limite est demain.",
+      [
+        "time",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "appointment",
+      "rendez-vous",
+      "appointment",
+      "J'ai un rendez-vous à 10h.",
+      [
+        "time",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "schedule",
+      "emploi du temps",
+      "schedule",
+      "Mon emploi du temps est chargé.",
+      [
+        "time",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "urgent",
+      "urgent",
+      "urgent",
+      "C'est urgent!",
+      [
+        "priority",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "important",
+      "important",
+      "important",
+      "C'est très important.",
+      [
+        "priority",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "briefcase",
+      "serviette",
+      "briefcase",
+      "Ma serviette contient mon ordinateur portable.",
+      [
+        "item",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "notebook",
+      "cahier",
+      "notebook",
+      "J'écris mes notes dans mon cahier.",
+      [
+        "item",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "pen",
+      "stylo",
+      "pen",
+      "Le stylo ne fonctionne plus.",
+      [
+        "item",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "pencil",
+      "crayon",
+      "pencil",
+      "J'utilise un crayon pour dessiner.",
+      [
+        "item",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "paper",
+      "papier",
+      "paper",
+      "Le papier est dans l'imprimante.",
+      [
+        "item",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "folder",
+      "dossier",
+      "folder",
+      "Rangez les documents dans le dossier.",
+      [
+        "item",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "stapler",
+      "agrafeuse",
+      "stapler",
+      "L'agrafeuse est sur le bureau.",
+      [
+        "item",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "scissors",
+      "ciseaux",
+      "scissors",
+      "Utilisez les ciseaux avec précaution.",
+      [
+        "item",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "tape",
+      "ruban adhésif",
+      "tape",
+      "J'ai besoin de ruban adhésif.",
+      [
+        "item",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "calendar",
+      "calendrier",
+      "calendar",
+      "Le calendrier est accroché au mur.",
+      [
+        "item",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_organize",
+      "organiser",
+      "to organize",
+      "J'organise mes documents.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_plan",
+      "planifier",
+      "to plan",
+      "Nous planifions le projet ensemble.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_develop",
+      "développer",
+      "to develop",
+      "Nous développons une nouvelle application.",
+      [
+        "action",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "to_present",
+      "présenter",
+      "to present",
+      "Je présente les résultats à l'équipe.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_discuss",
+      "discuter",
+      "to discuss",
+      "Nous discutons des détails du contrat.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ]
+  ],
+  "medical": [
+    [
+      "head",
+      "tête",
+      "head",
+      "J'ai mal à la tête.",
+      [
+        "body",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "arm",
+      "bras",
+      "arm",
+      "Mon bras me fait mal.",
+      [
+        "body",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "leg",
+      "jambe",
+      "leg",
+      "Ma jambe est cassée.",
+      [
+        "body",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "hand",
+      "main",
+      "hand",
+      "Lavez-vous les mains.",
+      [
+        "body",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "foot",
+      "pied",
+      "foot",
+      "Mon pied est gonflé.",
+      [
+        "body",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "stomach",
+      "estomac",
+      "stomach",
+      "J'ai mal à l'estomac.",
+      [
+        "body",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "back",
+      "dos",
+      "back",
+      "Mon dos me fait mal.",
+      [
+        "body",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "chest",
+      "poitrine",
+      "chest",
+      "J'ai une douleur à la poitrine.",
+      [
+        "body",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "heart",
+      "cœur",
+      "heart",
+      "Le cœur est un muscle vital.",
+      [
+        "body",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "lung",
+      "poumon",
+      "lung",
+      "Les poumons sont essentiels.",
+      [
+        "body",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "pain",
+      "douleur",
+      "pain",
+      "J'ai une douleur.",
+      [
+        "symptom",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "fever",
+      "fièvre",
+      "fever",
+      "J'ai de la fièvre.",
+      [
+        "symptom",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "headache",
+      "mal de tête",
+      "headache",
+      "J'ai mal à la tête.",
+      [
+        "symptom",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "cough",
+      "toux",
+      "cough",
+      "J'ai la toux.",
+      [
+        "symptom",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "nausea",
+      "nausée",
+      "nausea",
+      "J'ai la nausée.",
+      [
+        "symptom",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "dizziness",
+      "étourdissement",
+      "dizziness",
+      "J'ai des étourdissements.",
+      [
+        "symptom",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "rash",
+      "éruption",
+      "rash",
+      "J'ai une éruption cutanée.",
+      [
+        "symptom",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "fatigue",
+      "fatigue",
+      "fatigue",
+      "Je suis très fatigué.",
+      [
+        "symptom",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "doctor",
+      "médecin",
+      "doctor",
+      "Le médecin m'examine.",
+      [
+        "professional",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "nurse",
+      "infirmière",
+      "nurse",
+      "L'infirmière prend soin de moi.",
+      [
+        "professional",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "hospital",
+      "hôpital",
+      "hospital",
+      "L'hôpital est au centre-ville.",
+      [
+        "place",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "clinic",
+      "clinique",
+      "clinic",
+      "La clinique est ouverte.",
+      [
+        "place",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "pharmacy",
+      "pharmacie",
+      "pharmacy",
+      "La pharmacie vend des médicaments.",
+      [
+        "place",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "medicine",
+      "médicament",
+      "medicine",
+      "Prenez ce médicament.",
+      [
+        "treatment",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "pill",
+      "comprimé",
+      "pill",
+      "Prenez un comprimé.",
+      [
+        "treatment",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "syrup",
+      "sirop",
+      "syrup",
+      "Le sirop est pour la toux.",
+      [
+        "treatment",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_examine",
+      "examiner",
+      "to examine",
+      "Le médecin va m'examiner.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_diagnose",
+      "diagnostiquer",
+      "to diagnose",
+      "Le médecin diagnostique la maladie.",
+      [
+        "action",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "to_prescribe",
+      "prescrire",
+      "to prescribe",
+      "Le médecin prescrit des médicaments.",
+      [
+        "action",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "to_treat",
+      "soigner",
+      "to treat",
+      "On peut soigner cette maladie.",
+      [
+        "action",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "emergency",
+      "urgence",
+      "emergency",
+      "C'est une urgence!",
+      [
+        "emergency",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "ambulance",
+      "ambulance",
+      "ambulance",
+      "Appelez une ambulance!",
+      [
+        "emergency",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "first_aid",
+      "premiers secours",
+      "first aid",
+      "Les premiers secours sont importants.",
+      [
+        "emergency",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "allergy",
+      "allergie",
+      "allergy",
+      "J'ai une allergie aux noix.",
+      [
+        "symptom",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "eye",
+      "œil",
+      "eye",
+      "Mes yeux sont fatigués.",
+      [
+        "body",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "ear",
+      "oreille",
+      "ear",
+      "J'ai mal à l'oreille.",
+      [
+        "body",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "nose",
+      "nez",
+      "nose",
+      "Mon nez est bouché.",
+      [
+        "body",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "mouth",
+      "bouche",
+      "mouth",
+      "Ouvrez la bouche, s'il vous plaît.",
+      [
+        "body",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "tooth",
+      "dent",
+      "tooth",
+      "J'ai mal aux dents.",
+      [
+        "body",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "throat",
+      "gorge",
+      "throat",
+      "Ma gorge est irritée.",
+      [
+        "body",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "skin",
+      "peau",
+      "skin",
+      "Ma peau est sèche.",
+      [
+        "body",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "hair",
+      "cheveux",
+      "hair",
+      "Mes cheveux sont longs.",
+      [
+        "body",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "fingernail",
+      "ongle",
+      "fingernail",
+      "Mes ongles sont courts.",
+      [
+        "body",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "blood",
+      "sang",
+      "blood",
+      "Le médecin prend du sang pour analyse.",
+      [
+        "body",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "bone",
+      "os",
+      "bone",
+      "J'ai un os cassé.",
+      [
+        "body",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "muscle",
+      "muscle",
+      "muscle",
+      "J'ai mal aux muscles.",
+      [
+        "body",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "temperature",
+      "température",
+      "temperature",
+      "Ma température est normale.",
+      [
+        "symptom",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "pulse",
+      "pouls",
+      "pulse",
+      "Le médecin vérifie mon pouls.",
+      [
+        "symptom",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "blood_pressure",
+      "tension artérielle",
+      "blood pressure",
+      "Ma tension artérielle est élevée.",
+      [
+        "symptom",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "to_heal",
+      "guérir",
+      "to heal",
+      "La blessure va guérir rapidement.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ]
+  ],
+  "technology": [
+    [
+      "computer",
+      "ordinateur",
+      "computer",
+      "L'ordinateur est rapide.",
+      [
+        "device",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "laptop",
+      "ordinateur portable",
+      "laptop",
+      "J'utilise un ordinateur portable.",
+      [
+        "device",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "tablet",
+      "tablette",
+      "tablet",
+      "La tablette est légère.",
+      [
+        "device",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "smartphone",
+      "smartphone",
+      "smartphone",
+      "Mon smartphone est nouveau.",
+      [
+        "device",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "camera",
+      "appareil photo",
+      "camera",
+      "L'appareil photo prend de belles photos.",
+      [
+        "device",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "printer",
+      "imprimante",
+      "printer",
+      "L'imprimante est en panne.",
+      [
+        "device",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "scanner",
+      "scanner",
+      "scanner",
+      "Le scanner ne fonctionne pas.",
+      [
+        "device",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "monitor",
+      "écran",
+      "monitor",
+      "L'écran est grand.",
+      [
+        "device",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "keyboard",
+      "clavier",
+      "keyboard",
+      "Le clavier est ergonomique.",
+      [
+        "device",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "mouse",
+      "souris",
+      "mouse",
+      "La souris est sans fil.",
+      [
+        "device",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "internet",
+      "internet",
+      "internet",
+      "L'internet est lent aujourd'hui.",
+      [
+        "internet",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "website",
+      "site web",
+      "website",
+      "Le site web est bien conçu.",
+      [
+        "internet",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "webpage",
+      "page web",
+      "webpage",
+      "La page web ne se charge pas.",
+      [
+        "internet",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "email",
+      "courriel",
+      "email",
+      "J'envoie un courriel.",
+      [
+        "internet",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "chat",
+      "discussion",
+      "chat",
+      "La discussion en ligne est utile.",
+      [
+        "internet",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "social_media",
+      "réseau social",
+      "social media",
+      "Les réseaux sociaux sont populaires.",
+      [
+        "internet",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "online",
+      "en ligne",
+      "online",
+      "Je suis en ligne.",
+      [
+        "internet",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_browse",
+      "naviguer",
+      "to browse",
+      "Je navigue sur internet.",
+      [
+        "internet",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "link",
+      "lien",
+      "link",
+      "Cliquez sur le lien.",
+      [
+        "internet",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "password",
+      "mot de passe",
+      "password",
+      "Le mot de passe est secret.",
+      [
+        "security",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "username",
+      "nom d'utilisateur",
+      "username",
+      "Le nom d'utilisateur est unique.",
+      [
+        "security",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "account",
+      "compte",
+      "account",
+      "J'ai un compte.",
+      [
+        "security",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "profile",
+      "profil",
+      "profile",
+      "Mon profil est à jour.",
+      [
+        "security",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "setting",
+      "paramètre",
+      "setting",
+      "Changez les paramètres.",
+      [
+        "security",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "network",
+      "réseau",
+      "network",
+      "Le réseau est rapide.",
+      [
+        "security",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "to_use",
+      "utiliser",
+      "to use",
+      "J'utilise l'ordinateur.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_turn_on",
+      "allumer",
+      "to turn on",
+      "Allumez l'ordinateur.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_turn_off",
+      "éteindre",
+      "to turn off",
+      "Éteignez l'ordinateur.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_connect",
+      "connecter",
+      "to connect",
+      "Connectez-vous à internet.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_disconnect",
+      "déconnecter",
+      "to disconnect",
+      "Déconnectez-vous.",
+      [
+        "action",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "to_charge",
+      "charger",
+      "to charge",
+      "Je charge mon téléphone.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_save",
+      "enregistrer",
+      "to save",
+      "Enregistrez le fichier.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_delete",
+      "supprimer",
+      "to delete",
+      "Supprimez ce fichier.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "problem",
+      "problème",
+      "problem",
+      "J'ai un problème avec mon ordinateur.",
+      [
+        "problem",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "error",
+      "erreur",
+      "error",
+      "Il y a une erreur.",
+      [
+        "problem",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "headphones",
+      "casque",
+      "headphones",
+      "J'écoute de la musique avec mon casque.",
+      [
+        "device",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "microphone",
+      "microphone",
+      "microphone",
+      "Le microphone fonctionne bien.",
+      [
+        "device",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "webcam",
+      "webcam",
+      "webcam",
+      "La webcam est intégrée à l'ordinateur.",
+      [
+        "device",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "hard_drive",
+      "disque dur",
+      "hard drive",
+      "Le disque dur a beaucoup d'espace.",
+      [
+        "device",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "usb",
+      "clé USB",
+      "USB drive",
+      "J'ai une clé USB avec mes fichiers.",
+      [
+        "device",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "router",
+      "routeur",
+      "router",
+      "Le routeur est dans le salon.",
+      [
+        "device",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "modem",
+      "modem",
+      "modem",
+      "Le modem connecte à internet.",
+      [
+        "device",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "software",
+      "logiciel",
+      "software",
+      "J'installe un nouveau logiciel.",
+      [
+        "software",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "app",
+      "application",
+      "app",
+      "J'utilise une application mobile.",
+      [
+        "software",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "program",
+      "programme",
+      "program",
+      "Le programme est en cours d'exécution.",
+      [
+        "software",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_download",
+      "télécharger",
+      "to download",
+      "Je télécharge un fichier.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_upload",
+      "téléverser",
+      "to upload",
+      "Je téléverse mes photos.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_update",
+      "mettre à jour",
+      "to update",
+      "Je mets à jour mon système.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_install",
+      "installer",
+      "to install",
+      "J'installe le nouveau logiciel.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_uninstall",
+      "désinstaller",
+      "to uninstall",
+      "Je désinstalle l'ancienne version.",
+      [
+        "action",
+        "intermediate"
+      ],
+      2
+    ]
+  ],
+  "daily_routines": [
+    [
+      "to_wake_up",
+      "se réveiller",
+      "to wake up",
+      "Je me réveille à 7h.",
+      [
+        "morning",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "breakfast",
+      "petit déjeuner",
+      "breakfast",
+      "Le petit déjeuner est prêt.",
+      [
+        "morning",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "shower",
+      "douche",
+      "shower",
+      "Je prends une douche.",
+      [
+        "morning",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_brush_teeth",
+      "se brosser les dents",
+      "to brush teeth",
+      "Je me brosse les dents.",
+      [
+        "morning",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_get_dressed",
+      "s'habiller",
+      "to get dressed",
+      "Je m'habille.",
+      [
+        "morning",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_comb_hair",
+      "se coiffer",
+      "to comb hair",
+      "Je me coiffe.",
+      [
+        "morning",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_wash_face",
+      "se laver le visage",
+      "to wash face",
+      "Je me lave le visage.",
+      [
+        "morning",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "alarm_clock",
+      "réveil",
+      "alarm clock",
+      "Le réveil sonne à 7h.",
+      [
+        "morning",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "work",
+      "travail",
+      "work",
+      "Je vais au travail.",
+      [
+        "day",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "lunch",
+      "déjeuner",
+      "lunch",
+      "Le déjeuner est à midi.",
+      [
+        "day",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "break",
+      "pause",
+      "break",
+      "Je prends une pause.",
+      [
+        "day",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "nap",
+      "sieste",
+      "nap",
+      "Je fais une sieste.",
+      [
+        "day",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "errands",
+      "courses",
+      "errands",
+      "Je fais des courses.",
+      [
+        "day",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "appointment",
+      "rendez-vous",
+      "appointment",
+      "J'ai un rendez-vous.",
+      [
+        "day",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "dinner",
+      "dîner",
+      "dinner",
+      "Le dîner est prêt.",
+      [
+        "evening",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_relax",
+      "se détendre",
+      "to relax",
+      "Je me détends le soir.",
+      [
+        "evening",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "television",
+      "télévision",
+      "television",
+      "Je regarde la télévision.",
+      [
+        "evening",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_watch",
+      "regarder",
+      "to watch",
+      "Je regarde un film.",
+      [
+        "evening",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_read",
+      "lire",
+      "to read",
+      "Je lis un livre.",
+      [
+        "evening",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_cook",
+      "cuisiner",
+      "to cook",
+      "J'aime cuisiner.",
+      [
+        "evening",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_clean",
+      "nettoyer",
+      "to clean",
+      "Je nettoie la maison.",
+      [
+        "evening",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_wash_dishes",
+      "faire la vaisselle",
+      "to wash dishes",
+      "Je fais la vaisselle.",
+      [
+        "evening",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_go_to_bed",
+      "aller au lit",
+      "to go to bed",
+      "Je vais au lit à 22h.",
+      [
+        "night",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_sleep",
+      "dormir",
+      "to sleep",
+      "J'aime dormir.",
+      [
+        "night",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "dream",
+      "rêve",
+      "dream",
+      "J'ai fait un rêve.",
+      [
+        "night",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "morning",
+      "matin",
+      "morning",
+      "Bonjour, ce matin.",
+      [
+        "time",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "afternoon",
+      "après-midi",
+      "afternoon",
+      "L'après-midi, je me repose.",
+      [
+        "time",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "evening",
+      "soir",
+      "evening",
+      "Bonjour, ce soir.",
+      [
+        "time",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "today",
+      "aujourd'hui",
+      "today",
+      "Aujourd'hui est un bon jour.",
+      [
+        "time",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "tomorrow",
+      "demain",
+      "tomorrow",
+      "Demain, je partirai.",
+      [
+        "time",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "yesterday",
+      "hier",
+      "yesterday",
+      "Hier, j'étais fatigué.",
+      [
+        "time",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "always",
+      "toujours",
+      "always",
+      "Je suis toujours à l'heure.",
+      [
+        "frequency",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "often",
+      "souvent",
+      "often",
+      "Je vais souvent au cinéma.",
+      [
+        "frequency",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "sometimes",
+      "parfois",
+      "sometimes",
+      "Parfois, je me repose.",
+      [
+        "frequency",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "rarely",
+      "rarement",
+      "rarely",
+      "Je décide rarement ainsi.",
+      [
+        "frequency",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "never",
+      "jamais",
+      "never",
+      "Je ne vais jamais là.",
+      [
+        "frequency",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "every_day",
+      "tous les jours",
+      "every day",
+      "Je fais ça tous les jours.",
+      [
+        "frequency",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_make_bed",
+      "faire son lit",
+      "to make bed",
+      "Je fais mon lit chaque matin.",
+      [
+        "morning",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_take_shower",
+      "prendre une douche",
+      "to take shower",
+      "Je prends une douche chaude.",
+      [
+        "morning",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_wash_hands",
+      "se laver les mains",
+      "to wash hands",
+      "Lavez-vous les mains avant de manger.",
+      [
+        "morning",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_dry_hair",
+      "sécher ses cheveux",
+      "to dry hair",
+      "Je sèche mes cheveux avec le sèche-cheveux.",
+      [
+        "morning",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_put_on_makeup",
+      "se maquiller",
+      "to put on makeup",
+      "Elle se maquille dans la salle de bain.",
+      [
+        "morning",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "to_shave",
+      "se raser",
+      "to shave",
+      "Il se rase tous les matins.",
+      [
+        "morning",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_go_out",
+      "sortir",
+      "to go out",
+      "Je sors avec mes amis ce soir.",
+      [
+        "evening",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_stay_home",
+      "rester à la maison",
+      "to stay home",
+      "Je reste à la maison aujourd'hui.",
+      [
+        "day",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_take_break",
+      "faire une pause",
+      "to take break",
+      "Je fais une pause de 10 minutes.",
+      [
+        "day",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_go_to_work",
+      "aller au travail",
+      "to go to work",
+      "Je vais au travail en voiture.",
+      [
+        "day",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_come_home",
+      "rentrer à la maison",
+      "to come home",
+      "Je rentre à la maison à 18h.",
+      [
+        "evening",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_watch_movie",
+      "regarder un film",
+      "to watch movie",
+      "Nous regardons un film le vendredi soir.",
+      [
+        "evening",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_listen_music",
+      "écouter de la musique",
+      "to listen music",
+      "J'écoute de la musique en travaillant.",
+      [
+        "day",
+        "beginner"
+      ],
+      1
+    ]
+  ],
+  "hobbies": [
+    [
+      "to_paint",
+      "peindre",
+      "to paint",
+      "J'aime peindre.",
+      [
+        "creative",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_draw",
+      "dessiner",
+      "to draw",
+      "J'aime dessiner.",
+      [
+        "creative",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "painting",
+      "tableau",
+      "painting",
+      "Le tableau est beau.",
+      [
+        "creative",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "drawing",
+      "dessin",
+      "drawing",
+      "Le dessin est créatif.",
+      [
+        "creative",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "photograph",
+      "photo",
+      "photograph",
+      "J'aime prendre des photos.",
+      [
+        "creative",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "photography",
+      "photographie",
+      "photography",
+      "La photographie est mon hobby.",
+      [
+        "creative",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "craft",
+      "artisanat",
+      "craft",
+      "L'artisanat est relaxant.",
+      [
+        "creative",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "music",
+      "musique",
+      "music",
+      "J'aime la musique.",
+      [
+        "creative",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "book",
+      "livre",
+      "book",
+      "Le livre est intéressant.",
+      [
+        "reading",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "novel",
+      "roman",
+      "novel",
+      "Le roman est captivant.",
+      [
+        "reading",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "magazine",
+      "magazine",
+      "magazine",
+      "Je lis des magazines.",
+      [
+        "reading",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "newspaper",
+      "journal",
+      "newspaper",
+      "Je lis le journal.",
+      [
+        "reading",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "library",
+      "bibliothèque",
+      "library",
+      "La bibliothèque est calme.",
+      [
+        "reading",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_borrow",
+      "emprunter",
+      "to borrow",
+      "J'emprunte un livre.",
+      [
+        "reading",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_sing",
+      "chanter",
+      "to sing",
+      "J'aime chanter.",
+      [
+        "music",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_play",
+      "jouer",
+      "to play",
+      "Je joue du piano.",
+      [
+        "music",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "concert",
+      "concert",
+      "concert",
+      "Le concert était formidable.",
+      [
+        "music",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "song",
+      "chanson",
+      "song",
+      "La chanson est belle.",
+      [
+        "music",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "melody",
+      "mélodie",
+      "melody",
+      "La mélodie est entraînante.",
+      [
+        "music",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "rhythm",
+      "rythme",
+      "rhythm",
+      "Le rythme est rapide.",
+      [
+        "music",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "to_garden",
+      "jardiner",
+      "to garden",
+      "J'aime jardiner.",
+      [
+        "outdoor",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "garden",
+      "jardin",
+      "garden",
+      "Le jardin est beau.",
+      [
+        "outdoor",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_hike",
+      "faire de la randonnée",
+      "to hike",
+      "J'aime la randonnée.",
+      [
+        "outdoor",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "to_camp",
+      "camper",
+      "to camp",
+      "J'adore camper.",
+      [
+        "outdoor",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "to_fish",
+      "pêcher",
+      "to fish",
+      "Je pêche le week-end.",
+      [
+        "outdoor",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_swim",
+      "nager",
+      "to swim",
+      "J'aime nager.",
+      [
+        "outdoor",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_bike",
+      "faire du vélo",
+      "to bike",
+      "Je fais du vélo tous les jours.",
+      [
+        "outdoor",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_cook",
+      "cuisiner",
+      "to cook",
+      "J'aime cuisiner.",
+      [
+        "indoor",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_bake",
+      "faire de la pâtisserie",
+      "to bake",
+      "J'adore faire de la pâtisserie.",
+      [
+        "indoor",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "to_knit",
+      "tricoter",
+      "to knit",
+      "Je tricote un écharpe.",
+      [
+        "indoor",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "to_sew",
+      "coudre",
+      "to sew",
+      "Je sais coudre.",
+      [
+        "indoor",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "to_collect",
+      "collectionner",
+      "to collect",
+      "Je collectionne des timbres.",
+      [
+        "indoor",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "to_do_puzzle",
+      "faire un puzzle",
+      "to do puzzle",
+      "J'aime faire des puzzles.",
+      [
+        "indoor",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_collect_items",
+      "collectionner",
+      "to collect",
+      "J'aime collectionner des timbres.",
+      [
+        "indoor",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "to_play_chess",
+      "jouer aux échecs",
+      "to play chess",
+      "Mon grand-père et moi jouons aux échecs.",
+      [
+        "indoor",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_play_board_games",
+      "jouer à des jeux de société",
+      "to play board games",
+      "Nous jouons à des jeux de société le week-end.",
+      [
+        "indoor",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_do_yoga",
+      "faire du yoga",
+      "to do yoga",
+      "Je fais du yoga pour me détendre.",
+      [
+        "indoor",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_meditate",
+      "méditer",
+      "to meditate",
+      "Je médite 10 minutes chaque jour.",
+      [
+        "indoor",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_do_crossword",
+      "faire des mots croisés",
+      "to do crossword",
+      "J'aime faire des mots croisés.",
+      [
+        "indoor",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_do_sudoku",
+      "faire du sudoku",
+      "to do sudoku",
+      "Le sudoku est bon pour le cerveau.",
+      [
+        "indoor",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "to_go_to_gym",
+      "aller à la salle de sport",
+      "to go to gym",
+      "Je vais à la salle de sport trois fois par semaine.",
+      [
+        "indoor",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_go_swimming",
+      "nager",
+      "to swim",
+      "J'aime nager à la piscine.",
+      [
+        "outdoor",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_go_fishing",
+      "aller à la pêche",
+      "to go fishing",
+      "Mon père et moi allons à la pêche.",
+      [
+        "outdoor",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_go_camping",
+      "aller camper",
+      "to go camping",
+      "Nous allons camper dans les montagnes.",
+      [
+        "outdoor",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "to_go_hiking",
+      "faire de la randonnée",
+      "to go hiking",
+      "J'adore la randonnée en forêt.",
+      [
+        "outdoor",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_climb",
+      "escalader",
+      "to climb",
+      "Nous escaladons la montagne.",
+      [
+        "outdoor",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "to_ski",
+      "skier",
+      "to ski",
+      "Je skie en hiver.",
+      [
+        "outdoor",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "to_snowboard",
+      "faire du snowboard",
+      "to snowboard",
+      "Le snowboard est amusant.",
+      [
+        "outdoor",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "to_go_to_concert",
+      "aller à un concert",
+      "to go to concert",
+      "Nous allons à un concert ce soir.",
+      [
+        "music",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_play_video_games",
+      "jouer aux jeux vidéo",
+      "to play video games",
+      "Mon frère joue aux jeux vidéo.",
+      [
+        "indoor",
+        "beginner"
+      ],
+      1
+    ]
+  ],
+  "education": [
+    [
+      "school",
+      "école",
+      "school",
+      "L'école commence à 8h.",
+      [
+        "school",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "university",
+      "université",
+      "university",
+      "L'université est grande.",
+      [
+        "school",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "college",
+      "collège",
+      "college",
+      "Le collège est près de chez moi.",
+      [
+        "school",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "class",
+      "classe",
+      "class",
+      "La classe est silencieuse.",
+      [
+        "school",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "classroom",
+      "salle de classe",
+      "classroom",
+      "La salle de classe est propre.",
+      [
+        "school",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "student",
+      "élève",
+      "student",
+      "L'élève est intelligent.",
+      [
+        "school",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "teacher",
+      "professeur",
+      "teacher",
+      "Le professeur explique la leçon.",
+      [
+        "school",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "principal",
+      "principal",
+      "principal",
+      "Le principal est gentil.",
+      [
+        "school",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "homework",
+      "devoirs",
+      "homework",
+      "J'ai beaucoup de devoirs.",
+      [
+        "school",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "math",
+      "maths",
+      "math",
+      "Les maths sont difficiles.",
+      [
+        "subject",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "science",
+      "sciences",
+      "science",
+      "J'aime les sciences.",
+      [
+        "subject",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "history",
+      "histoire",
+      "history",
+      "L'histoire est intéressante.",
+      [
+        "subject",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "geography",
+      "géographie",
+      "geography",
+      "La géographie est utile.",
+      [
+        "subject",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "language",
+      "langue",
+      "language",
+      "J'étudie une nouvelle langue.",
+      [
+        "subject",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "french",
+      "français",
+      "French",
+      "J'apprends le français.",
+      [
+        "subject",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "english",
+      "anglais",
+      "English",
+      "Je parle anglais.",
+      [
+        "subject",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "art",
+      "art",
+      "art",
+      "L'art est créatif.",
+      [
+        "subject",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "music_class",
+      "cours de musique",
+      "music class",
+      "Le cours de musique est amusant.",
+      [
+        "subject",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "to_learn",
+      "apprendre",
+      "to learn",
+      "J'apprends tous les jours.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_study",
+      "étudier",
+      "to study",
+      "J'étudie pour l'examen.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_teach",
+      "enseigner",
+      "to teach",
+      "Le professeur enseigne.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_read",
+      "lire",
+      "to read",
+      "Je lis un livre.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_write",
+      "écrire",
+      "to write",
+      "J'écris une composition.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_research",
+      "faire des recherches",
+      "to research",
+      "Je fais des recherches.",
+      [
+        "action",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "to_memorize",
+      "mémoriser",
+      "to memorize",
+      "Je dois mémoriser ceci.",
+      [
+        "action",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "to_practice",
+      "pratiquer",
+      "to practice",
+      "Je pratique tous les jours.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "book",
+      "livre",
+      "book",
+      "Le livre est intéressant.",
+      [
+        "material",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "notebook",
+      "cahier",
+      "notebook",
+      "J'écris dans mon cahier.",
+      [
+        "material",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "pen",
+      "stylo",
+      "pen",
+      "Le stylo écrit bien.",
+      [
+        "material",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "pencil",
+      "crayon",
+      "pencil",
+      "J'utilise un crayon.",
+      [
+        "material",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "paper",
+      "papier",
+      "paper",
+      "Le papier est blanc.",
+      [
+        "material",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "computer",
+      "ordinateur",
+      "computer",
+      "J'utilise un ordinateur.",
+      [
+        "material",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "exam",
+      "examen",
+      "exam",
+      "L'examen est demain.",
+      [
+        "test",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "test",
+      "test",
+      "test",
+      "Le test était facile.",
+      [
+        "test",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "quiz",
+      "interrogation",
+      "quiz",
+      "L'interrogation est courte.",
+      [
+        "test",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "grade",
+      "note",
+      "grade",
+      "J'ai une bonne note.",
+      [
+        "test",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "score",
+      "score",
+      "score",
+      "Mon score est élevé.",
+      [
+        "test",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_pass",
+      "réussir",
+      "to pass",
+      "J'ai réussi l'examen.",
+      [
+        "test",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_fail",
+      "échouer",
+      "to fail",
+      "Je ne veux pas échouer.",
+      [
+        "test",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "school_homework",
+      "devoirs",
+      "homework",
+      "J'ai beaucoup de devoirs ce soir.",
+      [
+        "school",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_do_homework",
+      "faire ses devoirs",
+      "to do homework",
+      "Je fais mes devoirs après l'école.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_study_hard",
+      "étudier",
+      "to study",
+      "J'étudie pour mon examen.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_learn_by_heart",
+      "apprendre par cœur",
+      "to learn by heart",
+      "J'apprends ce poème par cœur.",
+      [
+        "action",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "to_revise",
+      "réviser",
+      "to revise",
+      "Je révise mes leçons.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_take_notes",
+      "prendre des notes",
+      "to take notes",
+      "Je prends des notes pendant le cours.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_ask_question",
+      "poser une question",
+      "to ask question",
+      "Je pose une question au professeur.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_answer",
+      "répondre",
+      "to answer",
+      "L'élève répond à la question.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_explain",
+      "expliquer",
+      "to explain",
+      "Le professeur explique la leçon.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_understand",
+      "comprendre",
+      "to understand",
+      "Je comprends maintenant.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_pass_exam",
+      "réussir un examen",
+      "to pass exam",
+      "J'espère réussir mon examen.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ]
+  ],
+  "sports": [
+    [
+      "soccer",
+      "football",
+      "soccer",
+      "Le football est populaire.",
+      [
+        "sport",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "basketball",
+      "basketball",
+      "basketball",
+      "Le basketball est amusant.",
+      [
+        "sport",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "tennis",
+      "tennis",
+      "tennis",
+      "Je joue au tennis.",
+      [
+        "sport",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "swimming",
+      "natation",
+      "swimming",
+      "La natation est bonne pour la santé.",
+      [
+        "sport",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "running",
+      "course à pied",
+      "running",
+      "Je fais de la course à pied.",
+      [
+        "sport",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "cycling",
+      "cyclisme",
+      "cycling",
+      "Le cyclisme est populaire en Europe.",
+      [
+        "sport",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "gymnastics",
+      "gymnastique",
+      "gymnastics",
+      "La gymnastique est difficile.",
+      [
+        "sport",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "volleyball",
+      "volleyball",
+      "volleyball",
+      "Le volleyball est un sport d'équipe.",
+      [
+        "sport",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "golf",
+      "golf",
+      "golf",
+      "Le golf est un sport calme.",
+      [
+        "sport",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "skiing",
+      "ski",
+      "skiing",
+      "Le ski est amusant en hiver.",
+      [
+        "sport",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "ball",
+      "ballon",
+      "ball",
+      "Le ballon est rond.",
+      [
+        "equipment",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "racket",
+      "raquette",
+      "racket",
+      "La raquette est légère.",
+      [
+        "equipment",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "bat",
+      "batte",
+      "bat",
+      "La batte est en bois.",
+      [
+        "equipment",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "glove",
+      "gant",
+      "glove",
+      "Le gant protège la main.",
+      [
+        "equipment",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "net",
+      "filet",
+      "net",
+      "Le filet est tendu.",
+      [
+        "equipment",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "goal",
+      "but",
+      "goal",
+      "Le but est marqué!",
+      [
+        "equipment",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "field",
+      "terrain",
+      "field",
+      "Le terrain est vert.",
+      [
+        "equipment",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "court",
+      "court",
+      "court",
+      "Le court est prêt.",
+      [
+        "equipment",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "track",
+      "piste",
+      "track",
+      "La piste est longue.",
+      [
+        "equipment",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "player",
+      "joueur",
+      "player",
+      "Le joueur est doué.",
+      [
+        "people",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "coach",
+      "entraîneur",
+      "coach",
+      "L'entraîneur donne des conseils.",
+      [
+        "people",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "referee",
+      "arbitre",
+      "referee",
+      "L'arbitre siffle.",
+      [
+        "people",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "opponent",
+      "adversaire",
+      "opponent",
+      "L'adversaire est fort.",
+      [
+        "people",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "fan",
+      "fan",
+      "fan",
+      "Les fans crient.",
+      [
+        "people",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_play",
+      "jouer",
+      "to play",
+      "Je joue au football.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_score",
+      "marquer",
+      "to score",
+      "J'ai marqué un but!",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_win",
+      "gagner",
+      "to win",
+      "J'ai gagné le match!",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_lose",
+      "perdre",
+      "to lose",
+      "J'ai perdu le match.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_compete",
+      "concourir",
+      "to compete",
+      "Nous concourons ensemble.",
+      [
+        "action",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "to_train",
+      "s'entraîner",
+      "to train",
+      "Je m'entraîner tous les jours.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_practice",
+      "pratiquer",
+      "to practice",
+      "Je pratique le tennis.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_exercise",
+      "faire de l'exercice",
+      "to exercise",
+      "Je fais de l'exercice.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "stadium",
+      "stade",
+      "stadium",
+      "Le stade est plein.",
+      [
+        "place",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "gym",
+      "gymnase",
+      "gym",
+      "Le gymnase est grand.",
+      [
+        "place",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "pool",
+      "piscine",
+      "pool",
+      "La piscine est ouverte.",
+      [
+        "place",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "team",
+      "équipe",
+      "team",
+      "Notre équipe a gagné.",
+      [
+        "people",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "game",
+      "jeu",
+      "game",
+      "Le jeu est passionnant.",
+      [
+        "term",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "match",
+      "match",
+      "match",
+      "Le match commence à 15h.",
+      [
+        "term",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "tournament",
+      "tournoi",
+      "tournament",
+      "Le tournoi dure une semaine.",
+      [
+        "term",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "championship",
+      "championnat",
+      "championship",
+      "Le championnat est important.",
+      [
+        "term",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "medal",
+      "médaille",
+      "medal",
+      "La médaille est en or.",
+      [
+        "term",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_compete_in",
+      "concourir",
+      "to compete",
+      "J'aime concours en natation.",
+      [
+        "action",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "to_train_hard",
+      "s'entraîner",
+      "to train",
+      "Je m'entraîner tous les jours.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_warm_up",
+      "s'échauffer",
+      "to warm up",
+      "Il faut s'échauffer avant le match.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_cool_down",
+      "refroidir",
+      "to cool down",
+      "Après l'entraînement, je me refroidis.",
+      [
+        "action",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "to_cheer",
+      "encourager",
+      "to cheer",
+      "Les fans encouragent leur équipe.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_applaud",
+      "applaudir",
+      "to applaud",
+      "Le public applaudit les joueurs.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_high_five",
+      "faire un check",
+      "to high five",
+      "Nous faisons un check après le but.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_stretch",
+      "s'étirer",
+      "to stretch",
+      "Il faut s'étirer avant de courir.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_rest",
+      "se reposer",
+      "to rest",
+      "Je me repose après le sport.",
+      [
+        "action",
+        "beginner"
+      ],
+      1
+    ]
+  ],
+  "food": [
+    [
+      "apple",
+      "pomme",
+      "apple",
+      "Je mange une pomme.",
+      [
+        "fruit",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "banana",
+      "banane",
+      "banana",
+      "La banane est jaune.",
+      [
+        "fruit",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "orange",
+      "orange",
+      "orange",
+      "L'orange est juteuse.",
+      [
+        "fruit",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "grape",
+      "raisin",
+      "grape",
+      "Le raisin est sucré.",
+      [
+        "fruit",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "strawberry",
+      "fraise",
+      "strawberry",
+      "La fraise est rouge.",
+      [
+        "fruit",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "pear",
+      "poire",
+      "pear",
+      "La poire est mûre.",
+      [
+        "fruit",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "peach",
+      "pêche",
+      "peach",
+      "La pêche est douce.",
+      [
+        "fruit",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "cherry",
+      "cerise",
+      "cherry",
+      "La cerise est petite.",
+      [
+        "fruit",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "watermelon",
+      "pastèque",
+      "watermelon",
+      "La pastèque est rafraîchissante.",
+      [
+        "fruit",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "pineapple",
+      "ananas",
+      "pineapple",
+      "L'ananas est exotique.",
+      [
+        "fruit",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "carrot",
+      "carotte",
+      "carrot",
+      "La carotte est bonne pour les yeux.",
+      [
+        "vegetable",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "potato",
+      "pomme de terre",
+      "potato",
+      "La pomme de terre est polyvalente.",
+      [
+        "vegetable",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "tomato",
+      "tomate",
+      "tomato",
+      "La tomate est rouge.",
+      [
+        "vegetable",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "onion",
+      "oignon",
+      "onion",
+      "L'oignon pique.",
+      [
+        "vegetable",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "lettuce",
+      "laitue",
+      "lettuce",
+      "La laitue est dans la salade.",
+      [
+        "vegetable",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "cucumber",
+      "concombre",
+      "cucumber",
+      "Le concombre est frais.",
+      [
+        "vegetable",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "bell_pepper",
+      "poivron",
+      "bell pepper",
+      "Le poivron est vert.",
+      [
+        "vegetable",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "broccoli",
+      "brocoli",
+      "broccoli",
+      "Le brocoli est vert.",
+      [
+        "vegetable",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "spinach",
+      "épinard",
+      "spinach",
+      "Les épinards sont bons pour la santé.",
+      [
+        "vegetable",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "chicken",
+      "poulet",
+      "chicken",
+      "Le poulet est tendre.",
+      [
+        "meat",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "beef",
+      "bœuf",
+      "beef",
+      "Le bœuf est savoureux.",
+      [
+        "meat",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "pork",
+      "porc",
+      "pork",
+      "Le porc est populaire en France.",
+      [
+        "meat",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "fish",
+      "poisson",
+      "fish",
+      "Le poisson est frais.",
+      [
+        "meat",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "shrimp",
+      "crevette",
+      "shrimp",
+      "La crevette est délicieuse.",
+      [
+        "meat",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "lamb",
+      "agneau",
+      "lamb",
+      "L'agneau est tendre.",
+      [
+        "meat",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "duck",
+      "canard",
+      "duck",
+      "Le canard est gras.",
+      [
+        "meat",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "milk",
+      "lait",
+      "milk",
+      "Le lait est blanc.",
+      [
+        "dairy",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "cheese",
+      "fromage",
+      "cheese",
+      "Le fromage français est délicieux.",
+      [
+        "dairy",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "butter",
+      "beurre",
+      "butter",
+      "Le beurre est dans le frigo.",
+      [
+        "dairy",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "yogurt",
+      "yaourt",
+      "yogurt",
+      "Le yaourt est bon pour la santé.",
+      [
+        "dairy",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "cream",
+      "crème",
+      "cream",
+      "La crème est fraîche.",
+      [
+        "dairy",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "bread",
+      "pain",
+      "bread",
+      "Le pain est frais.",
+      [
+        "grain",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "rice",
+      "riz",
+      "rice",
+      "Le riz accompagne le plat.",
+      [
+        "grain",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "pasta",
+      "pâtes",
+      "pasta",
+      "Les pâtes sont cuites.",
+      [
+        "grain",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "cereal",
+      "céréales",
+      "cereal",
+      "Les céréales sont pour le petit déjeuner.",
+      [
+        "grain",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "flour",
+      "farine",
+      "flour",
+      "La farine est nécessaire pour le pain.",
+      [
+        "grain",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "salad",
+      "salade",
+      "salad",
+      "La salade est fraîche.",
+      [
+        "prepared",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "soup",
+      "soupe",
+      "soup",
+      "La soupe est chaude.",
+      [
+        "prepared",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "sandwich",
+      "sandwich",
+      "sandwich",
+      "Le sandwich est prêt.",
+      [
+        "prepared",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "pizza",
+      "pizza",
+      "pizza",
+      "La pizza est italienne.",
+      [
+        "prepared",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "cake",
+      "gâteau",
+      "cake",
+      "Le gâteau est délicieux.",
+      [
+        "prepared",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "dessert",
+      "dessert",
+      "dessert",
+      "Le dessert est sucré.",
+      [
+        "prepared",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_cook",
+      "cuisiner",
+      "to cook",
+      "J'aime cuisiner.",
+      [
+        "verb",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_bake",
+      "faire cuire au four",
+      "to bake",
+      "Je fais cuire un gâteau.",
+      [
+        "verb",
+        "intermediate"
+      ],
+      2
+    ],
+    [
+      "to_fry",
+      "frire",
+      "to fry",
+      "Je fais frire des pommes de terre.",
+      [
+        "verb",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_boil",
+      "faire bouillir",
+      "to boil",
+      "Faites bouillir l'eau.",
+      [
+        "verb",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "to_grill",
+      "griller",
+      "to grill",
+      "Je grille de la viande.",
+      [
+        "verb",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "fresh",
+      "frais",
+      "fresh",
+      "Les légumes sont frais.",
+      [
+        "adjective",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "ripe",
+      "mûr",
+      "ripe",
+      "Le fruit est mûr.",
+      [
+        "adjective",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "raw",
+      "cru",
+      "raw",
+      "Les légumes sont crus.",
+      [
+        "adjective",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "cooked",
+      "cuit",
+      "cooked",
+      "Le poulet est bien cuit.",
+      [
+        "adjective",
+        "beginner"
+      ],
+      1
+    ],
+    [
+      "spicy",
+      "épicé",
+      "spicy",
+      "Ce plat est épicé.",
+      [
+        "adjective",
+        "beginner"
+      ],
+      1
+    ]
+  ]
+}

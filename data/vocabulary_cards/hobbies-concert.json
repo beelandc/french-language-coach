@@ -1,0 +1,13 @@
+{
+  "deck_id": "hobbies",
+  "card_id": "concert",
+  "front": "concert",
+  "back": "concert",
+  "example": "Le concert était formidable.",
+  "tags": [
+    "music",
+    "beginner"
+  ],
+  "context": "deck:hobbies",
+  "difficulty": 1
+}

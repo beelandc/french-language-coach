@@ -1,0 +1,13 @@
+{
+  "deck_id": "technology",
+  "card_id": "to_use",
+  "front": "utiliser",
+  "back": "to use",
+  "example": "J'utilise l'ordinateur.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:technology",
+  "difficulty": 1
+}

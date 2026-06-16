@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "broccoli",
+  "front": "brocoli",
+  "back": "broccoli",
+  "example": "Le brocoli est vert.",
+  "tags": [
+    "vegetable",
+    "intermediate"
+  ],
+  "context": "deck:food",
+  "difficulty": 2
+}

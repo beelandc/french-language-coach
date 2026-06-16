@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "to_recommend",
+  "front": "recommander",
+  "back": "to recommend",
+  "example": "Que nous recommandez-vous comme plat du jour?",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:dining",
+  "difficulty": 1
+}

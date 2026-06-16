@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "milk",
+  "front": "lait",
+  "back": "milk",
+  "example": "Le lait est blanc.",
+  "tags": [
+    "dairy",
+    "beginner"
+  ],
+  "context": "deck:food",
+  "difficulty": 1
+}

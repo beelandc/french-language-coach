@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "to_explore",
+  "front": "explorer",
+  "back": "to explore",
+  "example": "Explorons la vieille ville ensemble.",
+  "tags": [
+    "action",
+    "intermediate"
+  ],
+  "context": "deck:travel",
+  "difficulty": 2
+}

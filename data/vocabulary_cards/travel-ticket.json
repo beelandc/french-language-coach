@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "ticket",
+  "front": "billet",
+  "back": "ticket",
+  "example": "J'ai acheté mon billet de train.",
+  "tags": [
+    "document",
+    "beginner"
+  ],
+  "context": "deck:travel",
+  "difficulty": 1
+}

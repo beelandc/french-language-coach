@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "onion",
+  "front": "oignon",
+  "back": "onion",
+  "example": "L'oignon pique.",
+  "tags": [
+    "vegetable",
+    "beginner"
+  ],
+  "context": "deck:food",
+  "difficulty": 1
+}

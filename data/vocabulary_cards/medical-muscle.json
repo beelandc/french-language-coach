@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "muscle",
+  "front": "muscle",
+  "back": "muscle",
+  "example": "J'ai mal aux muscles.",
+  "tags": [
+    "body",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

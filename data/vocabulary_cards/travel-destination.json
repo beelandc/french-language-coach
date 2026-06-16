@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "destination",
+  "front": "destination",
+  "back": "destination",
+  "example": "Notre destination finale est Rome.",
+  "tags": [
+    "place",
+    "intermediate"
+  ],
+  "context": "deck:travel",
+  "difficulty": 2
+}

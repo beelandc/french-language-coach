@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "to_try",
+  "front": "essayer",
+  "back": "to try",
+  "example": "Essayez la spécialité du chef.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:dining",
+  "difficulty": 1
+}

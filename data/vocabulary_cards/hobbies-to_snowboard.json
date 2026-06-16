@@ -1,0 +1,13 @@
+{
+  "deck_id": "hobbies",
+  "card_id": "to_snowboard",
+  "front": "faire du snowboard",
+  "back": "to snowboard",
+  "example": "Le snowboard est amusant.",
+  "tags": [
+    "outdoor",
+    "intermediate"
+  ],
+  "context": "deck:hobbies",
+  "difficulty": 2
+}

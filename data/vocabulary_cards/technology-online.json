@@ -1,0 +1,13 @@
+{
+  "deck_id": "technology",
+  "card_id": "online",
+  "front": "en ligne",
+  "back": "online",
+  "example": "Je suis en ligne.",
+  "tags": [
+    "internet",
+    "beginner"
+  ],
+  "context": "deck:technology",
+  "difficulty": 1
+}

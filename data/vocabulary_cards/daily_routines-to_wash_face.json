@@ -1,0 +1,13 @@
+{
+  "deck_id": "daily_routines",
+  "card_id": "to_wash_face",
+  "front": "se laver le visage",
+  "back": "to wash face",
+  "example": "Je me lave le visage.",
+  "tags": [
+    "morning",
+    "beginner"
+  ],
+  "context": "deck:daily_routines",
+  "difficulty": 1
+}

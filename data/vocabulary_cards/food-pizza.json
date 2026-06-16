@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "pizza",
+  "front": "pizza",
+  "back": "pizza",
+  "example": "La pizza est italienne.",
+  "tags": [
+    "prepared",
+    "beginner"
+  ],
+  "context": "deck:food",
+  "difficulty": 1
+}

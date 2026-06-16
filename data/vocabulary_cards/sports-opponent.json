@@ -1,0 +1,13 @@
+{
+  "deck_id": "sports",
+  "card_id": "opponent",
+  "front": "adversaire",
+  "back": "opponent",
+  "example": "L'adversaire est fort.",
+  "tags": [
+    "people",
+    "intermediate"
+  ],
+  "context": "deck:sports",
+  "difficulty": 2
+}

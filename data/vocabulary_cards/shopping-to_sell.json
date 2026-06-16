@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "to_sell",
+  "front": "vendre",
+  "back": "to sell",
+  "example": "Ils vendent des produits locaux au marché.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

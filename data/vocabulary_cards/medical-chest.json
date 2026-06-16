@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "chest",
+  "front": "poitrine",
+  "back": "chest",
+  "example": "J'ai une douleur à la poitrine.",
+  "tags": [
+    "body",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

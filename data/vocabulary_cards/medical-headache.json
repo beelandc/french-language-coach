@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "headache",
+  "front": "mal de tête",
+  "back": "headache",
+  "example": "J'ai mal à la tête.",
+  "tags": [
+    "symptom",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

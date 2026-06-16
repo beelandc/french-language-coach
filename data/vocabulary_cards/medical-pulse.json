@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "pulse",
+  "front": "pouls",
+  "back": "pulse",
+  "example": "Le médecin vérifie mon pouls.",
+  "tags": [
+    "symptom",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "shoe_store",
+  "front": "magasin de chaussures",
+  "back": "shoe store",
+  "example": "Ce magasin de chaussures a un grand choix.",
+  "tags": [
+    "store",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

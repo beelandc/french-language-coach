@@ -1,0 +1,13 @@
+{
+  "deck_id": "business",
+  "card_id": "to_negotiate",
+  "front": "négocier",
+  "back": "to negotiate",
+  "example": "Nous négocions le prix.",
+  "tags": [
+    "action",
+    "intermediate"
+  ],
+  "context": "deck:business",
+  "difficulty": 2
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "education",
+  "card_id": "university",
+  "front": "université",
+  "back": "university",
+  "example": "L'université est grande.",
+  "tags": [
+    "school",
+    "beginner"
+  ],
+  "context": "deck:education",
+  "difficulty": 1
+}

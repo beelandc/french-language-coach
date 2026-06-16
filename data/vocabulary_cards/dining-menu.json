@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "menu",
+  "front": "menu",
+  "back": "menu",
+  "example": "Le menu propose des plats traditionnels français.",
+  "tags": [
+    "restaurant",
+    "beginner"
+  ],
+  "context": "deck:dining",
+  "difficulty": 1
+}

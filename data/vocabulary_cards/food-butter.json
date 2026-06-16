@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "butter",
+  "front": "beurre",
+  "back": "butter",
+  "example": "Le beurre est dans le frigo.",
+  "tags": [
+    "dairy",
+    "beginner"
+  ],
+  "context": "deck:food",
+  "difficulty": 1
+}

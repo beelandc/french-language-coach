@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "guide",
+  "front": "guide",
+  "back": "guide",
+  "example": "Le guide touristique connaît bien la ville.",
+  "tags": [
+    "people",
+    "beginner"
+  ],
+  "context": "deck:travel",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "hobbies",
+  "card_id": "to_go_fishing",
+  "front": "aller à la pêche",
+  "back": "to go fishing",
+  "example": "Mon père et moi allons à la pêche.",
+  "tags": [
+    "outdoor",
+    "beginner"
+  ],
+  "context": "deck:hobbies",
+  "difficulty": 1
+}

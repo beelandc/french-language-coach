@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "airplane",
+  "front": "avion",
+  "back": "airplane",
+  "example": "Je prends l'avion pour Paris.",
+  "tags": [
+    "transport",
+    "beginner"
+  ],
+  "context": "deck:travel",
+  "difficulty": 1
+}

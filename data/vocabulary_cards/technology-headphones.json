@@ -1,0 +1,13 @@
+{
+  "deck_id": "technology",
+  "card_id": "headphones",
+  "front": "casque",
+  "back": "headphones",
+  "example": "J'écoute de la musique avec mon casque.",
+  "tags": [
+    "device",
+    "beginner"
+  ],
+  "context": "deck:technology",
+  "difficulty": 1
+}

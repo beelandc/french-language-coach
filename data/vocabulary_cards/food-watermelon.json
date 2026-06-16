@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "watermelon",
+  "front": "pastèque",
+  "back": "watermelon",
+  "example": "La pastèque est rafraîchissante.",
+  "tags": [
+    "fruit",
+    "intermediate"
+  ],
+  "context": "deck:food",
+  "difficulty": 2
+}

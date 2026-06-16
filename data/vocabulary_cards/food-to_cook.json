@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "to_cook",
+  "front": "cuisiner",
+  "back": "to cook",
+  "example": "J'aime cuisiner.",
+  "tags": [
+    "verb",
+    "beginner"
+  ],
+  "context": "deck:food",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "to_travel",
+  "front": "voyager",
+  "back": "to travel",
+  "example": "J'adore voyager à l'étranger.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:travel",
+  "difficulty": 1
+}

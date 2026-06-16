@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "tip",
+  "front": "pourboire",
+  "back": "tip",
+  "example": "Le pourboire est inclus dans l'addition.",
+  "tags": [
+    "restaurant",
+    "intermediate"
+  ],
+  "context": "deck:dining",
+  "difficulty": 2
+}

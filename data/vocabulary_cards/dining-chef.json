@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "chef",
+  "front": "chef",
+  "back": "chef",
+  "example": "Le chef cuisinier a 20 ans d'expérience.",
+  "tags": [
+    "people",
+    "beginner"
+  ],
+  "context": "deck:dining",
+  "difficulty": 1
+}

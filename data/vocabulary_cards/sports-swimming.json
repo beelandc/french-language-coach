@@ -1,0 +1,13 @@
+{
+  "deck_id": "sports",
+  "card_id": "swimming",
+  "front": "natation",
+  "back": "swimming",
+  "example": "La natation est bonne pour la santé.",
+  "tags": [
+    "sport",
+    "beginner"
+  ],
+  "context": "deck:sports",
+  "difficulty": 1
+}

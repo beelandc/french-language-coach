@@ -1,0 +1,13 @@
+{
+  "deck_id": "sports",
+  "card_id": "to_play",
+  "front": "jouer",
+  "back": "to play",
+  "example": "Je joue au football.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:sports",
+  "difficulty": 1
+}

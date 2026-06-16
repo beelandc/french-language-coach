@@ -1,0 +1,13 @@
+{
+  "deck_id": "business",
+  "card_id": "to_sign",
+  "front": "signer",
+  "back": "to sign",
+  "example": "J'ai signé le contrat.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:business",
+  "difficulty": 1
+}

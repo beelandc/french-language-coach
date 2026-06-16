@@ -1,0 +1,13 @@
+{
+  "deck_id": "education",
+  "card_id": "principal",
+  "front": "principal",
+  "back": "principal",
+  "example": "Le principal est gentil.",
+  "tags": [
+    "school",
+    "intermediate"
+  ],
+  "context": "deck:education",
+  "difficulty": 2
+}

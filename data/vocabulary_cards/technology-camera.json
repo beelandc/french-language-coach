@@ -1,0 +1,13 @@
+{
+  "deck_id": "technology",
+  "card_id": "camera",
+  "front": "appareil photo",
+  "back": "camera",
+  "example": "L'appareil photo prend de belles photos.",
+  "tags": [
+    "device",
+    "beginner"
+  ],
+  "context": "deck:technology",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "business",
+  "card_id": "pen",
+  "front": "stylo",
+  "back": "pen",
+  "example": "Le stylo ne fonctionne plus.",
+  "tags": [
+    "item",
+    "beginner"
+  ],
+  "context": "deck:business",
+  "difficulty": 1
+}

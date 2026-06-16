@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "total",
+  "front": "total",
+  "back": "total",
+  "example": "Le total s'élève à 150 euros.",
+  "tags": [
+    "money",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

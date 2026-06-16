@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "bicycle",
+  "front": "vélo",
+  "back": "bicycle",
+  "example": "Je fais du vélo le week-end.",
+  "tags": [
+    "transport",
+    "beginner"
+  ],
+  "context": "deck:travel",
+  "difficulty": 1
+}

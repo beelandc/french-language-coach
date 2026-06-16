@@ -1,0 +1,13 @@
+{
+  "deck_id": "technology",
+  "card_id": "to_delete",
+  "front": "supprimer",
+  "back": "to delete",
+  "example": "Supprimez ce fichier.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:technology",
+  "difficulty": 1
+}

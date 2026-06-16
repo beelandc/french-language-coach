@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "cash",
+  "front": "espèces",
+  "back": "cash",
+  "example": "Je paie en espèces quand j'ai assez de monnaie.",
+  "tags": [
+    "money",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "bag",
+  "front": "sac",
+  "back": "bag",
+  "example": "Le sac en papier est gratuit dans ce magasin.",
+  "tags": [
+    "item",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "apple",
+  "front": "pomme",
+  "back": "apple",
+  "example": "Je mange une pomme.",
+  "tags": [
+    "fruit",
+    "beginner"
+  ],
+  "context": "deck:food",
+  "difficulty": 1
+}

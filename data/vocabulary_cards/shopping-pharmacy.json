@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "pharmacy",
+  "front": "pharmacie",
+  "back": "pharmacy",
+  "example": "La pharmacie de garde est ouverte le dimanche.",
+  "tags": [
+    "store",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

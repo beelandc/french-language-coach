@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "map",
+  "front": "carte",
+  "back": "map",
+  "example": "La carte touristique montre tous les monuments.",
+  "tags": [
+    "item",
+    "beginner"
+  ],
+  "context": "deck:travel",
+  "difficulty": 1
+}

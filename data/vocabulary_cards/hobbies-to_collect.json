@@ -1,0 +1,13 @@
+{
+  "deck_id": "hobbies",
+  "card_id": "to_collect",
+  "front": "collectionner",
+  "back": "to collect",
+  "example": "Je collectionne des timbres.",
+  "tags": [
+    "indoor",
+    "intermediate"
+  ],
+  "context": "deck:hobbies",
+  "difficulty": 2
+}

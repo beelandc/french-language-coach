@@ -1,0 +1,13 @@
+{
+  "deck_id": "daily_routines",
+  "card_id": "to_go_to_bed",
+  "front": "aller au lit",
+  "back": "to go to bed",
+  "example": "Je vais au lit à 22h.",
+  "tags": [
+    "night",
+    "beginner"
+  ],
+  "context": "deck:daily_routines",
+  "difficulty": 1
+}

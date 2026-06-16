@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "to_drink",
+  "front": "boire",
+  "back": "to drink",
+  "example": "Je vais boire un verre de vin rouge.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:dining",
+  "difficulty": 1
+}

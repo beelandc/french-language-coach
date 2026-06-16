@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "rash",
+  "front": "éruption",
+  "back": "rash",
+  "example": "J'ai une éruption cutanée.",
+  "tags": [
+    "symptom",
+    "intermediate"
+  ],
+  "context": "deck:medical",
+  "difficulty": 2
+}

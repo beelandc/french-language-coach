@@ -1,0 +1,13 @@
+{
+  "deck_id": "sports",
+  "card_id": "bat",
+  "front": "batte",
+  "back": "bat",
+  "example": "La batte est en bois.",
+  "tags": [
+    "equipment",
+    "beginner"
+  ],
+  "context": "deck:sports",
+  "difficulty": 1
+}

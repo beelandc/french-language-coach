@@ -1,0 +1,13 @@
+{
+  "deck_id": "business",
+  "card_id": "appointment",
+  "front": "rendez-vous",
+  "back": "appointment",
+  "example": "J'ai un rendez-vous à 10h.",
+  "tags": [
+    "time",
+    "beginner"
+  ],
+  "context": "deck:business",
+  "difficulty": 1
+}

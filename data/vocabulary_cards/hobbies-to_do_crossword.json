@@ -1,0 +1,13 @@
+{
+  "deck_id": "hobbies",
+  "card_id": "to_do_crossword",
+  "front": "faire des mots croisés",
+  "back": "to do crossword",
+  "example": "J'aime faire des mots croisés.",
+  "tags": [
+    "indoor",
+    "beginner"
+  ],
+  "context": "deck:hobbies",
+  "difficulty": 1
+}

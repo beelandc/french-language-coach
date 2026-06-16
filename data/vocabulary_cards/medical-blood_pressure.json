@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "blood_pressure",
+  "front": "tension artérielle",
+  "back": "blood pressure",
+  "example": "Ma tension artérielle est élevée.",
+  "tags": [
+    "symptom",
+    "intermediate"
+  ],
+  "context": "deck:medical",
+  "difficulty": 2
+}

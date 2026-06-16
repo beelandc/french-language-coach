@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "fever",
+  "front": "fièvre",
+  "back": "fever",
+  "example": "J'ai de la fièvre.",
+  "tags": [
+    "symptom",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

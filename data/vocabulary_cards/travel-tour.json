@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "tour",
+  "front": "visite guidée",
+  "back": "guided tour",
+  "example": "Nous faisons une visite guidée de la ville.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:travel",
+  "difficulty": 1
+}

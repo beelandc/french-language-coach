@@ -1,0 +1,13 @@
+{
+  "deck_id": "education",
+  "card_id": "music_class",
+  "front": "cours de musique",
+  "back": "music class",
+  "example": "Le cours de musique est amusant.",
+  "tags": [
+    "subject",
+    "intermediate"
+  ],
+  "context": "deck:education",
+  "difficulty": 2
+}

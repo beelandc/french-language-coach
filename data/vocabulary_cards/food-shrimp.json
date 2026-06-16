@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "shrimp",
+  "front": "crevette",
+  "back": "shrimp",
+  "example": "La crevette est délicieuse.",
+  "tags": [
+    "meat",
+    "intermediate"
+  ],
+  "context": "deck:food",
+  "difficulty": 2
+}

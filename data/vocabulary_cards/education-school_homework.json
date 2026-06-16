@@ -1,0 +1,13 @@
+{
+  "deck_id": "education",
+  "card_id": "school_homework",
+  "front": "devoirs",
+  "back": "homework",
+  "example": "J'ai beaucoup de devoirs ce soir.",
+  "tags": [
+    "school",
+    "beginner"
+  ],
+  "context": "deck:education",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "daily_routines",
+  "card_id": "to_wake_up",
+  "front": "se réveiller",
+  "back": "to wake up",
+  "example": "Je me réveille à 7h.",
+  "tags": [
+    "morning",
+    "beginner"
+  ],
+  "context": "deck:daily_routines",
+  "difficulty": 1
+}

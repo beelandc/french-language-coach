@@ -1,0 +1,13 @@
+{
+  "deck_id": "daily_routines",
+  "card_id": "to_put_on_makeup",
+  "front": "se maquiller",
+  "back": "to put on makeup",
+  "example": "Elle se maquille dans la salle de bain.",
+  "tags": [
+    "morning",
+    "intermediate"
+  ],
+  "context": "deck:daily_routines",
+  "difficulty": 2
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "business",
+  "card_id": "urgent",
+  "front": "urgent",
+  "back": "urgent",
+  "example": "C'est urgent!",
+  "tags": [
+    "priority",
+    "beginner"
+  ],
+  "context": "deck:business",
+  "difficulty": 1
+}

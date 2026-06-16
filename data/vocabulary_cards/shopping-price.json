@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "price",
+  "front": "prix",
+  "back": "price",
+  "example": "Le prix est-il négociable ou fixe?",
+  "tags": [
+    "money",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

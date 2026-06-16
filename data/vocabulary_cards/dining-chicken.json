@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "chicken",
+  "front": "poulet",
+  "back": "chicken",
+  "example": "Le poulet rôti aux herbes est excellent.",
+  "tags": [
+    "food",
+    "beginner"
+  ],
+  "context": "deck:dining",
+  "difficulty": 1
+}

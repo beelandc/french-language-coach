@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "pasta",
+  "front": "pâtes",
+  "back": "pasta",
+  "example": "Les pâtes sont cuites.",
+  "tags": [
+    "grain",
+    "beginner"
+  ],
+  "context": "deck:food",
+  "difficulty": 1
+}

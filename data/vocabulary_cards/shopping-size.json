@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "size",
+  "front": "taille",
+  "back": "size",
+  "example": "Quelle taille faites-vous?",
+  "tags": [
+    "clothing",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "boarding_pass",
+  "front": "carte d'embarquement",
+  "back": "boarding pass",
+  "example": "Voici ma carte d'embarquement.",
+  "tags": [
+    "document",
+    "intermediate"
+  ],
+  "context": "deck:travel",
+  "difficulty": 2
+}

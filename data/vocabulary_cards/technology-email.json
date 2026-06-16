@@ -1,0 +1,13 @@
+{
+  "deck_id": "technology",
+  "card_id": "email",
+  "front": "courriel",
+  "back": "email",
+  "example": "J'envoie un courriel.",
+  "tags": [
+    "internet",
+    "beginner"
+  ],
+  "context": "deck:technology",
+  "difficulty": 1
+}

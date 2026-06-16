@@ -1,0 +1,13 @@
+{
+  "deck_id": "sports",
+  "card_id": "goal",
+  "front": "but",
+  "back": "goal",
+  "example": "Le but est marqué!",
+  "tags": [
+    "equipment",
+    "beginner"
+  ],
+  "context": "deck:sports",
+  "difficulty": 1
+}

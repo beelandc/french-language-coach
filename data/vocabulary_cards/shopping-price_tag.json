@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "price_tag",
+  "front": "étiquette de prix",
+  "back": "price tag",
+  "example": "L'étiquette de prix montre 20 euros.",
+  "tags": [
+    "store",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

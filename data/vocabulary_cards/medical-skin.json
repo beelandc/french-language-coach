@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "skin",
+  "front": "peau",
+  "back": "skin",
+  "example": "Ma peau est sèche.",
+  "tags": [
+    "body",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

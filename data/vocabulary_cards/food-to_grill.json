@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "to_grill",
+  "front": "griller",
+  "back": "to grill",
+  "example": "Je grille de la viande.",
+  "tags": [
+    "verb",
+    "beginner"
+  ],
+  "context": "deck:food",
+  "difficulty": 1
+}

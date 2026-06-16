@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "customer",
+  "front": "client",
+  "back": "customer",
+  "example": "Le client a toujours raison.",
+  "tags": [
+    "people",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

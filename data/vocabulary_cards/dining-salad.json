@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "salad",
+  "front": "salade",
+  "back": "salad",
+  "example": "La salade niçoise est parfaite pour l'été.",
+  "tags": [
+    "food",
+    "beginner"
+  ],
+  "context": "deck:dining",
+  "difficulty": 1
+}

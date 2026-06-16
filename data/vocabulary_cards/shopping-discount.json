@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "discount",
+  "front": "réduction",
+  "back": "discount",
+  "example": "Il y a une réduction de 30% sur ce produit.",
+  "tags": [
+    "money",
+    "intermediate"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 2
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "hobbies",
+  "card_id": "to_do_yoga",
+  "front": "faire du yoga",
+  "back": "to do yoga",
+  "example": "Je fais du yoga pour me détendre.",
+  "tags": [
+    "indoor",
+    "beginner"
+  ],
+  "context": "deck:hobbies",
+  "difficulty": 1
+}

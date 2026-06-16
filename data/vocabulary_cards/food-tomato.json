@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "tomato",
+  "front": "tomate",
+  "back": "tomato",
+  "example": "La tomate est rouge.",
+  "tags": [
+    "vegetable",
+    "beginner"
+  ],
+  "context": "deck:food",
+  "difficulty": 1
+}

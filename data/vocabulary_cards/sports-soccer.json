@@ -1,0 +1,13 @@
+{
+  "deck_id": "sports",
+  "card_id": "soccer",
+  "front": "football",
+  "back": "soccer",
+  "example": "Le football est populaire.",
+  "tags": [
+    "sport",
+    "beginner"
+  ],
+  "context": "deck:sports",
+  "difficulty": 1
+}

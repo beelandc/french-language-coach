@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "lettuce",
+  "front": "laitue",
+  "back": "lettuce",
+  "example": "La laitue est dans la salade.",
+  "tags": [
+    "vegetable",
+    "beginner"
+  ],
+  "context": "deck:food",
+  "difficulty": 1
+}

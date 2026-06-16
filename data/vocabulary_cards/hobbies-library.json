@@ -1,0 +1,13 @@
+{
+  "deck_id": "hobbies",
+  "card_id": "library",
+  "front": "bibliothèque",
+  "back": "library",
+  "example": "La bibliothèque est calme.",
+  "tags": [
+    "reading",
+    "beginner"
+  ],
+  "context": "deck:hobbies",
+  "difficulty": 1
+}

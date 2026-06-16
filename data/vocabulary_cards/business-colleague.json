@@ -1,0 +1,13 @@
+{
+  "deck_id": "business",
+  "card_id": "colleague",
+  "front": "collègue",
+  "back": "colleague",
+  "example": "Mon collègue est compétent.",
+  "tags": [
+    "job",
+    "beginner"
+  ],
+  "context": "deck:business",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "business",
+  "card_id": "scissors",
+  "front": "ciseaux",
+  "back": "scissors",
+  "example": "Utilisez les ciseaux avec précaution.",
+  "tags": [
+    "item",
+    "beginner"
+  ],
+  "context": "deck:business",
+  "difficulty": 1
+}

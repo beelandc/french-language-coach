@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "first_aid",
+  "front": "premiers secours",
+  "back": "first aid",
+  "example": "Les premiers secours sont importants.",
+  "tags": [
+    "emergency",
+    "intermediate"
+  ],
+  "context": "deck:medical",
+  "difficulty": 2
+}

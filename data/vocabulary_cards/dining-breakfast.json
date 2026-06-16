@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "breakfast",
+  "front": "petit déjeuner",
+  "back": "breakfast",
+  "example": "Le petit déjeuner est servi à 7h.",
+  "tags": [
+    "food",
+    "beginner"
+  ],
+  "context": "deck:dining",
+  "difficulty": 1
+}

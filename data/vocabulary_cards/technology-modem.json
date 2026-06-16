@@ -1,0 +1,13 @@
+{
+  "deck_id": "technology",
+  "card_id": "modem",
+  "front": "modem",
+  "back": "modem",
+  "example": "Le modem connecte à internet.",
+  "tags": [
+    "device",
+    "beginner"
+  ],
+  "context": "deck:technology",
+  "difficulty": 1
+}

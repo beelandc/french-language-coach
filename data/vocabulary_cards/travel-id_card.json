@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "id_card",
+  "front": "carte d'identité",
+  "back": "ID card",
+  "example": "Ma carte d'identité est dans mon sac.",
+  "tags": [
+    "document",
+    "beginner"
+  ],
+  "context": "deck:travel",
+  "difficulty": 1
+}

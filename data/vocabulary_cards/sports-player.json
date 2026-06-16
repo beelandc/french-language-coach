@@ -1,0 +1,13 @@
+{
+  "deck_id": "sports",
+  "card_id": "player",
+  "front": "joueur",
+  "back": "player",
+  "example": "Le joueur est doué.",
+  "tags": [
+    "people",
+    "beginner"
+  ],
+  "context": "deck:sports",
+  "difficulty": 1
+}

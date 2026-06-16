@@ -1,0 +1,13 @@
+{
+  "deck_id": "technology",
+  "card_id": "username",
+  "front": "nom d'utilisateur",
+  "back": "username",
+  "example": "Le nom d'utilisateur est unique.",
+  "tags": [
+    "security",
+    "intermediate"
+  ],
+  "context": "deck:technology",
+  "difficulty": 2
+}

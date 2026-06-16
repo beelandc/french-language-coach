@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "back",
+  "front": "dos",
+  "back": "back",
+  "example": "Mon dos me fait mal.",
+  "tags": [
+    "body",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

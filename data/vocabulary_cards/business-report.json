@@ -1,0 +1,13 @@
+{
+  "deck_id": "business",
+  "card_id": "report",
+  "front": "rapport",
+  "back": "report",
+  "example": "Le rapport annuel est dû vendredi.",
+  "tags": [
+    "document",
+    "beginner"
+  ],
+  "context": "deck:business",
+  "difficulty": 1
+}

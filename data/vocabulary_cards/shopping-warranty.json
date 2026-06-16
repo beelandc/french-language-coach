@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "warranty",
+  "front": "garantie",
+  "back": "warranty",
+  "example": "Le produit a une garantie de 2 ans.",
+  "tags": [
+    "term",
+    "intermediate"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 2
+}

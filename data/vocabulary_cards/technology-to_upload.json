@@ -1,0 +1,13 @@
+{
+  "deck_id": "technology",
+  "card_id": "to_upload",
+  "front": "téléverser",
+  "back": "to upload",
+  "example": "Je téléverse mes photos.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:technology",
+  "difficulty": 1
+}

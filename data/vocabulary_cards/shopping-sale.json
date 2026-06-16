@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "sale",
+  "front": "solde",
+  "back": "sale",
+  "example": "Les soldes d'hiver commencent demain.",
+  "tags": [
+    "term",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

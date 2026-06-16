@@ -1,0 +1,13 @@
+{
+  "deck_id": "sports",
+  "card_id": "to_cool_down",
+  "front": "refroidir",
+  "back": "to cool down",
+  "example": "Après l'entraînement, je me refroidis.",
+  "tags": [
+    "action",
+    "intermediate"
+  ],
+  "context": "deck:sports",
+  "difficulty": 2
+}

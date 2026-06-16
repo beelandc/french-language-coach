@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "trip",
+  "front": "voyage",
+  "back": "trip",
+  "example": "Notre voyage en Italie était merveilleux.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:travel",
+  "difficulty": 1
+}

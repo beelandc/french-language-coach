@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "coat",
+  "front": "manteau",
+  "back": "coat",
+  "example": "Il me faut un manteau chaud pour l'hiver.",
+  "tags": [
+    "clothing",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

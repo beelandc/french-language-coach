@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "carrot",
+  "front": "carotte",
+  "back": "carrot",
+  "example": "La carotte est bonne pour les yeux.",
+  "tags": [
+    "vegetable",
+    "beginner"
+  ],
+  "context": "deck:food",
+  "difficulty": 1
+}

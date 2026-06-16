@@ -1,0 +1,13 @@
+{
+  "deck_id": "business",
+  "card_id": "to_develop",
+  "front": "développer",
+  "back": "to develop",
+  "example": "Nous développons une nouvelle application.",
+  "tags": [
+    "action",
+    "intermediate"
+  ],
+  "context": "deck:business",
+  "difficulty": 2
+}
