@@ -230,7 +230,8 @@ french-language-coach/
 ├── data/
 │   ├── grammar_lessons/     # Grammar lesson JSON files for Phase 2 (20+ lessons)
 │   ├── grammar/reference/   # Grammar reference entry JSON files for Phase 2 (50+ entries)
-│   └── grammar/exercises/   # Grammar exercise JSON files for Phase 2 (5 exercises: fill-in-the-blank, multiple-choice, translation, conjugation, sentence-transformation)
+│   ├── grammar/exercises/   # Grammar exercise JSON files for Phase 2 (5 exercises: fill-in-the-blank, multiple-choice, translation, conjugation, sentence-transformation)
+│   └── vocabulary_cards/    # Vocabulary card JSON files organized by thematic decks (Phase 3, Issue #51)
 ├── scripts/
 │   ├── validate_grammar_lessons.py  # Validation script for grammar lessons
 │   └── validate_grammar_reference.py  # Validation script for grammar reference entries
