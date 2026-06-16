@@ -55,8 +55,7 @@ export default function IndexPage() {
       title: 'Vocabulary Flashcards',
       description: 'Spaced-repetition flashcards',
       ctaText: 'Learn Vocabulary →',
-      disabled: true,
-      comingSoon: true
+      path: '/vocabulary'
     }
   ]
 
