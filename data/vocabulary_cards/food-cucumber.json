@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "cucumber",
+  "front": "concombre",
+  "back": "cucumber",
+  "example": "Le concombre est frais.",
+  "tags": [
+    "vegetable",
+    "beginner"
+  ],
+  "context": "deck:food",
+  "difficulty": 1
+}

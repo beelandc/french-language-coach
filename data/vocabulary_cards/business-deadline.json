@@ -1,0 +1,13 @@
+{
+  "deck_id": "business",
+  "card_id": "deadline",
+  "front": "date limite",
+  "back": "deadline",
+  "example": "La date limite est demain.",
+  "tags": [
+    "time",
+    "beginner"
+  ],
+  "context": "deck:business",
+  "difficulty": 1
+}

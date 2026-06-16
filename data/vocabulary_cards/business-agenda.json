@@ -1,0 +1,13 @@
+{
+  "deck_id": "business",
+  "card_id": "agenda",
+  "front": "ordre du jour",
+  "back": "agenda",
+  "example": "L'ordre du jour est envoyé par email.",
+  "tags": [
+    "meeting",
+    "intermediate"
+  ],
+  "context": "deck:business",
+  "difficulty": 2
+}

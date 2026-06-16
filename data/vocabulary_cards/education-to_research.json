@@ -1,0 +1,13 @@
+{
+  "deck_id": "education",
+  "card_id": "to_research",
+  "front": "faire des recherches",
+  "back": "to research",
+  "example": "Je fais des recherches.",
+  "tags": [
+    "action",
+    "intermediate"
+  ],
+  "context": "deck:education",
+  "difficulty": 2
+}

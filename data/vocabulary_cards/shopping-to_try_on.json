@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "to_try_on",
+  "front": "essayer",
+  "back": "to try on",
+  "example": "Puis-je essayer ce jean en taille 32?",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "sports",
+  "card_id": "cycling",
+  "front": "cyclisme",
+  "back": "cycling",
+  "example": "Le cyclisme est populaire en Europe.",
+  "tags": [
+    "sport",
+    "beginner"
+  ],
+  "context": "deck:sports",
+  "difficulty": 1
+}

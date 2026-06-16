@@ -1,0 +1,13 @@
+{
+  "deck_id": "daily_routines",
+  "card_id": "appointment",
+  "front": "rendez-vous",
+  "back": "appointment",
+  "example": "J'ai un rendez-vous.",
+  "tags": [
+    "day",
+    "beginner"
+  ],
+  "context": "deck:daily_routines",
+  "difficulty": 1
+}

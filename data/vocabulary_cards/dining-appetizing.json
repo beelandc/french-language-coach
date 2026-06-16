@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "appetizing",
+  "front": "appétissant",
+  "back": "appetizing",
+  "example": "Ce plat a l'air très appétissant.",
+  "tags": [
+    "adjective",
+    "intermediate"
+  ],
+  "context": "deck:dining",
+  "difficulty": 2
+}

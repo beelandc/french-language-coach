@@ -1,0 +1,13 @@
+{
+  "deck_id": "daily_routines",
+  "card_id": "to_shave",
+  "front": "se raser",
+  "back": "to shave",
+  "example": "Il se rase tous les matins.",
+  "tags": [
+    "morning",
+    "beginner"
+  ],
+  "context": "deck:daily_routines",
+  "difficulty": 1
+}

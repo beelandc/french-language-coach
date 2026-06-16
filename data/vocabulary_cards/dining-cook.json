@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "cook",
+  "front": "cuisinier",
+  "back": "cook",
+  "example": "Le cuisinier prépare nos plats devant nous.",
+  "tags": [
+    "people",
+    "beginner"
+  ],
+  "context": "deck:dining",
+  "difficulty": 1
+}

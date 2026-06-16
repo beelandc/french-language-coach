@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "allergy",
+  "front": "allergie",
+  "back": "allergy",
+  "example": "J'ai une allergie aux noix.",
+  "tags": [
+    "symptom",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

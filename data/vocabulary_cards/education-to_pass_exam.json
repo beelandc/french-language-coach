@@ -1,0 +1,13 @@
+{
+  "deck_id": "education",
+  "card_id": "to_pass_exam",
+  "front": "réussir un examen",
+  "back": "to pass exam",
+  "example": "J'espère réussir mon examen.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:education",
+  "difficulty": 1
+}

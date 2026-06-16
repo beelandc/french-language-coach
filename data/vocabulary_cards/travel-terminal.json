@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "terminal",
+  "front": "terminal",
+  "back": "terminal",
+  "example": "Le terminal est bondé de voyageurs.",
+  "tags": [
+    "place",
+    "intermediate"
+  ],
+  "context": "deck:travel",
+  "difficulty": 2
+}

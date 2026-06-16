@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "heart",
+  "front": "cœur",
+  "back": "heart",
+  "example": "Le cœur est un muscle vital.",
+  "tags": [
+    "body",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

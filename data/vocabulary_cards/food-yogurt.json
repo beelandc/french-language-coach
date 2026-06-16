@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "yogurt",
+  "front": "yaourt",
+  "back": "yogurt",
+  "example": "Le yaourt est bon pour la santé.",
+  "tags": [
+    "dairy",
+    "beginner"
+  ],
+  "context": "deck:food",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "education",
+  "card_id": "notebook",
+  "front": "cahier",
+  "back": "notebook",
+  "example": "J'écris dans mon cahier.",
+  "tags": [
+    "material",
+    "beginner"
+  ],
+  "context": "deck:education",
+  "difficulty": 1
+}

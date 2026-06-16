@@ -1,0 +1,13 @@
+{
+  "deck_id": "education",
+  "card_id": "language",
+  "front": "langue",
+  "back": "language",
+  "example": "J'étudie une nouvelle langue.",
+  "tags": [
+    "subject",
+    "beginner"
+  ],
+  "context": "deck:education",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "daily_routines",
+  "card_id": "tomorrow",
+  "front": "demain",
+  "back": "tomorrow",
+  "example": "Demain, je partirai.",
+  "tags": [
+    "time",
+    "beginner"
+  ],
+  "context": "deck:daily_routines",
+  "difficulty": 1
+}

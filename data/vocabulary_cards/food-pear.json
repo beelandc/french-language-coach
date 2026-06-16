@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "pear",
+  "front": "poire",
+  "back": "pear",
+  "example": "La poire est mûre.",
+  "tags": [
+    "fruit",
+    "beginner"
+  ],
+  "context": "deck:food",
+  "difficulty": 1
+}

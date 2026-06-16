@@ -1,0 +1,13 @@
+{
+  "deck_id": "daily_routines",
+  "card_id": "sometimes",
+  "front": "parfois",
+  "back": "sometimes",
+  "example": "Parfois, je me repose.",
+  "tags": [
+    "frequency",
+    "beginner"
+  ],
+  "context": "deck:daily_routines",
+  "difficulty": 1
+}

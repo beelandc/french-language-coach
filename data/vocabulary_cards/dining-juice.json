@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "juice",
+  "front": "jus",
+  "back": "juice",
+  "example": "Un jus d'orange fraîchement pressé, s'il vous plaît.",
+  "tags": [
+    "drink",
+    "beginner"
+  ],
+  "context": "deck:dining",
+  "difficulty": 1
+}

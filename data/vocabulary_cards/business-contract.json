@@ -1,0 +1,13 @@
+{
+  "deck_id": "business",
+  "card_id": "contract",
+  "front": "contrat",
+  "back": "contract",
+  "example": "Le contrat doit être signé.",
+  "tags": [
+    "document",
+    "beginner"
+  ],
+  "context": "deck:business",
+  "difficulty": 1
+}

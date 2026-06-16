@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "bell_pepper",
+  "front": "poivron",
+  "back": "bell pepper",
+  "example": "Le poivron est vert.",
+  "tags": [
+    "vegetable",
+    "intermediate"
+  ],
+  "context": "deck:food",
+  "difficulty": 2
+}

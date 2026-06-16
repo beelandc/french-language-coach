@@ -1,0 +1,13 @@
+{
+  "deck_id": "daily_routines",
+  "card_id": "to_read",
+  "front": "lire",
+  "back": "to read",
+  "example": "Je lis un livre.",
+  "tags": [
+    "evening",
+    "beginner"
+  ],
+  "context": "deck:daily_routines",
+  "difficulty": 1
+}

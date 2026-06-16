@@ -1,0 +1,13 @@
+{
+  "deck_id": "technology",
+  "card_id": "chat",
+  "front": "discussion",
+  "back": "chat",
+  "example": "La discussion en ligne est utile.",
+  "tags": [
+    "internet",
+    "beginner"
+  ],
+  "context": "deck:technology",
+  "difficulty": 1
+}

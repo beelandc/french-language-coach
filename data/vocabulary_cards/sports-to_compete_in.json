@@ -1,0 +1,13 @@
+{
+  "deck_id": "sports",
+  "card_id": "to_compete_in",
+  "front": "concourir",
+  "back": "to compete",
+  "example": "J'aime concours en natation.",
+  "tags": [
+    "action",
+    "intermediate"
+  ],
+  "context": "deck:sports",
+  "difficulty": 2
+}

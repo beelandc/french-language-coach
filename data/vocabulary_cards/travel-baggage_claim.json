@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "baggage_claim",
+  "front": "réclamation des bagages",
+  "back": "baggage claim",
+  "example": "La réclamation des bagages est par là.",
+  "tags": [
+    "place",
+    "intermediate"
+  ],
+  "context": "deck:travel",
+  "difficulty": 2
+}

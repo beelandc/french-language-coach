@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "sightseeing",
+  "front": "tourisme",
+  "back": "sightseeing",
+  "example": "Nous faisons du tourisme aujourd'hui.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:travel",
+  "difficulty": 1
+}

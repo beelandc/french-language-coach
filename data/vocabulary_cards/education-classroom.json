@@ -1,0 +1,13 @@
+{
+  "deck_id": "education",
+  "card_id": "classroom",
+  "front": "salle de classe",
+  "back": "classroom",
+  "example": "La salle de classe est propre.",
+  "tags": [
+    "school",
+    "beginner"
+  ],
+  "context": "deck:education",
+  "difficulty": 1
+}

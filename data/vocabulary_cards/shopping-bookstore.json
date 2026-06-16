@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "bookstore",
+  "front": "librairie",
+  "back": "bookstore",
+  "example": "La librairie a une section dédiée aux livres en français.",
+  "tags": [
+    "store",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

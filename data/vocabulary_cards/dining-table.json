@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "table",
+  "front": "table",
+  "back": "table",
+  "example": "Nous avons réservé une table pour 4 personnes.",
+  "tags": [
+    "restaurant",
+    "beginner"
+  ],
+  "context": "deck:dining",
+  "difficulty": 1
+}

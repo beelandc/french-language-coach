@@ -1,0 +1,13 @@
+{
+  "deck_id": "business",
+  "card_id": "schedule",
+  "front": "emploi du temps",
+  "back": "schedule",
+  "example": "Mon emploi du temps est chargé.",
+  "tags": [
+    "time",
+    "intermediate"
+  ],
+  "context": "deck:business",
+  "difficulty": 2
+}

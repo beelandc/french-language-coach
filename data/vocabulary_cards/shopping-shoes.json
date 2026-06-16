@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "shoes",
+  "front": "chaussures",
+  "back": "shoes",
+  "example": "Ces chaussures sont confortables pour la marche.",
+  "tags": [
+    "clothing",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

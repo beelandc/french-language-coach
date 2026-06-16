@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "tea",
+  "front": "thé",
+  "back": "tea",
+  "example": "Je préfère le thé vert au café noir.",
+  "tags": [
+    "drink",
+    "beginner"
+  ],
+  "context": "deck:dining",
+  "difficulty": 1
+}

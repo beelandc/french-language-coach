@@ -1,0 +1,13 @@
+{
+  "deck_id": "education",
+  "card_id": "school",
+  "front": "école",
+  "back": "school",
+  "example": "L'école commence à 8h.",
+  "tags": [
+    "school",
+    "beginner"
+  ],
+  "context": "deck:education",
+  "difficulty": 1
+}

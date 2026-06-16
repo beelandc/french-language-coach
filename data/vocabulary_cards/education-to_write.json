@@ -1,0 +1,13 @@
+{
+  "deck_id": "education",
+  "card_id": "to_write",
+  "front": "écrire",
+  "back": "to write",
+  "example": "J'écris une composition.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:education",
+  "difficulty": 1
+}

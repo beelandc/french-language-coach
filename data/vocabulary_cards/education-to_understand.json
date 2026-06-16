@@ -1,0 +1,13 @@
+{
+  "deck_id": "education",
+  "card_id": "to_understand",
+  "front": "comprendre",
+  "back": "to understand",
+  "example": "Je comprends maintenant.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:education",
+  "difficulty": 1
+}

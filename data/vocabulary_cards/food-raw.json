@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "raw",
+  "front": "cru",
+  "back": "raw",
+  "example": "Les légumes sont crus.",
+  "tags": [
+    "adjective",
+    "beginner"
+  ],
+  "context": "deck:food",
+  "difficulty": 1
+}

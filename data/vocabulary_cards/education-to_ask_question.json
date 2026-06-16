@@ -1,0 +1,13 @@
+{
+  "deck_id": "education",
+  "card_id": "to_ask_question",
+  "front": "poser une question",
+  "back": "to ask question",
+  "example": "Je pose une question au professeur.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:education",
+  "difficulty": 1
+}

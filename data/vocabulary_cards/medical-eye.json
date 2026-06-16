@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "eye",
+  "front": "œil",
+  "back": "eye",
+  "example": "Mes yeux sont fatigués.",
+  "tags": [
+    "body",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

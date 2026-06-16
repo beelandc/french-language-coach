@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "pain",
+  "front": "douleur",
+  "back": "pain",
+  "example": "J'ai une douleur.",
+  "tags": [
+    "symptom",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

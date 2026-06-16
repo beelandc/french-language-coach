@@ -1,0 +1,13 @@
+{
+  "deck_id": "hobbies",
+  "card_id": "to_play_board_games",
+  "front": "jouer à des jeux de société",
+  "back": "to play board games",
+  "example": "Nous jouons à des jeux de société le week-end.",
+  "tags": [
+    "indoor",
+    "beginner"
+  ],
+  "context": "deck:hobbies",
+  "difficulty": 1
+}

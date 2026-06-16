@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "nausea",
+  "front": "nausée",
+  "back": "nausea",
+  "example": "J'ai la nausée.",
+  "tags": [
+    "symptom",
+    "intermediate"
+  ],
+  "context": "deck:medical",
+  "difficulty": 2
+}

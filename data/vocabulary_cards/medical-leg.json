@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "leg",
+  "front": "jambe",
+  "back": "leg",
+  "example": "Ma jambe est cassée.",
+  "tags": [
+    "body",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

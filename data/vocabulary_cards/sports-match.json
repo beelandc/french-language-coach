@@ -1,0 +1,13 @@
+{
+  "deck_id": "sports",
+  "card_id": "match",
+  "front": "match",
+  "back": "match",
+  "example": "Le match commence à 15h.",
+  "tags": [
+    "term",
+    "beginner"
+  ],
+  "context": "deck:sports",
+  "difficulty": 1
+}

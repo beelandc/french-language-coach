@@ -1,0 +1,13 @@
+{
+  "deck_id": "hobbies",
+  "card_id": "to_swim",
+  "front": "nager",
+  "back": "to swim",
+  "example": "J'aime nager.",
+  "tags": [
+    "outdoor",
+    "beginner"
+  ],
+  "context": "deck:hobbies",
+  "difficulty": 1
+}

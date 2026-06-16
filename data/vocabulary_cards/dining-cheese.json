@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "cheese",
+  "front": "fromage",
+  "back": "cheese",
+  "example": "Le plateau de fromages français est varié.",
+  "tags": [
+    "food",
+    "beginner"
+  ],
+  "context": "deck:dining",
+  "difficulty": 1
+}

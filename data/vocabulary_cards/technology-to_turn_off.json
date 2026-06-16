@@ -1,0 +1,13 @@
+{
+  "deck_id": "technology",
+  "card_id": "to_turn_off",
+  "front": "éteindre",
+  "back": "to turn off",
+  "example": "Éteignez l'ordinateur.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:technology",
+  "difficulty": 1
+}

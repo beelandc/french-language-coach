@@ -1,0 +1,13 @@
+{
+  "deck_id": "education",
+  "card_id": "english",
+  "front": "anglais",
+  "back": "English",
+  "example": "Je parle anglais.",
+  "tags": [
+    "subject",
+    "beginner"
+  ],
+  "context": "deck:education",
+  "difficulty": 1
+}

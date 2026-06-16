@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "cheese",
+  "front": "fromage",
+  "back": "cheese",
+  "example": "Le fromage français est délicieux.",
+  "tags": [
+    "dairy",
+    "beginner"
+  ],
+  "context": "deck:food",
+  "difficulty": 1
+}

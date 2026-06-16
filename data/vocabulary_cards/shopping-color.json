@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "color",
+  "front": "couleur",
+  "back": "color",
+  "example": "J'aime cette couleur bleu marine.",
+  "tags": [
+    "clothing",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

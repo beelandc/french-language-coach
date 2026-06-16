@@ -1,0 +1,13 @@
+{
+  "deck_id": "education",
+  "card_id": "college",
+  "front": "collège",
+  "back": "college",
+  "example": "Le collège est près de chez moi.",
+  "tags": [
+    "school",
+    "beginner"
+  ],
+  "context": "deck:education",
+  "difficulty": 1
+}

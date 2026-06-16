@@ -1,0 +1,13 @@
+{
+  "deck_id": "technology",
+  "card_id": "app",
+  "front": "application",
+  "back": "app",
+  "example": "J'utilise une application mobile.",
+  "tags": [
+    "software",
+    "beginner"
+  ],
+  "context": "deck:technology",
+  "difficulty": 1
+}

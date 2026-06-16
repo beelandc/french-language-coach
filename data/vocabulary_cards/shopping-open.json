@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "open",
+  "front": "ouvert",
+  "back": "open",
+  "example": "Le magasin est ouvert de 9h à 19h.",
+  "tags": [
+    "term",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

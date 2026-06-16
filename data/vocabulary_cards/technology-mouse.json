@@ -1,0 +1,13 @@
+{
+  "deck_id": "technology",
+  "card_id": "mouse",
+  "front": "souris",
+  "back": "mouse",
+  "example": "La souris est sans fil.",
+  "tags": [
+    "device",
+    "beginner"
+  ],
+  "context": "deck:technology",
+  "difficulty": 1
+}

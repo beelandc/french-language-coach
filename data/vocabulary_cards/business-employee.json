@@ -1,0 +1,13 @@
+{
+  "deck_id": "business",
+  "card_id": "employee",
+  "front": "employé",
+  "back": "employee",
+  "example": "Les employés travaillent dur.",
+  "tags": [
+    "job",
+    "beginner"
+  ],
+  "context": "deck:business",
+  "difficulty": 1
+}

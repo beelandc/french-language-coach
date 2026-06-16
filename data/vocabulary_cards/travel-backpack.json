@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "backpack",
+  "front": "sac à dos",
+  "back": "backpack",
+  "example": "Il porte toujours un sac à dos.",
+  "tags": [
+    "accommodation",
+    "beginner"
+  ],
+  "context": "deck:travel",
+  "difficulty": 1
+}

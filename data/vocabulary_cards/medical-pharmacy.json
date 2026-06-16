@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "pharmacy",
+  "front": "pharmacie",
+  "back": "pharmacy",
+  "example": "La pharmacie vend des médicaments.",
+  "tags": [
+    "place",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

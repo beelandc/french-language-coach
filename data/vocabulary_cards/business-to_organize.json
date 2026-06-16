@@ -1,0 +1,13 @@
+{
+  "deck_id": "business",
+  "card_id": "to_organize",
+  "front": "organiser",
+  "back": "to organize",
+  "example": "J'organise mes documents.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:business",
+  "difficulty": 1
+}

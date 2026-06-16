@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "to_buy",
+  "front": "acheter",
+  "back": "to buy",
+  "example": "Je veux acheter ce pull, il est magnifique.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

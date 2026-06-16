@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "restaurant",
+  "front": "restaurant",
+  "back": "restaurant",
+  "example": "C'est un restaurant étoilé au guide Michelin.",
+  "tags": [
+    "restaurant",
+    "beginner"
+  ],
+  "context": "deck:dining",
+  "difficulty": 1
+}

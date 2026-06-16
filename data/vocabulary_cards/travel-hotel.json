@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "hotel",
+  "front": "hôtel",
+  "back": "hotel",
+  "example": "Nous séjournerons à l'hôtel.",
+  "tags": [
+    "accommodation",
+    "beginner"
+  ],
+  "context": "deck:travel",
+  "difficulty": 1
+}

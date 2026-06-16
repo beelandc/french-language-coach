@@ -1,0 +1,13 @@
+{
+  "deck_id": "hobbies",
+  "card_id": "to_bike",
+  "front": "faire du vélo",
+  "back": "to bike",
+  "example": "Je fais du vélo tous les jours.",
+  "tags": [
+    "outdoor",
+    "beginner"
+  ],
+  "context": "deck:hobbies",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "education",
+  "card_id": "to_memorize",
+  "front": "mémoriser",
+  "back": "to memorize",
+  "example": "Je dois mémoriser ceci.",
+  "tags": [
+    "action",
+    "intermediate"
+  ],
+  "context": "deck:education",
+  "difficulty": 2
+}

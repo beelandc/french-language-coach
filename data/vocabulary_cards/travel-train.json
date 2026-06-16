@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "train",
+  "front": "train",
+  "back": "train",
+  "example": "Le train part à 8h.",
+  "tags": [
+    "transport",
+    "beginner"
+  ],
+  "context": "deck:travel",
+  "difficulty": 1
+}

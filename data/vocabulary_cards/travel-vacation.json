@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "vacation",
+  "front": "vacances",
+  "back": "vacation",
+  "example": "Les vacances d'été durent deux mois.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:travel",
+  "difficulty": 1
+}

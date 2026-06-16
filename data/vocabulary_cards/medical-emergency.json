@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "emergency",
+  "front": "urgence",
+  "back": "emergency",
+  "example": "C'est une urgence!",
+  "tags": [
+    "emergency",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

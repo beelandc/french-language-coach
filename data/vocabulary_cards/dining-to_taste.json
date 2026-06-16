@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "to_taste",
+  "front": "goûter",
+  "back": "to taste",
+  "example": "Goûtez ce plat, c'est délicieux.",
+  "tags": [
+    "action",
+    "intermediate"
+  ],
+  "context": "deck:dining",
+  "difficulty": 2
+}

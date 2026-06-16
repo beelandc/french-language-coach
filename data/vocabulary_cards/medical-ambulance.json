@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "ambulance",
+  "front": "ambulance",
+  "back": "ambulance",
+  "example": "Appelez une ambulance!",
+  "tags": [
+    "emergency",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

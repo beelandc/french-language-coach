@@ -1,0 +1,13 @@
+{
+  "deck_id": "daily_routines",
+  "card_id": "to_go_out",
+  "front": "sortir",
+  "back": "to go out",
+  "example": "Je sors avec mes amis ce soir.",
+  "tags": [
+    "evening",
+    "beginner"
+  ],
+  "context": "deck:daily_routines",
+  "difficulty": 1
+}

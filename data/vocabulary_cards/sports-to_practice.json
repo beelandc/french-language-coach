@@ -1,0 +1,13 @@
+{
+  "deck_id": "sports",
+  "card_id": "to_practice",
+  "front": "pratiquer",
+  "back": "to practice",
+  "example": "Je pratique le tennis.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:sports",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "business",
+  "card_id": "calendar",
+  "front": "calendrier",
+  "back": "calendar",
+  "example": "Le calendrier est accroché au mur.",
+  "tags": [
+    "item",
+    "beginner"
+  ],
+  "context": "deck:business",
+  "difficulty": 1
+}

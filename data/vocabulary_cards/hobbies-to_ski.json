@@ -1,0 +1,13 @@
+{
+  "deck_id": "hobbies",
+  "card_id": "to_ski",
+  "front": "skier",
+  "back": "to ski",
+  "example": "Je skie en hiver.",
+  "tags": [
+    "outdoor",
+    "intermediate"
+  ],
+  "context": "deck:hobbies",
+  "difficulty": 2
+}

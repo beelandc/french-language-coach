@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "room_service",
+  "front": "service en chambre",
+  "back": "room service",
+  "example": "J'ai commandé le service en chambre.",
+  "tags": [
+    "accommodation",
+    "intermediate"
+  ],
+  "context": "deck:travel",
+  "difficulty": 2
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "hobbies",
+  "card_id": "rhythm",
+  "front": "rythme",
+  "back": "rhythm",
+  "example": "Le rythme est rapide.",
+  "tags": [
+    "music",
+    "intermediate"
+  ],
+  "context": "deck:hobbies",
+  "difficulty": 2
+}

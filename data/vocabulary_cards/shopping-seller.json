@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "seller",
+  "front": "vendeur",
+  "back": "seller",
+  "example": "Le vendeur est très connaisseur.",
+  "tags": [
+    "people",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

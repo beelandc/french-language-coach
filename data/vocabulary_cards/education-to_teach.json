@@ -1,0 +1,13 @@
+{
+  "deck_id": "education",
+  "card_id": "to_teach",
+  "front": "enseigner",
+  "back": "to teach",
+  "example": "Le professeur enseigne.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:education",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "daily_routines",
+  "card_id": "rarely",
+  "front": "rarement",
+  "back": "rarely",
+  "example": "Je décide rarement ainsi.",
+  "tags": [
+    "frequency",
+    "intermediate"
+  ],
+  "context": "deck:daily_routines",
+  "difficulty": 2
+}

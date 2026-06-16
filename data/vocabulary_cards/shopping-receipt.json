@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "receipt",
+  "front": "reçu",
+  "back": "receipt",
+  "example": "Je veux un reçu pour mon achat, s'il vous plaît.",
+  "tags": [
+    "money",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

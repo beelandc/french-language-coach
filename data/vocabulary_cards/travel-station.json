@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "station",
+  "front": "gare",
+  "back": "station",
+  "example": "La gare est au centre-ville.",
+  "tags": [
+    "place",
+    "beginner"
+  ],
+  "context": "deck:travel",
+  "difficulty": 1
+}

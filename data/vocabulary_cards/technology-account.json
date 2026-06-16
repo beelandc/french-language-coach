@@ -1,0 +1,13 @@
+{
+  "deck_id": "technology",
+  "card_id": "account",
+  "front": "compte",
+  "back": "account",
+  "example": "J'ai un compte.",
+  "tags": [
+    "security",
+    "beginner"
+  ],
+  "context": "deck:technology",
+  "difficulty": 1
+}

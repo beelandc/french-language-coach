@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "to_serve",
+  "front": "servir",
+  "back": "to serve",
+  "example": "Le serveur va nous servir le dessert.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:dining",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "change",
+  "front": "monnaie",
+  "back": "change",
+  "example": "J'ai besoin de monnaie pour le parking.",
+  "tags": [
+    "money",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

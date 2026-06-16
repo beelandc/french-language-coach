@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "bread",
+  "front": "pain",
+  "back": "bread",
+  "example": "Le pain frais de la boulangerie est incomparable.",
+  "tags": [
+    "food",
+    "beginner"
+  ],
+  "context": "deck:dining",
+  "difficulty": 1
+}

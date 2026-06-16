@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "hospital",
+  "front": "hôpital",
+  "back": "hospital",
+  "example": "L'hôpital est au centre-ville.",
+  "tags": [
+    "place",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "passport",
+  "front": "passeport",
+  "back": "passport",
+  "example": "J'ai oublié mon passeport à la maison.",
+  "tags": [
+    "document",
+    "beginner"
+  ],
+  "context": "deck:travel",
+  "difficulty": 1
+}

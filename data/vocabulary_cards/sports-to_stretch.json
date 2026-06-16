@@ -1,0 +1,13 @@
+{
+  "deck_id": "sports",
+  "card_id": "to_stretch",
+  "front": "s'étirer",
+  "back": "to stretch",
+  "example": "Il faut s'étirer avant de courir.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:sports",
+  "difficulty": 1
+}

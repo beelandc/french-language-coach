@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "departure",
+  "front": "départ",
+  "back": "departure",
+  "example": "Le départ de notre vol est à 8h.",
+  "tags": [
+    "time",
+    "beginner"
+  ],
+  "context": "deck:travel",
+  "difficulty": 1
+}

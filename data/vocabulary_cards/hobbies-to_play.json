@@ -1,0 +1,13 @@
+{
+  "deck_id": "hobbies",
+  "card_id": "to_play",
+  "front": "jouer",
+  "back": "to play",
+  "example": "Je joue du piano.",
+  "tags": [
+    "music",
+    "beginner"
+  ],
+  "context": "deck:hobbies",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "education",
+  "card_id": "to_read",
+  "front": "lire",
+  "back": "to read",
+  "example": "Je lis un livre.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:education",
+  "difficulty": 1
+}

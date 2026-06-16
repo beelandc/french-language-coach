@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "electronics_store",
+  "front": "magasin d'électronique",
+  "back": "electronics store",
+  "example": "Le magasin d'électronique vend des ordinateurs.",
+  "tags": [
+    "store",
+    "intermediate"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 2
+}

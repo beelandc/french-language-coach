@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "syrup",
+  "front": "sirop",
+  "back": "syrup",
+  "example": "Le sirop est pour la toux.",
+  "tags": [
+    "treatment",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

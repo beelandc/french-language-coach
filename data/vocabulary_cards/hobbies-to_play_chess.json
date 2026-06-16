@@ -1,0 +1,13 @@
+{
+  "deck_id": "hobbies",
+  "card_id": "to_play_chess",
+  "front": "jouer aux échecs",
+  "back": "to play chess",
+  "example": "Mon grand-père et moi jouons aux échecs.",
+  "tags": [
+    "indoor",
+    "beginner"
+  ],
+  "context": "deck:hobbies",
+  "difficulty": 1
+}

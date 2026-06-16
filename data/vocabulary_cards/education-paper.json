@@ -1,0 +1,13 @@
+{
+  "deck_id": "education",
+  "card_id": "paper",
+  "front": "papier",
+  "back": "paper",
+  "example": "Le papier est blanc.",
+  "tags": [
+    "material",
+    "beginner"
+  ],
+  "context": "deck:education",
+  "difficulty": 1
+}

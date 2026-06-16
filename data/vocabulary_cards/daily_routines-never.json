@@ -1,0 +1,13 @@
+{
+  "deck_id": "daily_routines",
+  "card_id": "never",
+  "front": "jamais",
+  "back": "never",
+  "example": "Je ne vais jamais là.",
+  "tags": [
+    "frequency",
+    "beginner"
+  ],
+  "context": "deck:daily_routines",
+  "difficulty": 1
+}

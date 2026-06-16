@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "to_boil",
+  "front": "faire bouillir",
+  "back": "to boil",
+  "example": "Faites bouillir l'eau.",
+  "tags": [
+    "verb",
+    "beginner"
+  ],
+  "context": "deck:food",
+  "difficulty": 1
+}

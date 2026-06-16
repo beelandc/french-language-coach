@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "hand",
+  "front": "main",
+  "back": "hand",
+  "example": "Lavez-vous les mains.",
+  "tags": [
+    "body",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

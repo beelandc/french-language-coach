@@ -1,0 +1,13 @@
+{
+  "deck_id": "hobbies",
+  "card_id": "garden",
+  "front": "jardin",
+  "back": "garden",
+  "example": "Le jardin est beau.",
+  "tags": [
+    "outdoor",
+    "beginner"
+  ],
+  "context": "deck:hobbies",
+  "difficulty": 1
+}

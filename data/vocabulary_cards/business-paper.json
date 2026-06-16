@@ -1,0 +1,13 @@
+{
+  "deck_id": "business",
+  "card_id": "paper",
+  "front": "papier",
+  "back": "paper",
+  "example": "Le papier est dans l'imprimante.",
+  "tags": [
+    "item",
+    "beginner"
+  ],
+  "context": "deck:business",
+  "difficulty": 1
+}

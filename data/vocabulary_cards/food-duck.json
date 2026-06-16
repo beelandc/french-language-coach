@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "duck",
+  "front": "canard",
+  "back": "duck",
+  "example": "Le canard est gras.",
+  "tags": [
+    "meat",
+    "intermediate"
+  ],
+  "context": "deck:food",
+  "difficulty": 2
+}

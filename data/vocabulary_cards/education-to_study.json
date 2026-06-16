@@ -1,0 +1,13 @@
+{
+  "deck_id": "education",
+  "card_id": "to_study",
+  "front": "étudier",
+  "back": "to study",
+  "example": "J'étudie pour l'examen.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:education",
+  "difficulty": 1
+}

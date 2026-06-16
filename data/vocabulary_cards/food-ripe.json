@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "ripe",
+  "front": "mûr",
+  "back": "ripe",
+  "example": "Le fruit est mûr.",
+  "tags": [
+    "adjective",
+    "beginner"
+  ],
+  "context": "deck:food",
+  "difficulty": 1
+}

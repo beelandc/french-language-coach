@@ -1,0 +1,13 @@
+{
+  "deck_id": "hobbies",
+  "card_id": "melody",
+  "front": "mélodie",
+  "back": "melody",
+  "example": "La mélodie est entraînante.",
+  "tags": [
+    "music",
+    "intermediate"
+  ],
+  "context": "deck:hobbies",
+  "difficulty": 2
+}

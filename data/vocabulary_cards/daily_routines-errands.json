@@ -1,0 +1,13 @@
+{
+  "deck_id": "daily_routines",
+  "card_id": "errands",
+  "front": "courses",
+  "back": "errands",
+  "example": "Je fais des courses.",
+  "tags": [
+    "day",
+    "beginner"
+  ],
+  "context": "deck:daily_routines",
+  "difficulty": 1
+}

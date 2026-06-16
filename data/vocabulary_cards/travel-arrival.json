@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "arrival",
+  "front": "arrivée",
+  "back": "arrival",
+  "example": "L'arrivée est prévue à 14h30.",
+  "tags": [
+    "time",
+    "beginner"
+  ],
+  "context": "deck:travel",
+  "difficulty": 1
+}

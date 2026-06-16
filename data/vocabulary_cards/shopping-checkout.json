@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "checkout",
+  "front": "caisse",
+  "back": "checkout",
+  "example": "La caisse est par là.",
+  "tags": [
+    "store",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

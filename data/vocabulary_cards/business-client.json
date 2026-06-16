@@ -1,0 +1,13 @@
+{
+  "deck_id": "business",
+  "card_id": "client",
+  "front": "client",
+  "back": "client",
+  "example": "Le client est satisfait.",
+  "tags": [
+    "job",
+    "beginner"
+  ],
+  "context": "deck:business",
+  "difficulty": 1
+}

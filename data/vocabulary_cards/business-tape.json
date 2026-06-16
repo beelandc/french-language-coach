@@ -1,0 +1,13 @@
+{
+  "deck_id": "business",
+  "card_id": "tape",
+  "front": "ruban adhésif",
+  "back": "tape",
+  "example": "J'ai besoin de ruban adhésif.",
+  "tags": [
+    "item",
+    "beginner"
+  ],
+  "context": "deck:business",
+  "difficulty": 1
+}

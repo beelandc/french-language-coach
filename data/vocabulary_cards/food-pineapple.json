@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "pineapple",
+  "front": "ananas",
+  "back": "pineapple",
+  "example": "L'ananas est exotique.",
+  "tags": [
+    "fruit",
+    "intermediate"
+  ],
+  "context": "deck:food",
+  "difficulty": 2
+}

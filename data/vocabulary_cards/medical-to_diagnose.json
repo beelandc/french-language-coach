@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "to_diagnose",
+  "front": "diagnostiquer",
+  "back": "to diagnose",
+  "example": "Le médecin diagnostique la maladie.",
+  "tags": [
+    "action",
+    "intermediate"
+  ],
+  "context": "deck:medical",
+  "difficulty": 2
+}

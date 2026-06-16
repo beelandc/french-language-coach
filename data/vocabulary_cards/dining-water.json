@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "water",
+  "front": "eau",
+  "back": "water",
+  "example": "Je voudrais de l'eau plate, s'il vous plaît.",
+  "tags": [
+    "drink",
+    "beginner"
+  ],
+  "context": "deck:dining",
+  "difficulty": 1
+}

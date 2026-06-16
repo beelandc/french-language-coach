@@ -1,0 +1,13 @@
+{
+  "deck_id": "technology",
+  "card_id": "webcam",
+  "front": "webcam",
+  "back": "webcam",
+  "example": "La webcam est intégrée à l'ordinateur.",
+  "tags": [
+    "device",
+    "beginner"
+  ],
+  "context": "deck:technology",
+  "difficulty": 1
+}

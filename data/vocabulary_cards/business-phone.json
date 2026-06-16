@@ -1,0 +1,13 @@
+{
+  "deck_id": "business",
+  "card_id": "phone",
+  "front": "téléphone",
+  "back": "phone",
+  "example": "Le téléphone sonne souvent au bureau.",
+  "tags": [
+    "office",
+    "beginner"
+  ],
+  "context": "deck:business",
+  "difficulty": 1
+}

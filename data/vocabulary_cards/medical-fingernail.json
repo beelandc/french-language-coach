@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "fingernail",
+  "front": "ongle",
+  "back": "fingernail",
+  "example": "Mes ongles sont courts.",
+  "tags": [
+    "body",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

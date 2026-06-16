@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "nurse",
+  "front": "infirmière",
+  "back": "nurse",
+  "example": "L'infirmière prend soin de moi.",
+  "tags": [
+    "professional",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

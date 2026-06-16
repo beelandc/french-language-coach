@@ -1,0 +1,13 @@
+{
+  "deck_id": "technology",
+  "card_id": "problem",
+  "front": "problème",
+  "back": "problem",
+  "example": "J'ai un problème avec mon ordinateur.",
+  "tags": [
+    "problem",
+    "beginner"
+  ],
+  "context": "deck:technology",
+  "difficulty": 1
+}

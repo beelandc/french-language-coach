@@ -1,0 +1,13 @@
+{
+  "deck_id": "sports",
+  "card_id": "tennis",
+  "front": "tennis",
+  "back": "tennis",
+  "example": "Je joue au tennis.",
+  "tags": [
+    "sport",
+    "beginner"
+  ],
+  "context": "deck:sports",
+  "difficulty": 1
+}

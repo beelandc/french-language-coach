@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "waiter",
+  "front": "serveur",
+  "back": "waiter",
+  "example": "Le serveur nous a recommandé la spécialité du chef.",
+  "tags": [
+    "restaurant",
+    "beginner"
+  ],
+  "context": "deck:dining",
+  "difficulty": 1
+}

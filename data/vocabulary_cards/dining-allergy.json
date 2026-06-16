@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "allergy",
+  "front": "allergie",
+  "back": "allergy",
+  "example": "J'ai une allergie aux fruits de mer.",
+  "tags": [
+    "health",
+    "beginner"
+  ],
+  "context": "deck:dining",
+  "difficulty": 1
+}

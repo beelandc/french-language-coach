@@ -1,0 +1,13 @@
+{
+  "deck_id": "business",
+  "card_id": "slide",
+  "front": "diapositive",
+  "back": "slide",
+  "example": "La diapositive montre les résultats.",
+  "tags": [
+    "meeting",
+    "intermediate"
+  ],
+  "context": "deck:business",
+  "difficulty": 2
+}

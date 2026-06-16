@@ -1,0 +1,13 @@
+{
+  "deck_id": "daily_routines",
+  "card_id": "shower",
+  "front": "douche",
+  "back": "shower",
+  "example": "Je prends une douche.",
+  "tags": [
+    "morning",
+    "beginner"
+  ],
+  "context": "deck:daily_routines",
+  "difficulty": 1
+}

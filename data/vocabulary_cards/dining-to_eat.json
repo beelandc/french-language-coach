@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "to_eat",
+  "front": "manger",
+  "back": "to eat",
+  "example": "J'aime manger dans de bons restaurants.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:dining",
+  "difficulty": 1
+}

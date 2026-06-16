@@ -1,0 +1,13 @@
+{
+  "deck_id": "education",
+  "card_id": "to_learn",
+  "front": "apprendre",
+  "back": "to learn",
+  "example": "J'apprends tous les jours.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:education",
+  "difficulty": 1
+}

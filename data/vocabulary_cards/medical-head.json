@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "head",
+  "front": "tête",
+  "back": "head",
+  "example": "J'ai mal à la tête.",
+  "tags": [
+    "body",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

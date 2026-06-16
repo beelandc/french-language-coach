@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "reception",
+  "front": "réception",
+  "back": "reception",
+  "example": "La réception est ouverte 24h/24.",
+  "tags": [
+    "accommodation",
+    "beginner"
+  ],
+  "context": "deck:travel",
+  "difficulty": 1
+}

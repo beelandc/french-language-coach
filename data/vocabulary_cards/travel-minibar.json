@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "minibar",
+  "front": "minibar",
+  "back": "minibar",
+  "example": "Le minibar contient des boissons.",
+  "tags": [
+    "accommodation",
+    "beginner"
+  ],
+  "context": "deck:travel",
+  "difficulty": 1
+}

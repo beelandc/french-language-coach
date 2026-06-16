@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "lung",
+  "front": "poumon",
+  "back": "lung",
+  "example": "Les poumons sont essentiels.",
+  "tags": [
+    "body",
+    "intermediate"
+  ],
+  "context": "deck:medical",
+  "difficulty": 2
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "airport",
+  "front": "aéroport",
+  "back": "airport",
+  "example": "L'aéroport est très grand et moderne.",
+  "tags": [
+    "place",
+    "beginner"
+  ],
+  "context": "deck:travel",
+  "difficulty": 1
+}

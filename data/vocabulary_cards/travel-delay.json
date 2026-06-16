@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "delay",
+  "front": "retard",
+  "back": "delay",
+  "example": "Le train a 15 minutes de retard.",
+  "tags": [
+    "problem",
+    "beginner"
+  ],
+  "context": "deck:travel",
+  "difficulty": 1
+}

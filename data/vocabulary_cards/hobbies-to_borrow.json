@@ -1,0 +1,13 @@
+{
+  "deck_id": "hobbies",
+  "card_id": "to_borrow",
+  "front": "emprunter",
+  "back": "to borrow",
+  "example": "J'emprunte un livre.",
+  "tags": [
+    "reading",
+    "beginner"
+  ],
+  "context": "deck:hobbies",
+  "difficulty": 1
+}

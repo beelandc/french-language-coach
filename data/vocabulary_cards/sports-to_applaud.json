@@ -1,0 +1,13 @@
+{
+  "deck_id": "sports",
+  "card_id": "to_applaud",
+  "front": "applaudir",
+  "back": "to applaud",
+  "example": "Le public applaudit les joueurs.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:sports",
+  "difficulty": 1
+}

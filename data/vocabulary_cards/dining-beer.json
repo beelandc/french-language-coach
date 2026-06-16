@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "beer",
+  "front": "bière",
+  "back": "beer",
+  "example": "Une bière pression, c'est parfait par ce temps.",
+  "tags": [
+    "drink",
+    "beginner"
+  ],
+  "context": "deck:dining",
+  "difficulty": 1
+}

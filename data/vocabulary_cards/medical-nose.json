@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "nose",
+  "front": "nez",
+  "back": "nose",
+  "example": "Mon nez est bouché.",
+  "tags": [
+    "body",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

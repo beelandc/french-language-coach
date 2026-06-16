@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "barcode",
+  "front": "code-barres",
+  "back": "barcode",
+  "example": "Le code-barres est sur l'emballage.",
+  "tags": [
+    "item",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

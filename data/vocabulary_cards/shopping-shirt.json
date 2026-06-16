@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "shirt",
+  "front": "chemise",
+  "back": "shirt",
+  "example": "Cette chemise en coton est très confortable.",
+  "tags": [
+    "clothing",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

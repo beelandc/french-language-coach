@@ -1,0 +1,13 @@
+{
+  "deck_id": "daily_routines",
+  "card_id": "to_dry_hair",
+  "front": "sécher ses cheveux",
+  "back": "to dry hair",
+  "example": "Je sèche mes cheveux avec le sèche-cheveux.",
+  "tags": [
+    "morning",
+    "beginner"
+  ],
+  "context": "deck:daily_routines",
+  "difficulty": 1
+}

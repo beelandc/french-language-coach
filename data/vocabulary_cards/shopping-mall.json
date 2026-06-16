@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "mall",
+  "front": "centre commercial",
+  "back": "mall",
+  "example": "Le centre commercial a plus de 200 boutiques.",
+  "tags": [
+    "store",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

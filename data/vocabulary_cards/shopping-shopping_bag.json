@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "shopping_bag",
+  "front": "sac de courses",
+  "back": "shopping bag",
+  "example": "J'ai plusieurs sacs de courses.",
+  "tags": [
+    "item",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

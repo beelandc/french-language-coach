@@ -1,0 +1,13 @@
+{
+  "deck_id": "hobbies",
+  "card_id": "to_hike",
+  "front": "faire de la randonnée",
+  "back": "to hike",
+  "example": "J'aime la randonnée.",
+  "tags": [
+    "outdoor",
+    "intermediate"
+  ],
+  "context": "deck:hobbies",
+  "difficulty": 2
+}

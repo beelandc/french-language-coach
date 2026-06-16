@@ -1,0 +1,13 @@
+{
+  "deck_id": "daily_routines",
+  "card_id": "to_comb_hair",
+  "front": "se coiffer",
+  "back": "to comb hair",
+  "example": "Je me coiffe.",
+  "tags": [
+    "morning",
+    "beginner"
+  ],
+  "context": "deck:daily_routines",
+  "difficulty": 1
+}

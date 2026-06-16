@@ -1,0 +1,13 @@
+{
+  "deck_id": "daily_routines",
+  "card_id": "to_listen_music",
+  "front": "écouter de la musique",
+  "back": "to listen music",
+  "example": "J'écoute de la musique en travaillant.",
+  "tags": [
+    "day",
+    "beginner"
+  ],
+  "context": "deck:daily_routines",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "to_return",
+  "front": "rapporter",
+  "back": "to return",
+  "example": "Je veux rapporter ce produit.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

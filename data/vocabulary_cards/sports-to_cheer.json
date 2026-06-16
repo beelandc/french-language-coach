@@ -1,0 +1,13 @@
+{
+  "deck_id": "sports",
+  "card_id": "to_cheer",
+  "front": "encourager",
+  "back": "to cheer",
+  "example": "Les fans encouragent leur équipe.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:sports",
+  "difficulty": 1
+}

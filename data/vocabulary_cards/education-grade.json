@@ -1,0 +1,13 @@
+{
+  "deck_id": "education",
+  "card_id": "grade",
+  "front": "note",
+  "back": "grade",
+  "example": "J'ai une bonne note.",
+  "tags": [
+    "test",
+    "beginner"
+  ],
+  "context": "deck:education",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "orange",
+  "front": "orange",
+  "back": "orange",
+  "example": "L'orange est juteuse.",
+  "tags": [
+    "fruit",
+    "beginner"
+  ],
+  "context": "deck:food",
+  "difficulty": 1
+}

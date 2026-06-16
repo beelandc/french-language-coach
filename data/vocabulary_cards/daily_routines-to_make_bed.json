@@ -1,0 +1,13 @@
+{
+  "deck_id": "daily_routines",
+  "card_id": "to_make_bed",
+  "front": "faire son lit",
+  "back": "to make bed",
+  "example": "Je fais mon lit chaque matin.",
+  "tags": [
+    "morning",
+    "beginner"
+  ],
+  "context": "deck:daily_routines",
+  "difficulty": 1
+}

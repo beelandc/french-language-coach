@@ -1,0 +1,13 @@
+{
+  "deck_id": "daily_routines",
+  "card_id": "work",
+  "front": "travail",
+  "back": "work",
+  "example": "Je vais au travail.",
+  "tags": [
+    "day",
+    "beginner"
+  ],
+  "context": "deck:daily_routines",
+  "difficulty": 1
+}

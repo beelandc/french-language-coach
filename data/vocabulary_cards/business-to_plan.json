@@ -1,0 +1,13 @@
+{
+  "deck_id": "business",
+  "card_id": "to_plan",
+  "front": "planifier",
+  "back": "to plan",
+  "example": "Nous planifions le projet ensemble.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:business",
+  "difficulty": 1
+}

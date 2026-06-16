@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "throat",
+  "front": "gorge",
+  "back": "throat",
+  "example": "Ma gorge est irritée.",
+  "tags": [
+    "body",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "technology",
+  "card_id": "social_media",
+  "front": "réseau social",
+  "back": "social media",
+  "example": "Les réseaux sociaux sont populaires.",
+  "tags": [
+    "internet",
+    "intermediate"
+  ],
+  "context": "deck:technology",
+  "difficulty": 2
+}

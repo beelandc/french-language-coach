@@ -1,0 +1,13 @@
+{
+  "deck_id": "technology",
+  "card_id": "smartphone",
+  "front": "smartphone",
+  "back": "smartphone",
+  "example": "Mon smartphone est nouveau.",
+  "tags": [
+    "device",
+    "beginner"
+  ],
+  "context": "deck:technology",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "jewelry_store",
+  "front": "bijouterie",
+  "back": "jewelry store",
+  "example": "La bijouterie propose des pièces uniques.",
+  "tags": [
+    "store",
+    "intermediate"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 2
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "education",
+  "card_id": "computer",
+  "front": "ordinateur",
+  "back": "computer",
+  "example": "J'utilise un ordinateur.",
+  "tags": [
+    "material",
+    "beginner"
+  ],
+  "context": "deck:education",
+  "difficulty": 1
+}

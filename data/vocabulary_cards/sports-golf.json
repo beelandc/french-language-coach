@@ -1,0 +1,13 @@
+{
+  "deck_id": "sports",
+  "card_id": "golf",
+  "front": "golf",
+  "back": "golf",
+  "example": "Le golf est un sport calme.",
+  "tags": [
+    "sport",
+    "intermediate"
+  ],
+  "context": "deck:sports",
+  "difficulty": 2
+}

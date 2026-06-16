@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "peach",
+  "front": "pêche",
+  "back": "peach",
+  "example": "La pêche est douce.",
+  "tags": [
+    "fruit",
+    "beginner"
+  ],
+  "context": "deck:food",
+  "difficulty": 1
+}

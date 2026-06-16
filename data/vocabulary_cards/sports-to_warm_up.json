@@ -1,0 +1,13 @@
+{
+  "deck_id": "sports",
+  "card_id": "to_warm_up",
+  "front": "s'échauffer",
+  "back": "to warm up",
+  "example": "Il faut s'échauffer avant le match.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:sports",
+  "difficulty": 1
+}

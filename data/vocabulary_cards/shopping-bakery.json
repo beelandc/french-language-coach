@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "bakery",
+  "front": "boulangerie",
+  "back": "bakery",
+  "example": "La boulangerie vend du pain frais tous les jours.",
+  "tags": [
+    "store",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

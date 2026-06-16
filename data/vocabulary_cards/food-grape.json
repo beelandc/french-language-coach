@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "grape",
+  "front": "raisin",
+  "back": "grape",
+  "example": "Le raisin est sucré.",
+  "tags": [
+    "fruit",
+    "beginner"
+  ],
+  "context": "deck:food",
+  "difficulty": 1
+}

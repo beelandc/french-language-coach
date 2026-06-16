@@ -1,0 +1,13 @@
+{
+  "deck_id": "sports",
+  "card_id": "skiing",
+  "front": "ski",
+  "back": "skiing",
+  "example": "Le ski est amusant en hiver.",
+  "tags": [
+    "sport",
+    "intermediate"
+  ],
+  "context": "deck:sports",
+  "difficulty": 2
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "pants",
+  "front": "pantalon",
+  "back": "pants",
+  "example": "Le pantalon noir va avec tout.",
+  "tags": [
+    "clothing",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

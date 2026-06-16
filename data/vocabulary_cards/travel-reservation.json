@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "reservation",
+  "front": "réservation",
+  "back": "reservation",
+  "example": "J'ai fait une réservation d'hôtel.",
+  "tags": [
+    "document",
+    "beginner"
+  ],
+  "context": "deck:travel",
+  "difficulty": 1
+}

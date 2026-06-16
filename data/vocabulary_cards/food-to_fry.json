@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "to_fry",
+  "front": "frire",
+  "back": "to fry",
+  "example": "Je fais frire des pommes de terre.",
+  "tags": [
+    "verb",
+    "beginner"
+  ],
+  "context": "deck:food",
+  "difficulty": 1
+}

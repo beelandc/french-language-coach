@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "on_sale",
+  "front": "en solde",
+  "back": "on sale",
+  "example": "Ce produit est en solde.",
+  "tags": [
+    "term",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

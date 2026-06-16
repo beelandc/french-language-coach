@@ -1,0 +1,13 @@
+{
+  "deck_id": "education",
+  "card_id": "french",
+  "front": "français",
+  "back": "French",
+  "example": "J'apprends le français.",
+  "tags": [
+    "subject",
+    "beginner"
+  ],
+  "context": "deck:education",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "technology",
+  "card_id": "hard_drive",
+  "front": "disque dur",
+  "back": "hard drive",
+  "example": "Le disque dur a beaucoup d'espace.",
+  "tags": [
+    "device",
+    "beginner"
+  ],
+  "context": "deck:technology",
+  "difficulty": 1
+}

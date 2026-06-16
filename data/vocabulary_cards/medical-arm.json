@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "arm",
+  "front": "bras",
+  "back": "arm",
+  "example": "Mon bras me fait mal.",
+  "tags": [
+    "body",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "shopping",
+  "card_id": "credit_card",
+  "front": "carte de crédit",
+  "back": "credit card",
+  "example": "Ma carte de crédit a une limite de 5000 euros.",
+  "tags": [
+    "money",
+    "beginner"
+  ],
+  "context": "deck:shopping",
+  "difficulty": 1
+}

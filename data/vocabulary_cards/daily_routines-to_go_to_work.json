@@ -1,0 +1,13 @@
+{
+  "deck_id": "daily_routines",
+  "card_id": "to_go_to_work",
+  "front": "aller au travail",
+  "back": "to go to work",
+  "example": "Je vais au travail en voiture.",
+  "tags": [
+    "day",
+    "beginner"
+  ],
+  "context": "deck:daily_routines",
+  "difficulty": 1
+}

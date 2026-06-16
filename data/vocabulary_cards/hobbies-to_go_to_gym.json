@@ -1,0 +1,13 @@
+{
+  "deck_id": "hobbies",
+  "card_id": "to_go_to_gym",
+  "front": "aller à la salle de sport",
+  "back": "to go to gym",
+  "example": "Je vais à la salle de sport trois fois par semaine.",
+  "tags": [
+    "indoor",
+    "beginner"
+  ],
+  "context": "deck:hobbies",
+  "difficulty": 1
+}

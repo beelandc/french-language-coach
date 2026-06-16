@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "temperature",
+  "front": "température",
+  "back": "temperature",
+  "example": "Ma température est normale.",
+  "tags": [
+    "symptom",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

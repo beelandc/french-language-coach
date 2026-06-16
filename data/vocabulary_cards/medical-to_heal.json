@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "to_heal",
+  "front": "guérir",
+  "back": "to heal",
+  "example": "La blessure va guérir rapidement.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

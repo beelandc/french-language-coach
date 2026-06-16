@@ -1,0 +1,13 @@
+{
+  "deck_id": "hobbies",
+  "card_id": "photography",
+  "front": "photographie",
+  "back": "photography",
+  "example": "La photographie est mon hobby.",
+  "tags": [
+    "creative",
+    "beginner"
+  ],
+  "context": "deck:hobbies",
+  "difficulty": 1
+}

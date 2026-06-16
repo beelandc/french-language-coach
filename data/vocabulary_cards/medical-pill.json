@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "pill",
+  "front": "comprimé",
+  "back": "pill",
+  "example": "Prenez un comprimé.",
+  "tags": [
+    "treatment",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

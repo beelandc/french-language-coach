@@ -1,0 +1,13 @@
+{
+  "deck_id": "daily_routines",
+  "card_id": "to_come_home",
+  "front": "rentrer à la maison",
+  "back": "to come home",
+  "example": "Je rentre à la maison à 18h.",
+  "tags": [
+    "evening",
+    "beginner"
+  ],
+  "context": "deck:daily_routines",
+  "difficulty": 1
+}

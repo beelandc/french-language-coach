@@ -1,0 +1,13 @@
+{
+  "deck_id": "technology",
+  "card_id": "to_browse",
+  "front": "naviguer",
+  "back": "to browse",
+  "example": "Je navigue sur internet.",
+  "tags": [
+    "internet",
+    "beginner"
+  ],
+  "context": "deck:technology",
+  "difficulty": 1
+}

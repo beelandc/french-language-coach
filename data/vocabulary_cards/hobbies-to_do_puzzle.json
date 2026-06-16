@@ -1,0 +1,13 @@
+{
+  "deck_id": "hobbies",
+  "card_id": "to_do_puzzle",
+  "front": "faire un puzzle",
+  "back": "to do puzzle",
+  "example": "J'aime faire des puzzles.",
+  "tags": [
+    "indoor",
+    "beginner"
+  ],
+  "context": "deck:hobbies",
+  "difficulty": 1
+}

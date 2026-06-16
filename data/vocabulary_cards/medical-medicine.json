@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "medicine",
+  "front": "médicament",
+  "back": "medicine",
+  "example": "Prenez ce médicament.",
+  "tags": [
+    "treatment",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

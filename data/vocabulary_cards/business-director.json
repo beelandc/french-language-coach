@@ -1,0 +1,13 @@
+{
+  "deck_id": "business",
+  "card_id": "director",
+  "front": "directeur",
+  "back": "director",
+  "example": "Le directeur a validé le projet.",
+  "tags": [
+    "job",
+    "beginner"
+  ],
+  "context": "deck:business",
+  "difficulty": 1
+}

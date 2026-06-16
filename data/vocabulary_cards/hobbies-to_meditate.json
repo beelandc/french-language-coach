@@ -1,0 +1,13 @@
+{
+  "deck_id": "hobbies",
+  "card_id": "to_meditate",
+  "front": "méditer",
+  "back": "to meditate",
+  "example": "Je médite 10 minutes chaque jour.",
+  "tags": [
+    "indoor",
+    "beginner"
+  ],
+  "context": "deck:hobbies",
+  "difficulty": 1
+}

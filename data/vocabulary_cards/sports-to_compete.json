@@ -1,0 +1,13 @@
+{
+  "deck_id": "sports",
+  "card_id": "to_compete",
+  "front": "concourir",
+  "back": "to compete",
+  "example": "Nous concourons ensemble.",
+  "tags": [
+    "action",
+    "intermediate"
+  ],
+  "context": "deck:sports",
+  "difficulty": 2
+}

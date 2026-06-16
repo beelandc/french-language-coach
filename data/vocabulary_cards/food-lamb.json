@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "lamb",
+  "front": "agneau",
+  "back": "lamb",
+  "example": "L'agneau est tendre.",
+  "tags": [
+    "meat",
+    "intermediate"
+  ],
+  "context": "deck:food",
+  "difficulty": 2
+}

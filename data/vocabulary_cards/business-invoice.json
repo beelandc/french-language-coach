@@ -1,0 +1,13 @@
+{
+  "deck_id": "business",
+  "card_id": "invoice",
+  "front": "facture",
+  "back": "invoice",
+  "example": "La facture est envoyée mensuellement.",
+  "tags": [
+    "document",
+    "beginner"
+  ],
+  "context": "deck:business",
+  "difficulty": 1
+}

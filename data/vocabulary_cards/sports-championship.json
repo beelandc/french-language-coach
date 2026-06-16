@@ -1,0 +1,13 @@
+{
+  "deck_id": "sports",
+  "card_id": "championship",
+  "front": "championnat",
+  "back": "championship",
+  "example": "Le championnat est important.",
+  "tags": [
+    "term",
+    "intermediate"
+  ],
+  "context": "deck:sports",
+  "difficulty": 2
+}

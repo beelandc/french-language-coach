@@ -1,0 +1,13 @@
+{
+  "deck_id": "medical",
+  "card_id": "tooth",
+  "front": "dent",
+  "back": "tooth",
+  "example": "J'ai mal aux dents.",
+  "tags": [
+    "body",
+    "beginner"
+  ],
+  "context": "deck:medical",
+  "difficulty": 1
+}

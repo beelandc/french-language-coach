@@ -1,0 +1,13 @@
+{
+  "deck_id": "hobbies",
+  "card_id": "to_sew",
+  "front": "coudre",
+  "back": "to sew",
+  "example": "Je sais coudre.",
+  "tags": [
+    "indoor",
+    "intermediate"
+  ],
+  "context": "deck:hobbies",
+  "difficulty": 2
+}

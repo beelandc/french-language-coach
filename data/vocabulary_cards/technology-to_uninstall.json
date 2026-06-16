@@ -1,0 +1,13 @@
+{
+  "deck_id": "technology",
+  "card_id": "to_uninstall",
+  "front": "désinstaller",
+  "back": "to uninstall",
+  "example": "Je désinstalle l'ancienne version.",
+  "tags": [
+    "action",
+    "intermediate"
+  ],
+  "context": "deck:technology",
+  "difficulty": 2
+}

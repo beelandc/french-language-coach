@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "delicious",
+  "front": "délicieux",
+  "back": "delicious",
+  "example": "Ce plat est absolument délicieux!",
+  "tags": [
+    "adjective",
+    "beginner"
+  ],
+  "context": "deck:dining",
+  "difficulty": 1
+}

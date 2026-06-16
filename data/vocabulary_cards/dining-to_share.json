@@ -1,0 +1,13 @@
+{
+  "deck_id": "dining",
+  "card_id": "to_share",
+  "front": "partager",
+  "back": "to share",
+  "example": "Nous partageons un dessert.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:dining",
+  "difficulty": 1
+}

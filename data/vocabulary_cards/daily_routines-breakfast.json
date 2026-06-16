@@ -1,0 +1,13 @@
+{
+  "deck_id": "daily_routines",
+  "card_id": "breakfast",
+  "front": "petit déjeuner",
+  "back": "breakfast",
+  "example": "Le petit déjeuner est prêt.",
+  "tags": [
+    "morning",
+    "beginner"
+  ],
+  "context": "deck:daily_routines",
+  "difficulty": 1
+}

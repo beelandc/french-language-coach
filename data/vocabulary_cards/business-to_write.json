@@ -1,0 +1,13 @@
+{
+  "deck_id": "business",
+  "card_id": "to_write",
+  "front": "écrire",
+  "back": "to write",
+  "example": "J'écris un email.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:business",
+  "difficulty": 1
+}

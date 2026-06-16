@@ -1,0 +1,13 @@
+{
+  "deck_id": "education",
+  "card_id": "to_fail",
+  "front": "échouer",
+  "back": "to fail",
+  "example": "Je ne veux pas échouer.",
+  "tags": [
+    "test",
+    "beginner"
+  ],
+  "context": "deck:education",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "fresh",
+  "front": "frais",
+  "back": "fresh",
+  "example": "Les légumes sont frais.",
+  "tags": [
+    "adjective",
+    "beginner"
+  ],
+  "context": "deck:food",
+  "difficulty": 1
+}

@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "tourist",
+  "front": "touriste",
+  "back": "tourist",
+  "example": "Les touristes visitent souvent la Tour Eiffel.",
+  "tags": [
+    "people",
+    "beginner"
+  ],
+  "context": "deck:travel",
+  "difficulty": 1
+}

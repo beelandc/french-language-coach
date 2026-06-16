@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "room",
+  "front": "chambre",
+  "back": "room",
+  "example": "Ma chambre a vue sur la mer.",
+  "tags": [
+    "accommodation",
+    "beginner"
+  ],
+  "context": "deck:travel",
+  "difficulty": 1
+}

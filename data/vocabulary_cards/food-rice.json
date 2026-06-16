@@ -1,0 +1,13 @@
+{
+  "deck_id": "food",
+  "card_id": "rice",
+  "front": "riz",
+  "back": "rice",
+  "example": "Le riz accompagne le plat.",
+  "tags": [
+    "grain",
+    "beginner"
+  ],
+  "context": "deck:food",
+  "difficulty": 1
+}

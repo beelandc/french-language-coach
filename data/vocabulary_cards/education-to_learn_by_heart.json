@@ -1,0 +1,13 @@
+{
+  "deck_id": "education",
+  "card_id": "to_learn_by_heart",
+  "front": "apprendre par cœur",
+  "back": "to learn by heart",
+  "example": "J'apprends ce poème par cœur.",
+  "tags": [
+    "action",
+    "intermediate"
+  ],
+  "context": "deck:education",
+  "difficulty": 2
+}

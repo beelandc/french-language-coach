@@ -1,0 +1,13 @@
+{
+  "deck_id": "daily_routines",
+  "card_id": "today",
+  "front": "aujourd'hui",
+  "back": "today",
+  "example": "Aujourd'hui est un bon jour.",
+  "tags": [
+    "time",
+    "beginner"
+  ],
+  "context": "deck:daily_routines",
+  "difficulty": 1
+}

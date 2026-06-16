@@ -1,0 +1,13 @@
+{
+  "deck_id": "education",
+  "card_id": "to_practice",
+  "front": "pratiquer",
+  "back": "to practice",
+  "example": "Je pratique tous les jours.",
+  "tags": [
+    "action",
+    "beginner"
+  ],
+  "context": "deck:education",
+  "difficulty": 1
+}

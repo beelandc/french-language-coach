@@ -1,0 +1,13 @@
+{
+  "deck_id": "travel",
+  "card_id": "subway",
+  "front": "métro",
+  "back": "subway",
+  "example": "Le métro est rapide à Paris.",
+  "tags": [
+    "transport",
+    "beginner"
+  ],
+  "context": "deck:travel",
+  "difficulty": 1
+}
