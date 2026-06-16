@@ -1,0 +1,10 @@
+{
+  "deck_id": "food-vocabulary",
+  "card_id": "bread",
+  "front": "pain",
+  "back": "bread",
+  "example": "Je veux du pain, s'il vous plaît.",
+  "tags": ["food", "staple", "beginner"],
+  "context": "lesson:food-basics",
+  "difficulty": 1
+}

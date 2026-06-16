@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://french-language-coach.github.io/schemas/vocabulary_card.json",
+  "title": "Vocabulary Card Schema",
+  "description": "Schema for defining vocabulary flashcards in the French Language Coach application. Each card contains a French word/phrase, its English translation, and metadata for study and organization.",
+  "version": "1.0.0",
+  "type": "object",
+  "required": ["deck_id", "card_id", "front", "back", "difficulty"],
+  "additionalProperties": false,
+  "properties": {
+    "deck_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Unique identifier for the deck/collection this card belongs to. Used for organizing and grouping related vocabulary cards."
+    },
+    "card_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Unique identifier for this card within the deck. Combined with deck_id, forms a globally unique identifier."
+    },
+    "front": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The French word, phrase, or text to be learned. This is what the user will see on the front of the flashcard."
+    },
+    "back": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The English translation of the French text on the front. This is what the user will see on the back of the flashcard."
+    },
+    "example": {
+      "type": "string",
+      "minLength": 1,
+      "description": "A French sentence that uses the word/phrase in context. Helps the user understand how the vocabulary is used."
+    },
+    "tags": {
+      "type": "array",
+      "description": "List of categorization labels for filtering and organizing cards. Each tag should be a descriptive string.",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "default": []
+    },
+    "context": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Describes where the word appeared or was learned from. Can reference a lesson ID, session ID, or be free text (e.g., 'lesson:present-tense', 'session:123')."
+    },
+    "difficulty": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5,
+      "description": "Numeric rating indicating the difficulty level of this vocabulary card. 1 = easiest (common words), 5 = hardest (rare/specialized words). Used for study prioritization."
+    }
+  }
+}

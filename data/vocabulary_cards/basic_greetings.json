@@ -1,0 +1,10 @@
+{
+  "deck_id": "basic-greetings",
+  "card_id": "hello",
+  "front": "Bonjour",
+  "back": "Hello",
+  "example": "Bonjour, comment ça va?",
+  "tags": ["greeting", "common", "beginner"],
+  "context": "lesson:greetings-101",
+  "difficulty": 1
+}

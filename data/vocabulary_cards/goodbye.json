@@ -1,0 +1,10 @@
+{
+  "deck_id": "basic-greetings",
+  "card_id": "goodbye",
+  "front": "Au revoir",
+  "back": "Goodbye",
+  "example": "Au revoir, à demain!",
+  "tags": ["greeting", "common", "beginner"],
+  "context": "lesson:greetings-101",
+  "difficulty": 1
+}

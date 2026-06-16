@@ -1,0 +1,10 @@
+{
+  "deck_id": "food-vocabulary",
+  "card_id": "coffee",
+  "front": "café",
+  "back": "coffee",
+  "example": "Je bois un café au lait.",
+  "tags": ["food", "drink", "beginner"],
+  "context": "lesson:cafe-culture",
+  "difficulty": 2
+}
