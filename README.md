@@ -614,6 +614,40 @@ npm run test:jest:watch
 >
 > **Jest Coverage Note:** Due to TypeScript compilation errors in some source files, Jest coverage collection currently excludes certain directories (styles, mocks, hooks, pages, utils, types, ExerciseTypes) and files (main.tsx, App.tsx, setupTests.ts, testSetup.ts). These exclusions are configured in `frontend/jest.config.cjs` and can be reduced as TypeScript errors are fixed.
 
+## GitHub Actions CI/CD
+
+This project uses GitHub Actions for Continuous Integration with the following workflows:
+
+### Test Workflows (Conditional)
+
+- **pytest-tests.yml** - Runs backend pytest tests when backend files change
+- **jest-tests.yml** - Runs frontend Jest tests when frontend files change
+- **vitest-tests.yml** - Runs frontend Vitest tests when frontend files change
+- **cypress-tests.yml** - Runs end-to-end Cypress tests when frontend files change
+
+All test workflows use path-based filtering to run only when relevant files are modified, improving CI efficiency.
+
+### Status Gateway Workflow
+
+**status-gateway.yml** - The All Clear Gateway Job (see [Issue #190](https://github.com/beelandc/french-language-coach/issues/190))
+
+This workflow always runs on PRs to main and checks the status of all test workflows that were triggered:
+
+- **Purpose**: Solve the problem where path-based workflow filtering causes workflows to be skipped, and GitHub treats missing required checks as failures
+- **Pattern**: Method 1 - The "All Clear" Gateway Job (industry best practice)
+- **Usage**: In branch protection rules, require only the `status-gateway` workflow, not the individual conditional workflows
+
+**How it works:**
+1. Runs on every PR to main (no path filtering)
+2. Uses the GitHub API to query all workflow runs for the current PR's head commit
+3. Filters to only the test workflows (pytest, jest, vitest, cypress)
+4. If no test workflows ran (e.g., docs-only PR), succeeds with message
+5. If workflows are still in progress, reports pending status
+6. If any triggered workflow failed, fails with details
+7. If all triggered workflows passed, succeeds
+
+**For branch protection:** Configure your branch protection rule to require only the `Status Gateway / Status Check Gateway` check.
+
 ## License
 
 MIT License

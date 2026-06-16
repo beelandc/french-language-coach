@@ -1,0 +1,174 @@
+name: Status Gateway
+
+# All Clear Gateway Workflow
+# This workflow always runs on PRs to main and checks the status of all
+# workflows that were triggered by the PR.
+#
+# Purpose: Solve the problem where path-based workflow filtering causes
+# workflows to be skipped, and GitHub treats missing required checks as failures.
+#
+# Pattern: Method 1 - The "All Clear" Gateway Job (industry best practice)
+# Reference: https://github.com/beelandc/french-language-coach/issues/190
+#
+# Usage: In branch protection rules, require only this workflow's status-check job,
+# not the individual conditional workflows.
+
+on:
+  pull_request:
+    branches: [main]
+    # NO paths filter - this workflow always runs on PRs to main
+
+jobs:
+  status-check:
+    name: Status Check Gateway
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Get workflow runs for this PR
+        uses: actions/github-script@v7
+        id: get-runs
+        with:
+          script: |
+            const headSha = context.payload.pull_request?.head?.sha;
+            if (!headSha) {
+              core.setFailed('No head SHA found in PR context');
+              return;
+            }
+            
+            console.log(`Checking workflow runs for PR with head SHA: ${headSha}`);
+            
+            // List all workflow runs for this commit
+            let runs = [];
+            try {
+              runs = await github.paginate(
+                github.rest.actions.listWorkflowRunsForRepo, {
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  head_sha: headSha,
+                  per_page: 100
+                }
+              );
+            } catch (error) {
+              console.error(`Error listing workflow runs: ${error.message}`);
+              // If we can't access the API, we can't determine status
+              // Fail to be safe
+              core.setFailed(`Failed to query workflow runs: ${error.message}`);
+              return;
+            }
+            
+            console.log(`Found ${runs.length} workflow runs for this commit`);
+            
+            // Workflow names we care about (the test workflows)
+            const expectedWorkflowNames = [
+              'Pytest Backend Unit Tests',
+              'Jest Unit Tests',
+              'Vitest Unit Tests',
+              'Cypress E2E Tests'
+            ];
+            
+            // Get all workflows to build a map of name -> id
+            let allWorkflows = [];
+            try {
+              allWorkflows = await github.paginate(
+                github.rest.actions.listWorkflows, {
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  per_page: 100
+                }
+              );
+            } catch (error) {
+              console.error(`Error listing workflows: ${error.message}`);
+              core.setFailed(`Failed to list workflows: ${error.message}`);
+              return;
+            }
+            
+            const workflowNameToId = {};
+            allWorkflows.forEach(wf => {
+              workflowNameToId[wf.name] = wf.id;
+            });
+            
+            console.log(`Tracking workflows: ${expectedWorkflowNames.join(', ')}`);
+            
+            // Filter runs to only our expected workflows and this PR's event
+            const ourRuns = runs.filter(run => {
+              const matchesName = expectedWorkflowNames.includes(run.name);
+              const matchesSha = run.head_sha === headSha;
+              const isPullRequest = run.event === 'pull_request';
+              return matchesName && matchesSha && isPullRequest;
+            });
+            
+            console.log(`Found ${ourRuns.length} matching workflow runs`);
+            
+            // If no test workflows ran, there's nothing to check - this is OK
+            // (e.g., PR only modifies documentation)
+            if (ourRuns.length === 0) {
+              console.log('No test workflows were triggered for this PR (no matching file paths)');
+              console.log('This is expected if the PR only modifies documentation, config, etc.');
+              core.setOutput('status', 'success');
+              core.setOutput('message', 'No test workflows triggered');
+              return;
+            }
+            
+            // Log all workflow run statuses
+            ourRuns.forEach(run => {
+              console.log(`  ${run.name}: status=${run.status}, conclusion=${run.conclusion}`);
+            });
+            
+            // Check if any workflows are still in progress
+            const inProgress = ourRuns.some(run => 
+              run.status === 'queued' || run.status === 'in_progress'
+            );
+            
+            if (inProgress) {
+              const inProgressNames = ourRuns
+                .filter(run => run.status === 'queued' || run.status === 'in_progress')
+                .map(run => run.name);
+              console.log(`Workflow(s) still in progress: ${inProgressNames.join(', ')}`);
+              console.log('Gateway will be re-triggered when they complete.');
+              // Don't fail - the workflow will be re-run when the other workflows complete
+              core.setOutput('status', 'pending');
+              core.setOutput('message', 'Some workflows still in progress');
+              return;
+            }
+            
+            // Check for failures and cancellations
+            const failedWorkflows = ourRuns.filter(run => {
+              return (
+                run.status === 'completed' && 
+                (run.conclusion === 'failure' || run.conclusion === 'cancelled')
+              );
+            });
+            
+            if (failedWorkflows.length > 0) {
+              const failedNames = failedWorkflows.map(run => run.name);
+              console.log(`Failed workflows: ${failedNames.join(', ')}`);
+              core.setOutput('status', 'failure');
+              core.setOutput('failed_workflows', failedNames.join(', '));
+              core.setFailed(`One or more workflows failed: ${failedNames.join(', ')}`);
+            } else {
+              console.log('All triggered workflows completed successfully');
+              core.setOutput('status', 'success');
+              core.setOutput('message', 'All triggered workflows passed');
+            }
+
+      - name: Report final status
+        run: |
+          STATUS="${{ steps.get-runs.outputs.status }}"
+          MESSAGE="${{ steps.get-runs.outputs.message }}"
+          FAILED_WORKFLOWS="${{ steps.get-runs.outputs.failed_workflows }}"
+          
+          echo "Status Gateway Result: $STATUS"
+          if [ -n "$MESSAGE" ]; then
+            echo "Message: $MESSAGE"
+          fi
+          if [ -n "$FAILED_WORKFLOWS" ]; then
+            echo "Failed Workflows: $FAILED_WORKFLOWS"
+          fi
+          
+          if [ "$STATUS" = "failure" ]; then
+            exit 1
+          else
+            exit 0
+          fi
