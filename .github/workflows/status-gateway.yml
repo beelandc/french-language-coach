@@ -77,6 +77,7 @@ jobs:
             
             const startTime = Date.now();
             let attemptCount = 0;
+            let ourRuns = []; // Define ourRuns outside the loop so it's available after the loop
             
             // Polling loop - continue until all workflows are completed or timeout
             while (true) {
@@ -147,7 +148,7 @@ jobs:
               console.log(`Found ${runs.length} workflow runs for this commit`);
               
               // Filter runs to only our expected workflows and this PR's event
-              const ourRuns = runs.filter(run => {
+              ourRuns = runs.filter(run => {
                 const matchesName = expectedWorkflowNames.includes(run.name);
                 const matchesSha = run.head_sha === headSha;
                 const isPullRequest = run.event === 'pull_request';
