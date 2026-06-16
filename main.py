@@ -12,6 +12,7 @@ from routers import (
     grammar_router,
     grammar_progress_router,
     vocabulary_router,
+    card_review_router,
 )
 
 app = FastAPI(
@@ -53,6 +54,7 @@ app.include_router(feedback_router)
 app.include_router(grammar_router)
 app.include_router(grammar_progress_router)
 app.include_router(vocabulary_router)
+app.include_router(card_review_router)
 
 
 @app.get("/")
