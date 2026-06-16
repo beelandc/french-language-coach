@@ -39,27 +39,6 @@ jobs:
             
             console.log(`Checking workflow runs for PR with head SHA: ${headSha}`);
             
-            // List all workflow runs for this commit
-            let runs = [];
-            try {
-              runs = await github.paginate(
-                github.rest.actions.listWorkflowRunsForRepo, {
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  head_sha: headSha,
-                  per_page: 100
-                }
-              );
-            } catch (error) {
-              console.error(`Error listing workflow runs: ${error.message}`);
-              // If we can't access the API, we can't determine status
-              // Fail to be safe
-              core.setFailed(`Failed to query workflow runs: ${error.message}`);
-              return;
-            }
-            
-            console.log(`Found ${runs.length} workflow runs for this commit`);
-            
             // Workflow names we care about (the test workflows)
             const expectedWorkflowNames = [
               'Pytest Backend Unit Tests',
@@ -91,48 +70,149 @@ jobs:
             
             console.log(`Tracking workflows: ${expectedWorkflowNames.join(', ')}`);
             
-            // Filter runs to only our expected workflows and this PR's event
-            const ourRuns = runs.filter(run => {
-              const matchesName = expectedWorkflowNames.includes(run.name);
-              const matchesSha = run.head_sha === headSha;
-              const isPullRequest = run.event === 'pull_request';
-              return matchesName && matchesSha && isPullRequest;
-            });
+            // Polling configuration
+            const POLL_INTERVAL_MS = 30000; // 30 seconds
+            const MAX_TIMEOUT_MS = 1800000; // 30 minutes
+            const MAX_ATTEMPTS = 60; // 30 minutes / 30 seconds
             
-            console.log(`Found ${ourRuns.length} matching workflow runs`);
+            const startTime = Date.now();
+            let attemptCount = 0;
             
-            // If no test workflows ran, there's nothing to check - this is OK
-            // (e.g., PR only modifies documentation)
-            if (ourRuns.length === 0) {
-              console.log('No test workflows were triggered for this PR (no matching file paths)');
-              console.log('This is expected if the PR only modifies documentation, config, etc.');
-              core.setOutput('status', 'success');
-              core.setOutput('message', 'No test workflows triggered');
-              return;
+            // Polling loop - continue until all workflows are completed or timeout
+            while (true) {
+              attemptCount++;
+              const elapsedTime = Date.now() - startTime;
+              
+              // Check for timeout
+              if (elapsedTime >= MAX_TIMEOUT_MS) {
+                console.log(`Timeout: Waited ${MAX_TIMEOUT_MS / 1000 / 60} minutes for workflows to complete`);
+                core.setOutput('status', 'failure');
+                core.setOutput('message', `Timeout waiting for workflows to complete after ${MAX_TIMEOUT_MS / 1000 / 60} minutes`);
+                core.setFailed(`Timeout waiting for workflows to complete`);
+                return;
+              }
+              
+              // Check for maximum attempts (additional safety)
+              if (attemptCount > MAX_ATTEMPTS) {
+                console.log(`Maximum attempts (${MAX_ATTEMPTS}) exceeded`);
+                core.setOutput('status', 'failure');
+                core.setOutput('message', `Maximum polling attempts (${MAX_ATTEMPTS}) exceeded`);
+                core.setFailed(`Maximum polling attempts exceeded`);
+                return;
+              }
+              
+              // Log polling attempt
+              if (attemptCount > 1) {
+                console.log(`Polling attempt ${attemptCount}, elapsed: ${Math.floor(elapsedTime / 1000)}s`);
+              }
+              
+              // List all workflow runs for this commit
+              let runs = [];
+              let queryAttempts = 0;
+              let querySuccess = false;
+              
+              // Retry logic for API errors
+              while (queryAttempts < 3 && !querySuccess) {
+                try {
+                  runs = await github.paginate(
+                    github.rest.actions.listWorkflowRunsForRepo, {
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      head_sha: headSha,
+                      per_page: 100
+                    }
+                  );
+                  querySuccess = true;
+                } catch (error) {
+                  queryAttempts++;
+                  console.error(`Error listing workflow runs (attempt ${queryAttempts}): ${error.message}`);
+                  
+                  // Check for rate limiting
+                  if (error.status === 403 && error.message.includes('rate limit')) {
+                    const retryAfter = error.response?.headers?.['retry-after'] || 60;
+                    console.log(`Rate limited, retrying after ${retryAfter} seconds...`);
+                    await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
+                  } else if (queryAttempts >= 3) {
+                    // If we can't access the API after retries, we can't determine status
+                    // Fail to be safe
+                    core.setFailed(`Failed to query workflow runs after ${queryAttempts} attempts: ${error.message}`);
+                    return;
+                  } else {
+                    // Wait before retrying
+                    await new Promise(resolve => setTimeout(resolve, 5000));
+                  }
+                }
+              }
+              
+              console.log(`Found ${runs.length} workflow runs for this commit`);
+              
+              // Filter runs to only our expected workflows and this PR's event
+              const ourRuns = runs.filter(run => {
+                const matchesName = expectedWorkflowNames.includes(run.name);
+                const matchesSha = run.head_sha === headSha;
+                const isPullRequest = run.event === 'pull_request';
+                return matchesName && matchesSha && isPullRequest;
+              });
+              
+              console.log(`Found ${ourRuns.length} matching workflow runs`);
+              
+              // Log all workflow run statuses
+              ourRuns.forEach(run => {
+                console.log(`  ${run.name}: status=${run.status}, conclusion=${run.conclusion}`);
+              });
+              
+              // If no test workflows ran, there's nothing to check - this is OK
+              // (e.g., PR only modifies documentation)
+              if (ourRuns.length === 0) {
+                if (attemptCount === 1) {
+                  // First attempt with no workflows - this is the expected case for doc-only changes
+                  console.log('No test workflows were triggered for this PR (no matching file paths)');
+                  console.log('This is expected if the PR only modifies documentation, config, etc.');
+                  core.setOutput('status', 'success');
+                  core.setOutput('message', 'No test workflows triggered');
+                  return;
+                } else {
+                  // Still no workflows after multiple attempts - might be a timing issue
+                  // but we've waited long enough, treat as success
+                  console.log('No test workflows found after polling, assuming none were triggered');
+                  core.setOutput('status', 'success');
+                  core.setOutput('message', 'No test workflows triggered');
+                  return;
+                }
+              }
+              
+              // Check if any workflows are still in progress (queued or in_progress)
+              const inProgress = ourRuns.some(run => 
+                run.status === 'queued' || run.status === 'in_progress'
+              );
+              
+              if (inProgress) {
+                const inProgressNames = ourRuns
+                  .filter(run => run.status === 'queued' || run.status === 'in_progress')
+                  .map(run => run.name);
+                console.log(`Workflow(s) still in progress: ${inProgressNames.join(', ')}`);
+                console.log(`Waiting ${POLL_INTERVAL_MS / 1000} seconds before polling again...`);
+                
+                // Wait before next poll
+                await new Promise(resolve => setTimeout(resolve, POLL_INTERVAL_MS));
+                continue; // Continue the polling loop
+              }
+              
+              // Check if ALL workflows are completed
+              const allCompleted = ourRuns.every(run => run.status === 'completed');
+              
+              if (!allCompleted) {
+                console.log('Some workflows have unexpected status, continuing to poll...');
+                await new Promise(resolve => setTimeout(resolve, POLL_INTERVAL_MS));
+                continue;
+              }
+              
+              // All workflows are completed - exit the polling loop
+              console.log('All tracked workflows have completed');
+              break;
             }
             
-            // Log all workflow run statuses
-            ourRuns.forEach(run => {
-              console.log(`  ${run.name}: status=${run.status}, conclusion=${run.conclusion}`);
-            });
-            
-            // Check if any workflows are still in progress
-            const inProgress = ourRuns.some(run => 
-              run.status === 'queued' || run.status === 'in_progress'
-            );
-            
-            if (inProgress) {
-              const inProgressNames = ourRuns
-                .filter(run => run.status === 'queued' || run.status === 'in_progress')
-                .map(run => run.name);
-              console.log(`Workflow(s) still in progress: ${inProgressNames.join(', ')}`);
-              console.log('Gateway will be re-triggered when they complete.');
-              // Don't fail - the workflow will be re-run when the other workflows complete
-              core.setOutput('status', 'pending');
-              core.setOutput('message', 'Some workflows still in progress');
-              return;
-            }
-            
+            // Now evaluate the final status
             // Check for failures and cancellations
             const failedWorkflows = ourRuns.filter(run => {
               return (
