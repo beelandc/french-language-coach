@@ -107,7 +107,9 @@ export const Error: Story = {
     vi.clearAllMocks()
 
     // Make the promise reject to show error state
-    vocabularyApi.listDecks.mockRejectedValue(new Error('Failed to load decks'))
+    // Use a plain object with message property instead of Error constructor
+    // to avoid ESM issues with global Error not being available
+    vocabularyApi.listDecks.mockRejectedValue({ message: 'Failed to load decks' })
 
     return <DeckBrowser />
   },
