@@ -148,7 +148,7 @@ def paginate_items(
 @router.get("/decks/", response_model=DeckListResponse)
 async def list_decks(
     page: int = Query(1, ge=1, description="Page number, starting at 1"),
-    per_page: int = Query(10, ge=1, le=100, description="Items per page, maximum 100"),
+    per_page: int = Query(10, ge=1, le=1000, description="Items per page, maximum 1000"),
     db: AsyncSession = Depends(get_db)
 ) -> DeckListResponse:
     """List all vocabulary decks with pagination.
@@ -255,7 +255,7 @@ async def create_deck(
 async def list_cards_in_deck(
     deck_id: int,
     page: int = Query(1, ge=1, description="Page number, starting at 1"),
-    per_page: int = Query(10, ge=1, le=100, description="Items per page, maximum 100"),
+    per_page: int = Query(10, ge=1, le=1000, description="Items per page, maximum 1000"),
     db: AsyncSession = Depends(get_db)
 ) -> CardListResponse:
     """List all cards in a specific deck with pagination.
@@ -404,7 +404,7 @@ async def submit_review(
 @router.get("/due/", response_model=DueCardsResponse)
 async def get_due_cards(
     page: int = Query(1, ge=1, description="Page number, starting at 1"),
-    per_page: int = Query(10, ge=1, le=100, description="Items per page, maximum 100"),
+    per_page: int = Query(10, ge=1, le=1000, description="Items per page, maximum 1000"),
     db: AsyncSession = Depends(get_db)
 ) -> DueCardsResponse:
     """Get all cards that are due for review.

@@ -70,6 +70,16 @@ Each scenario supports three difficulty levels that affect the AI's system promp
   - Real-time answer validation with immediate feedback
   - Score tracking across exercise sessions
   - Filterable by type, topic, and difficulty level
+- **Vocabulary Flashcards**: Interactive flashcard component with flip animation for vocabulary study (Phase 3, Issue #69)
+  - Click/tap to flip between French (front) and English + example (back)
+  - Swipe gesture support for mobile devices
+  - Smooth CSS flip animation
+- **Spaced Repetition Review**: ReviewSession component for managing vocabulary card reviews (Phase 3, Issue #69)
+  - Fetch and display cards due for review using SM-2 spaced repetition algorithm
+  - Rating buttons: Again (1), Hard (2), Good (3), Easy (4) for SM-2 algorithm
+  - Progress tracking through review session
+  - Session summary with rating distribution statistics
+  - Auto-advance to next card after rating submission
 
 ## Setup & Installation
 
@@ -280,6 +290,8 @@ french-language-coach/
 │   │   │   │   ├── TranslationExercise.tsx
 │   │   │   │   ├── ConjugationExercise.tsx
 │   │   │   │   └── SentenceTransformationExercise.tsx
+│   │   │   ├── Flashcard.tsx         # Vocabulary flashcard with flip animation (Phase 3, Issue #69)
+│   │   │   ├── ReviewSession.tsx     # Spaced repetition review session (Phase 3, Issue #69)
 │   │   │   └── index.ts
 │   │   ├── pages/           # Page-level components (React Router routes)
 │   │   │   ├── IndexPage.tsx         # Modern landing page with central navigation hub (Issue #177)
@@ -347,12 +359,12 @@ french-language-coach/
 | POST | `/grammar/progress/` | Record a new lesson progress entry. Required: `lesson_id` (string, e.g., "articles"). Optional: `user_id` (integer, nullable), `completed` (boolean, default false), `score` (integer 0-100, default 0), `time_spent` (integer seconds >=0, default 0). Returns 201 with created progress record. Returns 422 for invalid score (<0 or >100) or time_spent (<0). **Validates: score must be 0-100, time_spent must be >=0** |
 | GET | `/grammar/exercises/` | List grammar exercises with optional filtering and pagination. Query parameters: `page` (default 1), `per_page` (default 10, max 100), `exercise_type` (filter by type: fill-in-the-blank, multiple-choice, translation, conjugation, sentence-transformation), `topic` (filter by topic substring), `difficulty` (filter by level: beginner, intermediate, advanced). Returns paginated list of exercises with full content |
 | GET | `/grammar/exercises/{id}` | Get a specific grammar exercise by ID. Returns full exercise content including all type-specific fields. Returns 404 if exercise not found |
-| GET | `/vocabulary/decks/` | List all vocabulary decks with pagination. Query parameters: `page` (default 1), `per_page` (default 10, max 100). Returns list of decks with id, name, description, created_at, updated_at, card_count |
+| GET | `/vocabulary/decks/` | List all vocabulary decks with pagination. Query parameters: `page` (default 1), `per_page` (default 10, max 1000). Returns list of decks with id, name, description, created_at, updated_at, card_count |
 | POST | `/vocabulary/decks/` | Create a new vocabulary deck. Required: `name`. Optional: `description`. Returns 201 with created deck details |
-| GET | `/vocabulary/decks/{id}/cards/` | List all cards in a specific deck with pagination. Query parameters: `page` (default 1), `per_page` (default 10, max 100). Returns paginated list of cards with all fields including spaced repetition data |
+| GET | `/vocabulary/decks/{id}/cards/` | List all cards in a specific deck with pagination. Query parameters: `page` (default 1), `per_page` (default 10, max 1000). Returns paginated list of cards with all fields including spaced repetition data |
 | POST | `/vocabulary/decks/{id}/cards/` | Create a new card in a specific deck. Required: `card_id`, `front`, `back`. Optional: `example`, `tags`, `context`, `difficulty` (1-5, default 1). Initial spaced repetition values: interval=1, ease_factor=2.5, next_review_date=today+1. Returns 201 with created card details |
 | POST | `/vocabulary/review/` | Submit a card review to update spaced repetition scheduling on the Card model. Required: `card_id`, `deck_id`, `ease` (1-4 where 1=Again, 2=Hard, 3=Good, 4=Easy). Uses SM-2 algorithm to calculate new interval and ease factor. Returns success status with next_review_date, new_interval, new_ease_factor |
-| GET | `/vocabulary/due/` | Get all cards due for review (next_review_date <= today) with pagination. Query parameters: `page` (default 1), `per_page` (default 10, max 100). Returns paginated list of due cards with id, deck_id, deck_name, card_id, front, back, next_review_date |
+| GET | `/vocabulary/due/` | Get all cards due for review (next_review_date <= today) with pagination. Query parameters: `page` (default 1), `per_page` (default 10, max 1000). Returns paginated list of due cards with id, deck_id, deck_name, card_id, front, back, next_review_date |
 | POST | `/card-review/` | Submit a card review to track spaced repetition state in CardReview model (Issue #59). Required: `card_id`, `rating` (0-3 where 0=Fail/Again, 1=Hard, 2=Good, 3=Easy). Optional: `user_id` (nullable for Phase 1.5). Uses SM-2 algorithm with rating mapping. Returns success status with next_due_date, interval, ease_factor, reps, lapses |
 
 ### Frontend Routes
@@ -369,6 +381,7 @@ french-language-coach/
 | `/reference` | ReferencePage | Search and filter grammar reference entries (Phase 2) |
 | `/exercises` | ExerciseBrowserPage | Browse and filter all grammar exercises (Phase 2) |
 | `/exercises/:exerciseId` | ExercisePage | Practice a specific grammar exercise (Phase 2) |
+| `/review` | ReviewSession | Start vocabulary card review session with spaced repetition (Phase 3, Issue #69) |
 
 ### Data Flow
 
@@ -509,6 +522,10 @@ This ensures:
 - Analysis: `spdd/analysis/FLC-024-202606041500-[Analysis]-issue-46-reference-search-exercise.md`
 - Prompt: `spdd/prompt/FLC-024-202606041530-[Feat]-issue-46-reference-search-exercise.md`
 
+**Issue #69 - Flashcard and ReviewSession Components**:
+- Analysis: `spdd/analysis/FLC-039-202606161000-[Analysis]-issue-69-flashcard-review-session.md`
+- Prompt: `spdd/prompt/FLC-039-202606161015-[Feat]-issue-69-flashcard-review-session.md`
+
 #### Reference
 - [Structured Prompt Driven Development (Wei Zhang & Jessie Jie Xia)](https://martinfowler.com/articles/structured-prompt-driven.html)
 
@@ -631,6 +648,11 @@ npm run test:jest:watch
 > **Note:** Frontend test scripts are defined in `frontend/package.json`. If Vitest is not yet configured, you can add it with: `cd frontend && npm install -D vitest @testing-library/react @testing-library/jest-dom`
 >
 > **Jest Coverage Note:** Due to TypeScript compilation errors in some source files, Jest coverage collection currently excludes certain directories (styles, mocks, hooks, pages, utils, types, ExerciseTypes) and files (main.tsx, App.tsx, setupTests.ts, testSetup.ts). These exclusions are configured in `frontend/jest.config.cjs` and can be reduced as TypeScript errors are fixed.
+
+**Available frontend test files:**
+- `frontend/src/sample.jest.test.tsx` - Jest setup verification tests
+- `frontend/src/components/Flashcard.jest.test.tsx` - Tests for Flashcard component (Issue #69)
+- `frontend/src/components/ReviewSession.jest.test.tsx` - Tests for ReviewSession component (Issue #69)
 
 ## GitHub Actions CI/CD
 
