@@ -1,0 +1,10 @@
+{
+  "deck_id": "food-vocabulary",
+  "card_id": "apple",
+  "front": "pomme",
+  "back": "apple",
+  "example": "Je mange une pomme.",
+  "tags": ["food", "fruit", "beginner"],
+  "context": "lesson:food-basics",
+  "difficulty": 1
+}
