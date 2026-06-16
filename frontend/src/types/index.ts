@@ -204,8 +204,6 @@ export interface ConfirmationModalProps {
 // Lesson types for Grammar Lessons (Phase 2)
 // Matches backend schemas in schemas/grammar_lesson.py and schemas/grammar.py
 
-export type Difficulty = 'beginner' | 'intermediate' | 'advanced'
-
 // Section within a grammar lesson
 export interface LessonSection {
   title: string
