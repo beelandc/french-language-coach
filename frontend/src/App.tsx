@@ -11,6 +11,8 @@ import ReferencePage from './pages/ReferencePage'
 import ExercisePage from './pages/ExercisePage'
 import ExerciseBrowserPage from './pages/ExerciseBrowserPage'
 import VocabularyPage from './pages/VocabularyPage'
+import DeckDetailPage from './pages/DeckDetailPage'
+import DeckCardsPage from './pages/DeckCardsPage'
 
 function App() {
   return (
@@ -43,6 +45,9 @@ function App() {
           <Route path="/exercises/:exerciseId" element={<ExercisePage />} />
           {/* Vocabulary Routes (Issue #67) */}
           <Route path="/vocabulary" element={<VocabularyPage />} />
+          {/* Vocabulary Deck Detail Routes (Issue #201) */}
+          <Route path="/vocabulary/decks/:deckId" element={<DeckDetailPage />} />
+          <Route path="/vocabulary/decks/:deckId/cards" element={<DeckCardsPage />} />
         </Routes>
       </main>
     </div>

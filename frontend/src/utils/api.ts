@@ -321,4 +321,13 @@ export type {
   ReviewResponse,
   DueCard,
   DueCardsResponse,
+  // Deck Detail and Cards Page types (Issue #201)
+  BreadcrumbProps,
+  BreadcrumbItem,
+  CardForDisplay,
+  DeckDetail,
+  DeckDetailPageProps,
+  DeckCardsPageProps,
+  CardListState,
+  CardSortOption,
 } from '../types/index'

@@ -360,6 +360,7 @@ french-language-coach/
 | GET | `/grammar/exercises/` | List grammar exercises with optional filtering and pagination. Query parameters: `page` (default 1), `per_page` (default 10, max 100), `exercise_type` (filter by type: fill-in-the-blank, multiple-choice, translation, conjugation, sentence-transformation), `topic` (filter by topic substring), `difficulty` (filter by level: beginner, intermediate, advanced). Returns paginated list of exercises with full content |
 | GET | `/grammar/exercises/{id}` | Get a specific grammar exercise by ID. Returns full exercise content including all type-specific fields. Returns 404 if exercise not found |
 | GET | `/vocabulary/decks/` | List all vocabulary decks with pagination. Query parameters: `page` (default 1), `per_page` (default 10, max 1000). Returns list of decks with id, name, description, created_at, updated_at, card_count |
+| GET | `/vocabulary/decks/{id}` | Get a specific vocabulary deck by ID. Returns deck details including id, name, description, created_at, updated_at, card_count. Returns 404 if deck not found |
 | POST | `/vocabulary/decks/` | Create a new vocabulary deck. Required: `name`. Optional: `description`. Returns 201 with created deck details |
 | GET | `/vocabulary/decks/{id}/cards/` | List all cards in a specific deck with pagination. Query parameters: `page` (default 1), `per_page` (default 10, max 1000). Returns paginated list of cards with all fields including spaced repetition data |
 | POST | `/vocabulary/decks/{id}/cards/` | Create a new card in a specific deck. Required: `card_id`, `front`, `back`. Optional: `example`, `tags`, `context`, `difficulty` (1-5, default 1). Initial spaced repetition values: interval=1, ease_factor=2.5, next_review_date=today+1. Returns 201 with created card details |
@@ -382,6 +383,9 @@ french-language-coach/
 | `/exercises` | ExerciseBrowserPage | Browse and filter all grammar exercises (Phase 2) |
 | `/exercises/:exerciseId` | ExercisePage | Practice a specific grammar exercise (Phase 2) |
 | `/review` | ReviewSession | Start vocabulary card review session with spaced repetition (Phase 3, Issue #69) |
+| `/vocabulary` | VocabularyPage | Browse all vocabulary decks (Phase 3, Issue #67) |
+| `/vocabulary/decks/:deckId` | DeckDetailPage | View deck details, progress, and card preview (Phase 3, Issue #201) |
+| `/vocabulary/decks/:deckId/cards` | DeckCardsPage | Browse all cards in a specific deck with pagination (Phase 3, Issue #201) |
 
 ### Data Flow
 
