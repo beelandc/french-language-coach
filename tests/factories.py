@@ -4,7 +4,7 @@ This module provides factory classes for all SQLAlchemy models using factory-boy
 Factories generate test data instances that can be used in unit and integration tests.
 
 Usage:
-    from tests.factories import SessionFactory, LessonProgressFactory
+    from tests.factories import SessionFactory, LessonProgressFactory, CardReviewFactory
     
     # Create a Session instance
     session = SessionFactory()
@@ -21,10 +21,11 @@ Usage:
 
 import factory
 import factory.fuzzy
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from models.session import Session
 from models.lesson_progress import LessonProgress
+from models.card_review import CardReview
 
 
 class SessionFactory(factory.Factory):
@@ -113,6 +114,48 @@ class LessonProgressFactory(factory.Factory):
     score = factory.fuzzy.FuzzyInteger(0, 100)
     last_accessed = factory.LazyAttribute(lambda _: datetime.utcnow())
     time_spent = 0
+    
+    # Timestamps (handled by BaseModel defaults)
+    # created_at and updated_at are set automatically by SQLAlchemy
+
+
+class CardReviewFactory(factory.Factory):
+    """Factory for creating CardReview model instances.
+    
+    The CardReview model tracks spaced repetition state and review history
+    for vocabulary cards. It includes user_id, card_id, ease_factor, interval,
+    due_date, reps, and lapses fields.
+    
+    Attributes:
+        user_id: None (nullable for Phase 1.5 - no authentication)
+        card_id: Random integer ID of a card
+        ease_factor: Default 2.5 (SM-2 algorithm default)
+        interval: Default 1 day
+        due_date: Current UTC datetime + 1 day
+        reps: Default 0 (no consecutive successful reviews yet)
+        lapses: Default 0 (no failures yet)
+    
+    Note:
+        In Phase 1.5, user_id is nullable since user authentication is not yet
+        implemented. This will be updated when authentication is added.
+        
+        This factory uses the base Factory class (not SQLAlchemyModelFactory)
+        because we're using async SQLAlchemy. To persist instances, tests must
+        explicitly add them to the database session and commit.
+    """
+    
+    class Meta:
+        """Factory-boy metadata configuration."""
+        model = CardReview
+    
+    # Fields
+    user_id = None  # Nullable for Phase 1.5 (no auth)
+    card_id = factory.fuzzy.FuzzyInteger(1, 1000)
+    ease_factor = 2.5
+    interval = 1
+    due_date = factory.LazyAttribute(lambda _: datetime.utcnow() + timedelta(days=1))
+    reps = 0
+    lapses = 0
     
     # Timestamps (handled by BaseModel defaults)
     # created_at and updated_at are set automatically by SQLAlchemy

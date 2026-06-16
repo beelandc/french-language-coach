@@ -4,5 +4,6 @@ from .feedback import router as feedback_router
 from .grammar import router as grammar_router
 from .grammar_progress import router as grammar_progress_router
 from .vocabulary import router as vocabulary_router
+from .card_review import router as card_review_router
 
-__all__ = ["sessions_router", "messages_router", "feedback_router", "grammar_router", "grammar_progress_router", "vocabulary_router"]
+__all__ = ["sessions_router", "messages_router", "feedback_router", "grammar_router", "grammar_progress_router", "vocabulary_router", "card_review_router"]
