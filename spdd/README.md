@@ -146,6 +146,10 @@ Example header:
 - Analysis: `spdd/analysis/FLC-037-202606152345-[Analysis]-issue-67-deck-browser-component.md`
 - Prompt: `spdd/prompt/FLC-037-202606160000-[Feat]-issue-67-deck-browser-component.md`
 
+### Status Gateway Polling (Issue #197)
+- Analysis: `spdd/analysis/FLC-038-202606160913-[Analysis]-issue-197-status-gateway-polling.md`
+- Prompt: `spdd/prompt/FLC-038-202606160914-[Fix]-issue-197-status-gateway-polling.md`
+
 ## Reference
 
 This structure is based on the SPDD practice demonstrated in:
@@ -161,5 +165,5 @@ This structure is based on the SPDD practice demonstrated in:
 
 ---
 
-*Last updated: May 2026*
+*Last updated: June 2026*
 *Project: French Language Coach*
