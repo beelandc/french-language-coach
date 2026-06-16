@@ -4,158 +4,117 @@ Part of Issue #201: Implement vocabulary deck detail pages
 """
 
 import pytest
-from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.pool import StaticPool
+from datetime import date, datetime
 
-from main import app
-from models.base import BaseModel
-from models.deck import Deck as DeckModel
 from models.card import Card as CardModel
-from database import get_db
-
-# Test database setup
-SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"
-
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL,
-    connect_args={"check_same_thread": False},
-    poolclass=StaticPool,
-)
-TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-# Create test database
-BaseModel.metadata.create_all(bind=engine)
+from models.deck import Deck as DeckModel
 
 
-def override_get_db():
-    """Dependency override for testing."""
-    try:
-        db = TestingSessionLocal()
-        yield db
-    finally:
-        db.close()
-
-
-@pytest.fixture
-def test_db():
-    """Fixture for test database."""
-    db = TestingSessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-
-@pytest.fixture
-def client(test_db):
-    """Test client with database dependency override."""
-    app.dependency_overrides[get_db] = override_get_db
-    yield TestClient(app)
-    app.dependency_overrides.clear()
-
-
-@pytest.fixture
-def sample_deck(test_db):
-    """Create a sample deck for testing."""
-    deck = DeckModel(
-        name="Travel Vocabulary",
-        description="Travel-related French vocabulary"
-    )
-    test_db.add(deck)
-    test_db.commit()
-    test_db.refresh(deck)
-    
-    # Add some cards to the deck
-    card1 = CardModel(
-        deck_id=deck.id,
-        card_id="card-1",
-        front="Bonjour",
-        back="Hello",
-        example="Bonjour, comment ça va?",
-        tags="greeting,common",
-        context="Basic greeting",
-        difficulty=1,
-        next_review_date="2024-01-10",
-        interval=1,
-        ease_factor=2.5
-    )
-    card2 = CardModel(
-        deck_id=deck.id,
-        card_id="card-2",
-        front="Merci",
-        back="Thank you",
-        example="Merci beaucoup",
-        tags="greeting",
-        context="Expressing gratitude",
-        difficulty=1,
-        next_review_date="2024-01-10",
-        interval=2,
-        ease_factor=2.5
-    )
-    test_db.add_all([card1, card2])
-    test_db.commit()
-    
-    return deck
-
-
+@pytest.mark.asyncio
 class TestGetDeckDetail:
     """Tests for GET /vocabulary/decks/{id} endpoint."""
     
-    def test_get_deck_detail_success(self, client, sample_deck):
+    async def test_get_deck_detail_success(self, client, test_db):
         """Test successful retrieval of a single deck."""
-        response = client.get(f"/vocabulary/decks/{sample_deck.id}")
+        # Create a deck
+        deck = DeckModel(
+            name="Travel Vocabulary",
+            description="Travel-related French vocabulary"
+        )
+        test_db.add(deck)
+        await test_db.commit()
+        await test_db.refresh(deck)
+        
+        # Add some cards to the deck
+        card1 = CardModel(
+            deck_id=deck.id,
+            card_id="card-1",
+            front="Bonjour",
+            back="Hello",
+            example="Bonjour, comment ça va?",
+            tags="greeting,common",
+            context="Basic greeting",
+            difficulty=1,
+            next_review_date=date(2024, 1, 10),
+            interval=1,
+            ease_factor=2.5
+        )
+        card2 = CardModel(
+            deck_id=deck.id,
+            card_id="card-2",
+            front="Merci",
+            back="Thank you",
+            example="Merci beaucoup",
+            tags="greeting",
+            context="Expressing gratitude",
+            difficulty=1,
+            next_review_date=date(2024, 1, 10),
+            interval=2,
+            ease_factor=2.5
+        )
+        test_db.add_all([card1, card2])
+        await test_db.commit()
+
+        response = client.get(f"/vocabulary/decks/{deck.id}")
         
         assert response.status_code == 200
         
         data = response.json()
-        assert data["id"] == sample_deck.id
+        assert data["id"] == deck.id
         assert data["name"] == "Travel Vocabulary"
         assert data["description"] == "Travel-related French vocabulary"
         assert data["card_count"] == 2
         assert "created_at" in data
         assert "updated_at" in data
         
-    def test_get_deck_detail_not_found(self, client):
+    async def test_get_deck_detail_not_found(self, client):
         """Test retrieval of non-existent deck returns 404."""
         response = client.get("/vocabulary/decks/999")
         
         assert response.status_code == 404
         assert "not found" in response.json()["detail"].lower()
         
-    def test_get_deck_detail_returns_card_count(self, client, sample_deck, test_db):
+    async def test_get_deck_detail_returns_card_count(self, client, test_db):
         """Test that deck response includes correct card count."""
-        # Add more cards to verify count
-        for i in range(3, 6):
+        # Create a deck
+        deck = DeckModel(
+            name="Card Count Test",
+            description="Test deck for card counting"
+        )
+        test_db.add(deck)
+        await test_db.commit()
+        await test_db.refresh(deck)
+        
+        # Add 5 cards to verify count
+        for i in range(1, 6):
             card = CardModel(
-                deck_id=sample_deck.id,
+                deck_id=deck.id,
                 card_id=f"card-{i}",
                 front=f"Word {i}",
                 back=f"Translation {i}",
                 difficulty=1,
-                next_review_date="2024-01-10",
+                next_review_date=date(2024, 1, 10),
                 interval=1,
                 ease_factor=2.5
             )
             test_db.add(card)
-        test_db.commit()
-        
-        response = client.get(f"/vocabulary/decks/{sample_deck.id}")
+        await test_db.commit()
+
+        response = client.get(f"/vocabulary/decks/{deck.id}")
         
         assert response.status_code == 200
         data = response.json()
-        assert data["card_count"] == 5  # Original 2 + 3 new cards
+        assert data["card_count"] == 5
         
-    def test_get_deck_detail_empty_deck(self, client, test_db):
+    async def test_get_deck_detail_empty_deck(self, client, test_db):
         """Test retrieval of deck with no cards."""
         deck = DeckModel(
             name="Empty Deck",
             description="A deck with no cards"
         )
         test_db.add(deck)
-        test_db.commit()
-        test_db.refresh(deck)
+        await test_db.commit()
+        await test_db.refresh(deck)
         
         response = client.get(f"/vocabulary/decks/{deck.id}")
         
@@ -163,15 +122,15 @@ class TestGetDeckDetail:
         data = response.json()
         assert data["card_count"] == 0
         
-    def test_get_deck_detail_no_description(self, client, test_db):
+    async def test_get_deck_detail_no_description(self, client, test_db):
         """Test retrieval of deck with no description."""
         deck = DeckModel(
             name="Deck Without Description",
             description=None
         )
         test_db.add(deck)
-        test_db.commit()
-        test_db.refresh(deck)
+        await test_db.commit()
+        await test_db.refresh(deck)
         
         response = client.get(f"/vocabulary/decks/{deck.id}")
         
@@ -179,9 +138,17 @@ class TestGetDeckDetail:
         data = response.json()
         assert data["description"] is None
         
-    def test_get_deck_detail_dates_format(self, client, sample_deck):
+    async def test_get_deck_detail_dates_format(self, client, test_db):
         """Test that dates are returned in correct format."""
-        response = client.get(f"/vocabulary/decks/{sample_deck.id}")
+        deck = DeckModel(
+            name="Date Test",
+            description="Test deck for date format"
+        )
+        test_db.add(deck)
+        await test_db.commit()
+        await test_db.refresh(deck)
+
+        response = client.get(f"/vocabulary/decks/{deck.id}")
         
         assert response.status_code == 200
         data = response.json()
@@ -191,53 +158,87 @@ class TestGetDeckDetail:
         assert isinstance(data["updated_at"], str)
         
         # Dates should be parseable
-        from datetime import datetime
         datetime.fromisoformat(data["created_at"])
         datetime.fromisoformat(data["updated_at"])
 
 
+@pytest.mark.asyncio
 class TestVocabularyDeckDetailIntegration:
     """Integration tests for vocabulary deck detail functionality."""
     
-    def test_list_decks_then_get_detail(self, client, sample_deck):
+    async def test_list_decks_then_get_detail(self, client, test_db):
         """Test listing all decks then getting detail for a specific deck."""
+        # Create a deck
+        deck = DeckModel(
+            name="Integration Test",
+            description="Test deck for integration"
+        )
+        test_db.add(deck)
+        await test_db.commit()
+        await test_db.refresh(deck)
+        
         # List all decks
         list_response = client.get("/vocabulary/decks/")
         assert list_response.status_code == 200
         
         decks = list_response.json()["decks"]
         deck_ids = [d["id"] for d in decks]
-        assert sample_deck.id in deck_ids
+        assert deck.id in deck_ids
         
-        # Get detail for our sample deck
-        detail_response = client.get(f"/vocabulary/decks/{sample_deck.id}")
+        # Get detail for our deck
+        detail_response = client.get(f"/vocabulary/decks/{deck.id}")
         assert detail_response.status_code == 200
         
         detail_data = detail_response.json()
-        assert detail_data["id"] == sample_deck.id
-        assert detail_data["name"] == "Travel Vocabulary"
+        assert detail_data["id"] == deck.id
+        assert detail_data["name"] == "Integration Test"
         
-    def test_get_deck_cards_integration(self, client, sample_deck):
+    async def test_get_deck_cards_integration(self, client, test_db):
         """Test getting deck detail and then cards for that deck."""
+        # Create a deck with cards
+        deck = DeckModel(
+            name="Cards Integration Test",
+            description="Test deck with cards"
+        )
+        test_db.add(deck)
+        await test_db.commit()
+        await test_db.refresh(deck)
+        
+        # Add cards
+        card1 = CardModel(
+            deck_id=deck.id,
+            card_id="card-1",
+            front="Test Word 1",
+            back="Test Translation 1",
+            difficulty=1,
+            next_review_date=date(2024, 1, 10),
+            interval=1,
+            ease_factor=2.5
+        )
+        card2 = CardModel(
+            deck_id=deck.id,
+            card_id="card-2",
+            front="Test Word 2",
+            back="Test Translation 2",
+            difficulty=2,
+            next_review_date=date(2024, 1, 12),
+            interval=2,
+            ease_factor=2.5
+        )
+        test_db.add_all([card1, card2])
+        await test_db.commit()
+        
         # Get deck detail
-        deck_response = client.get(f"/vocabulary/decks/{sample_deck.id}")
+        deck_response = client.get(f"/vocabulary/decks/{deck.id}")
         assert deck_response.status_code == 200
         
         deck_data = deck_response.json()
         assert deck_data["card_count"] == 2
         
         # Get cards for this deck
-        cards_response = client.get(f"/vocabulary/decks/{sample_deck.id}/cards/")
+        cards_response = client.get(f"/vocabulary/decks/{deck.id}/cards/")
         assert cards_response.status_code == 200
         
         cards_data = cards_response.json()
         assert len(cards_data["cards"]) == 2
         assert cards_data["pagination"]["total"] == 2
-
-
-# Cleanup after tests
-@pytest.fixture(scope="session", autouse=True)
-def cleanup():
-    """Cleanup test database after all tests."""
-    yield
-    BaseModel.metadata.drop_all(bind=engine)
