@@ -14,6 +14,34 @@ from routers import (
     vocabulary_router,
     card_review_router,
 )
+from models.deck import Deck
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+
+async def seed_vocabulary_decks():
+    """Auto-seed vocabulary decks from deck_definitions.json if no decks exist.
+    
+    This function is called on application startup to ensure vocabulary data
+    is available for development. It only seeds if no decks currently exist.
+    
+    Note: Tables are created by the startup event handler before this is called.
+    """
+    # Check if any decks exist
+    async with AsyncSession(engine) as session:
+        result = await session.execute(select(Deck.id))
+        deck_count = len(result.scalars().all())
+        
+        if deck_count > 0:
+            print(f"Vocabulary decks already exist ({deck_count} decks) - skipping seed")
+            return
+        
+        print("No vocabulary decks found - seeding from deck_definitions.json...")
+        
+        # Import here to avoid circular imports
+        from seed_database import seed_database
+        await seed_database()
+
 
 app = FastAPI(
     title="French Language Coach",
@@ -45,6 +73,9 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 async def startup():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+    
+    # Auto-seed vocabulary decks if database is empty
+    await seed_vocabulary_decks()
 
 
 # Include API routers

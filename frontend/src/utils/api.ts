@@ -12,6 +12,15 @@ import type {
   ReferenceListResponse,
   Exercise,
   ExerciseListResponse,
+  // Vocabulary types
+  DeckListResponse,
+  DeckResponse,
+  CardListResponse,
+  DueCardsResponse,
+  ReviewSubmitRequest,
+  ReviewResponse,
+  DeckCreateRequest,
+  DeckSummary,
 } from '../types/index'
 
 // Use relative paths for development (Vite proxy handles routing)
@@ -193,6 +202,58 @@ export const grammarApi = {
     api<Exercise>(`/grammar/exercises/${exerciseId}`, { method: 'GET' }),
 }
 
+// Vocabulary API functions
+export const vocabularyApi = {
+  // Get list of decks with optional pagination
+  listDecks: (
+    page: number = 1,
+    perPage: number = 10
+  ) => 
+    api<DeckListResponse>(
+      `/vocabulary/decks/?page=${page}&per_page=${perPage}`,
+      { method: 'GET' }
+    ),
+
+  // Get a single deck by ID
+  getDeck: (deckId: number) =>
+    api<DeckResponse>(`/vocabulary/decks/${deckId}`, { method: 'GET' }),
+
+  // Get all cards in a specific deck
+  listDeckCards: (
+    deckId: number,
+    page: number = 1,
+    perPage: number = 50
+  ) =>
+    api<CardListResponse>(
+      `/vocabulary/decks/${deckId}/cards/?page=${page}&per_page=${perPage}`,
+      { method: 'GET' }
+    ),
+
+  // Get all cards due for review
+  listDueCards: (
+    page: number = 1,
+    perPage: number = 10
+  ) =>
+    api<DueCardsResponse>(
+      `/vocabulary/due/?page=${page}&per_page=${perPage}`,
+      { method: 'GET' }
+    ),
+
+  // Submit a card review
+  submitReview: (reviewData: ReviewSubmitRequest) =>
+    api<ReviewResponse>('/vocabulary/review/', {
+      method: 'POST',
+      data: reviewData
+    }),
+
+  // Create a new deck
+  createDeck: (deckData: DeckCreateRequest) =>
+    api<DeckResponse>('/vocabulary/decks/', {
+      method: 'POST',
+      data: deckData
+    }),
+}
+
 // Re-export types for convenience
 export type {
   Scenario,
@@ -243,4 +304,21 @@ export type {
   SentenceTransformationExerciseProps,
   ExercisePageProps,
   ExerciseSession,
+  // Vocabulary types
+  DeckSummary,
+  DeckWithProgress,
+  DeckListResponse,
+  DeckResponse,
+  CardSummary,
+  CardListResponse,
+  DeckPaginationInfo,
+  DeckCardProps,
+  DeckSearchProps,
+  DeckBrowserProps,
+  DeckSortOption,
+  DeckCreateRequest,
+  ReviewSubmitRequest,
+  ReviewResponse,
+  DueCard,
+  DueCardsResponse,
 } from '../types/index'

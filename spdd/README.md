@@ -142,6 +142,10 @@ Example header:
 - Analysis: `spdd/analysis/FLC-018-202606031200-[Analysis]-issue-32-grammar-reference.md`
 - Prompt: `spdd/prompt/FLC-018-202606031230-[Feat]-issue-32-grammar-reference.md`
 
+### DeckBrowser Component (Issue #67)
+- Analysis: `spdd/analysis/FLC-037-202606152345-[Analysis]-issue-67-deck-browser-component.md`
+- Prompt: `spdd/prompt/FLC-037-202606160000-[Feat]-issue-67-deck-browser-component.md`
+
 ## Reference
 
 This structure is based on the SPDD practice demonstrated in:

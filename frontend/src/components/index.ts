@@ -29,3 +29,8 @@ export { default as MultipleChoiceExercise } from './ExerciseTypes/MultipleChoic
 export { default as TranslationExercise } from './ExerciseTypes/TranslationExercise'
 export { default as ConjugationExercise } from './ExerciseTypes/ConjugationExercise'
 export { default as SentenceTransformationExercise } from './ExerciseTypes/SentenceTransformationExercise'
+
+// Vocabulary Components (Issue #67)
+export { default as DeckCard } from './DeckCard'
+export { default as DeckSearch } from './DeckSearch'
+export { default as DeckBrowser } from './DeckBrowser'
