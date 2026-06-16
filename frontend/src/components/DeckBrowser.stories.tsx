@@ -3,23 +3,18 @@
  * 
  * Stories for Issue #67: Create DeckBrowser React component
  * Note: These stories mock the API responses to demonstrate different states
+ * Mocks are configured in src/testSetup.ts
  */
 
 import type { Meta, StoryObj } from '@storybook/react'
 import { MemoryRouter } from 'react-router-dom'
+import { vi } from 'vitest'
 import DeckBrowser from './DeckBrowser'
 import { vocabularyApi } from '../utils/api'
 import type { DeckListResponse, DeckSummary, CardListResponse, CardSummary } from '../types/index'
 
-// Mock the vocabulary API
-const mockVocabularyApi = {
-  listDecks: vi.fn(),
-  listDeckCards: vi.fn(),
-}
-
-vi.mock('../utils/api', () => ({
-  vocabularyApi: mockVocabularyApi,
-}))
+// Note: vocabularyApi is mocked in testSetup.ts
+// All stories can configure the mock responses on vocabularyApi directly
 
 const meta = {
   title: 'Components/DeckBrowser',
@@ -50,17 +45,14 @@ function createMockDeckResponse(decks: DeckSummary[], cardsByDeck: Record<number
   }
 }
 
-// Reset mocks before each story
-const resetMocks = () => {
-  vi.clearAllMocks()
-}
+// Reset mocks before each story - vocabularyApi is already mocked in testSetup.ts
 
 /**
  * Default DeckBrowser with sample decks
  */
 export const Default: Story = {
   render: () => {
-    resetMocks()
+    vi.clearAllMocks()
 
     // Mock deck data
     const mockDecks: DeckSummary[] = [
@@ -84,12 +76,12 @@ export const Default: Story = {
       ],
     }
 
-    mockVocabularyApi.listDecks.mockResolvedValue({
+    vocabularyApi.listDecks.mockResolvedValue({
       decks: mockDecks,
       pagination: { total: 3, page: 1, per_page: 12, total_pages: 1 },
     })
 
-    mockVocabularyApi.listDeckCards.mockImplementation((deckId: number) => {
+    vocabularyApi.listDeckCards.mockImplementation((deckId: number) => {
       return Promise.resolve({
         cards: mockCards[deckId] || [],
         pagination: { total: mockCards[deckId]?.length || 0, page: 1, per_page: 1000, total_pages: 1 },
@@ -105,10 +97,10 @@ export const Default: Story = {
  */
 export const Loading: Story = {
   render: () => {
-    resetMocks()
+    vi.clearAllMocks()
 
     // Make the promise never resolve to show loading state
-    mockVocabularyApi.listDecks.mockReturnValue(new Promise(() => {}))
+    vocabularyApi.listDecks.mockReturnValue(new Promise(() => {}))
 
     return <DeckBrowser />
   },
@@ -119,10 +111,10 @@ export const Loading: Story = {
  */
 export const Error: Story = {
   render: () => {
-    resetMocks()
+    vi.clearAllMocks()
 
     // Make the promise reject to show error state
-    mockVocabularyApi.listDecks.mockRejectedValue(new Error('Failed to load decks'))
+    vocabularyApi.listDecks.mockRejectedValue(new Error('Failed to load decks'))
 
     return <DeckBrowser />
   },
@@ -133,9 +125,9 @@ export const Error: Story = {
  */
 export const Empty: Story = {
   render: () => {
-    resetMocks()
+    vi.clearAllMocks()
 
-    mockVocabularyApi.listDecks.mockResolvedValue({
+    vocabularyApi.listDecks.mockResolvedValue({
       decks: [],
       pagination: { total: 0, page: 1, per_page: 12, total_pages: 0 },
     })
@@ -149,7 +141,7 @@ export const Empty: Story = {
  */
 export const WithInitialSearch: Story = {
   render: () => {
-    resetMocks()
+    vi.clearAllMocks()
 
     const mockDecks: DeckSummary[] = [
       { id: 1, name: 'Travel Vocabulary', description: 'Essential words for traveling', created_at: '2026-01-01T00:00:00', updated_at: '2026-01-02T00:00:00', card_count: 20 },
@@ -165,12 +157,12 @@ export const WithInitialSearch: Story = {
       ],
     }
 
-    mockVocabularyApi.listDecks.mockResolvedValue({
+    vocabularyApi.listDecks.mockResolvedValue({
       decks: mockDecks,
       pagination: { total: 2, page: 1, per_page: 12, total_pages: 1 },
     })
 
-    mockVocabularyApi.listDeckCards.mockImplementation((deckId: number) => {
+    vocabularyApi.listDeckCards.mockImplementation((deckId: number) => {
       return Promise.resolve({
         cards: mockCards[deckId] || [],
         pagination: { total: mockCards[deckId]?.length || 0, page: 1, per_page: 1000, total_pages: 1 },
@@ -186,7 +178,7 @@ export const WithInitialSearch: Story = {
  */
 export const WithPagination: Story = {
   render: () => {
-    resetMocks()
+    vi.clearAllMocks()
 
     // Create 15 decks
     const mockDecks: DeckSummary[] = Array.from({ length: 15 }, (_, i) => ({
@@ -205,12 +197,12 @@ export const WithPagination: Story = {
       ]
     })
 
-    mockVocabularyApi.listDecks.mockResolvedValue({
+    vocabularyApi.listDecks.mockResolvedValue({
       decks: mockDecks,
       pagination: { total: 15, page: 1, per_page: 12, total_pages: 2 },
     })
 
-    mockVocabularyApi.listDeckCards.mockImplementation((deckId: number) => {
+    vocabularyApi.listDeckCards.mockImplementation((deckId: number) => {
       return Promise.resolve({
         cards: mockCards[deckId] || [],
         pagination: { total: mockCards[deckId]?.length || 0, page: 1, per_page: 1000, total_pages: 1 },
@@ -226,7 +218,7 @@ export const WithPagination: Story = {
  */
 export const ProgressLevels: Story = {
   render: () => {
-    resetMocks()
+    vi.clearAllMocks()
 
     const mockDecks: DeckSummary[] = [
       { id: 1, name: 'New Deck (0%)', description: 'Just created, no cards learned', created_at: '2026-01-01T00:00:00', updated_at: '2026-01-02T00:00:00', card_count: 10 },
@@ -294,12 +286,12 @@ export const ProgressLevels: Story = {
       })),
     }
 
-    mockVocabularyApi.listDecks.mockResolvedValue({
+    vocabularyApi.listDecks.mockResolvedValue({
       decks: mockDecks,
       pagination: { total: 4, page: 1, per_page: 12, total_pages: 1 },
     })
 
-    mockVocabularyApi.listDeckCards.mockImplementation((deckId: number) => {
+    vocabularyApi.listDeckCards.mockImplementation((deckId: number) => {
       return Promise.resolve({
         cards: mockCards[deckId] || [],
         pagination: { total: mockCards[deckId]?.length || 0, page: 1, per_page: 1000, total_pages: 1 },
@@ -315,7 +307,7 @@ export const ProgressLevels: Story = {
  */
 export const TagFiltering: Story = {
   render: () => {
-    resetMocks()
+    vi.clearAllMocks()
 
     const mockDecks: DeckSummary[] = [
       { id: 1, name: 'Travel Deck', description: 'Travel vocabulary', created_at: '2026-01-01T00:00:00', updated_at: '2026-01-02T00:00:00', card_count: 10 },
@@ -337,12 +329,12 @@ export const TagFiltering: Story = {
       ],
     }
 
-    mockVocabularyApi.listDecks.mockResolvedValue({
+    vocabularyApi.listDecks.mockResolvedValue({
       decks: mockDecks,
       pagination: { total: 3, page: 1, per_page: 12, total_pages: 1 },
     })
 
-    mockVocabularyApi.listDeckCards.mockImplementation((deckId: number) => {
+    vocabularyApi.listDeckCards.mockImplementation((deckId: number) => {
       return Promise.resolve({
         cards: mockCards[deckId] || [],
         pagination: { total: mockCards[deckId]?.length || 0, page: 1, per_page: 1000, total_pages: 1 },
@@ -358,7 +350,7 @@ export const TagFiltering: Story = {
  */
 export const Sorting: Story = {
   render: () => {
-    resetMocks()
+    vi.clearAllMocks()
 
     const mockDecks: DeckSummary[] = [
       { id: 1, name: 'Charlie Deck', description: 'C deck', created_at: '2026-01-03T00:00:00', updated_at: '2026-01-04T00:00:00', card_count: 10 },
@@ -372,12 +364,12 @@ export const Sorting: Story = {
       3: [{ id: 301, deck_id: 3, card_id: 'b-1', front: 'B1', back: 'B1', tags: ['test'], interval: 2, ease_factor: 2.5, next_review_date: '2026-01-10', created_at: '2026-01-02T00:00:00', updated_at: '2026-01-03T00:00:00', difficulty: 1 }],
     }
 
-    mockVocabularyApi.listDecks.mockResolvedValue({
+    vocabularyApi.listDecks.mockResolvedValue({
       decks: mockDecks,
       pagination: { total: 3, page: 1, per_page: 12, total_pages: 1 },
     })
 
-    mockVocabularyApi.listDeckCards.mockImplementation((deckId: number) => {
+    vocabularyApi.listDeckCards.mockImplementation((deckId: number) => {
       return Promise.resolve({
         cards: mockCards[deckId] || [],
         pagination: { total: mockCards[deckId]?.length || 0, page: 1, per_page: 1000, total_pages: 1 },
@@ -393,7 +385,7 @@ export const Sorting: Story = {
  */
 export const WithInitialFilters: Story = {
   render: () => {
-    resetMocks()
+    vi.clearAllMocks()
 
     const mockDecks: DeckSummary[] = [
       { id: 1, name: 'Travel Vocabulary', description: 'Essential words for traveling', created_at: '2026-01-01T00:00:00', updated_at: '2026-01-02T00:00:00', card_count: 20 },
@@ -409,12 +401,12 @@ export const WithInitialFilters: Story = {
       ],
     }
 
-    mockVocabularyApi.listDecks.mockResolvedValue({
+    vocabularyApi.listDecks.mockResolvedValue({
       decks: mockDecks,
       pagination: { total: 2, page: 1, per_page: 12, total_pages: 1 },
     })
 
-    mockVocabularyApi.listDeckCards.mockImplementation((deckId: number) => {
+    vocabularyApi.listDeckCards.mockImplementation((deckId: number) => {
       return Promise.resolve({
         cards: mockCards[deckId] || [],
         pagination: { total: mockCards[deckId]?.length || 0, page: 1, per_page: 1000, total_pages: 1 },
