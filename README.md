@@ -203,12 +203,16 @@ french-language-coach/
 ├── config.py                # Settings loaded from .env (MISTRAL_API_KEY, DATABASE_URL)
 ├── database.py              # SQLite + SQLAlchemy async engine and session setup
 ├── models/
-│   └── session.py           # SQLAlchemy ORM model for a conversation session
+│   ├── session.py           # SQLAlchemy ORM model for a conversation session
+│   ├── deck.py              # SQLAlchemy ORM model for vocabulary decks (Phase 3)
+│   └── card.py              # SQLAlchemy ORM model for vocabulary cards with spaced repetition (Phase 3)
 ├── schemas/
 │   ├── session.py           # Pydantic schemas for API request/response
 │   ├── grammar_lesson.py    # Pydantic models for grammar lesson validation (Phase 2)
 │   ├── grammar_reference.py # Pydantic models for grammar reference entry validation (Phase 2)
-│   └── grammar_exercise.py  # Pydantic models for grammar exercise validation (Phase 2)
+│   ├── grammar_exercise.py  # Pydantic models for grammar exercise validation (Phase 2)
+│   ├── vocabulary_card.py   # Pydantic models for vocabulary card schema (Issue #49, Phase 3)
+│   └── vocabulary.py        # Pydantic schemas for vocabulary router endpoints (Phase 3)
 ├── services/
 │   └── mistral.py           # Mistral API client: chat completion + feedback generation
 ├── routers/
@@ -217,7 +221,8 @@ french-language-coach/
 │   ├── messages.py          # POST /sessions/{id}/messages (send a message, get AI reply)
 │   ├── feedback.py          # POST /sessions/{id}/feedback (generate end-of-session report)
 │   ├── grammar.py           # GET /grammar/lessons/, /grammar/reference/, /grammar/exercises/ endpoints (Phase 2)
-│   └── grammar_progress.py  # GET /grammar/progress/, POST /grammar/progress/ endpoints (Phase 2)
+│   ├── grammar_progress.py  # GET /grammar/progress/, POST /grammar/progress/ endpoints (Phase 2)
+│   └── vocabulary.py        # GET /vocabulary/decks/, POST /vocabulary/decks/, GET /vocabulary/decks/{id}/cards/, POST /vocabulary/review/, GET /vocabulary/due/ (Phase 3)
 ├── scenarios.py             # Static list of 10 built-in conversation scenarios with system prompts
 ├── data/
 │   ├── grammar_lessons/     # Grammar lesson JSON files for Phase 2 (20+ lessons)
@@ -338,6 +343,12 @@ french-language-coach/
 | POST | `/grammar/progress/` | Record a new lesson progress entry. Required: `lesson_id` (string, e.g., "articles"). Optional: `user_id` (integer, nullable), `completed` (boolean, default false), `score` (integer 0-100, default 0), `time_spent` (integer seconds >=0, default 0). Returns 201 with created progress record. Returns 422 for invalid score (<0 or >100) or time_spent (<0). **Validates: score must be 0-100, time_spent must be >=0** |
 | GET | `/grammar/exercises/` | List grammar exercises with optional filtering and pagination. Query parameters: `page` (default 1), `per_page` (default 10, max 100), `exercise_type` (filter by type: fill-in-the-blank, multiple-choice, translation, conjugation, sentence-transformation), `topic` (filter by topic substring), `difficulty` (filter by level: beginner, intermediate, advanced). Returns paginated list of exercises with full content |
 | GET | `/grammar/exercises/{id}` | Get a specific grammar exercise by ID. Returns full exercise content including all type-specific fields. Returns 404 if exercise not found |
+| GET | `/vocabulary/decks/` | List all vocabulary decks with pagination. Query parameters: `page` (default 1), `per_page` (default 10, max 100). Returns list of decks with id, name, description, created_at, updated_at, card_count |
+| POST | `/vocabulary/decks/` | Create a new vocabulary deck. Required: `name`. Optional: `description`. Returns 201 with created deck details |
+| GET | `/vocabulary/decks/{id}/cards/` | List all cards in a specific deck with pagination. Query parameters: `page` (default 1), `per_page` (default 10, max 100). Returns paginated list of cards with all fields including spaced repetition data |
+| POST | `/vocabulary/decks/{id}/cards/` | Create a new card in a specific deck. Required: `card_id`, `front`, `back`. Optional: `example`, `tags`, `context`, `difficulty` (1-5, default 1). Initial spaced repetition values: interval=1, ease_factor=2.5, next_review_date=today+1. Returns 201 with created card details |
+| POST | `/vocabulary/review/` | Submit a card review to update spaced repetition scheduling. Required: `card_id`, `deck_id`, `ease` (1-4 where 1=Again, 2=Hard, 3=Good, 4=Easy). Uses SM-2 algorithm to calculate new interval and ease factor. Returns success status with next_review_date, new_interval, new_ease_factor |
+| GET | `/vocabulary/due/` | Get all cards due for review (next_review_date <= today) with pagination. Query parameters: `page` (default 1), `per_page` (default 10, max 100). Returns paginated list of due cards with id, deck_id, deck_name, card_id, front, back, next_review_date |
 
 ### Frontend Routes
 
@@ -554,6 +565,7 @@ pytest --cov=. --cov-report=term-missing
 - `tests/test_grammar_reference.py` - Tests for 50+ grammar reference entries (Issue #32)
 - `tests/test_grammar_router.py` - Tests for grammar router endpoints (Issue #36)
 - `tests/test_grammar_exercise_schema.py` - Tests for grammar exercise schema (Issue #34, #46)
+- `tests/test_vocabulary_simple.py` - Tests for vocabulary router endpoints (Issue #55)
 
 ### Frontend Tests
 
