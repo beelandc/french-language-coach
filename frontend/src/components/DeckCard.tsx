@@ -118,8 +118,6 @@ export default function DeckCard({ deck, onClick }: DeckCardProps) {
           )}
         </div>
       )}
-
-      <p className="deck-card-id">ID: {deck.id}</p>
     </div>
   )
 }

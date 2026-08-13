@@ -4241,12 +4241,6 @@ header h1 {
     font-size: 0.75rem;
 }
 
-.deck-card-id {
-    color: #999;
-    font-size: 0.8rem;
-    margin: 0;
-}
-
 /* Deck Browser Loading State */
 .deck-loading {
     display: flex;
