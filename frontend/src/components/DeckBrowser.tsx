@@ -393,6 +393,10 @@ export default function DeckBrowser({
         </span>
       </div>
 
+      <p className="deck-help-text" data-testid="deck-help-text">
+        Click on a deck to view its contents and study the cards.
+      </p>
+
       <DeckSearch
         searchQuery={searchQuery}
         tagFilter={tagFilter}

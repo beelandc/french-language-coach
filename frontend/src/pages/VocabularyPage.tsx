@@ -10,16 +10,12 @@ import DeckBrowser from '../components/DeckBrowser'
 export default function VocabularyPage() {
   return (
     <div className="vocabulary-page" data-testid="vocabulary-page">
-      <header className="page-header">
-        <h1 className="page-title">Vocabulary Flashcards</h1>
-        <p className="page-description">
-          Browse, search, and study your vocabulary decks with spaced repetition.
-        </p>
-      </header>
+      <h1 className="vocabulary-page-title">Vocabulary Flashcards</h1>
+      <p className="vocabulary-page-description">
+        Browse, search, and study your vocabulary decks with spaced repetition.
+      </p>
 
-      <main className="page-main">
-        <DeckBrowser />
-      </main>
+      <DeckBrowser />
     </div>
   )
 }
