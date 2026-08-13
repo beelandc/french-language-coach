@@ -4076,6 +4076,29 @@ header h1 {
 }
 
 /* ============================================================================
+   VocabularyPage Component Styles (Issue #202)
+   ============================================================================ */
+
+/* Vocabulary Page Container */
+.vocabulary-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.vocabulary-page-title {
+    color: #2c3e50;
+    margin-bottom: 10px;
+    font-size: 2rem;
+}
+
+.vocabulary-page-description {
+    color: #666;
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+}
+
+/* ============================================================================
    DeckBrowser Component Styles (Issue #202)
    ============================================================================ */
 
