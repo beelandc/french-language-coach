@@ -286,13 +286,31 @@ Implementation completed successfully. The following changes were made:
 
 ### Issues Found
 
-**Issue discovered during testing**: Navigating to `/vocabulary/` (with trailing slash) showed a blank page.
+**Issue 1 - Static index.html**: Direct navigation failed because `static/index.html` was outdated legacy vanilla JS file.
 
-**Root cause**: React Router routes were defined without trailing slashes (e.g., `/vocabulary`), so `/vocabulary/` couldn't be matched.
+**Solution**: Updated `static/index.html` to match `frontend/index.html` with React bootstrap.
 
-**Initial (incorrect) approach**: Added backend redirect routes for trailing slashes. This was rejected as it created inconsistency and technical debt.
+---
 
-**Correct solution**: Added duplicate routes with trailing slashes in frontend/src/App.tsx for all frontend routes. This ensures React Router handles both `/vocabulary` and `/vocabulary/` consistently, which is the proper architectural approach.
+**Issue 2 - Trailing slash routes**: Navigating to `/vocabulary/` (with trailing slash) showed a blank page.
+
+**Root cause**: React Router routes were defined without trailing slashes.
+
+**Initial (incorrect) approach**: Added backend redirect routes. Rejected for architectural reasons.
+
+**Correct solution**: Added duplicate routes with trailing slashes in frontend/src/App.tsx.
+
+---
+
+**Issue 3 - Vite proxy config**: Navigating to `/vocabulary` directly through Vite dev server (port 5173) showed blank page.
+
+**Root cause**: Vite proxy config had `'/vocabulary': 'http://localhost:8000'` which proxied the frontend route `/vocabulary` itself to FastAPI. FastAPI served `static/index.html` (which references `/src/main.tsx` that doesn't exist on FastAPI).
+
+**Solution**: Changed proxy from `'/vocabulary'` to `'/vocabulary/'` (with trailing slash). This ensures:
+- `/vocabulary` (frontend route) is served by Vite with proper React bootstrap
+- `/vocabulary/decks/` (API route) is still proxied to FastAPI
+
+This was the actual root cause of the blank page when navigating directly.
 
 ### Additional Context
 
