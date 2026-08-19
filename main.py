@@ -69,30 +69,6 @@ app.add_middleware(
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
-# Redirect routes with trailing slashes to their non-slash equivalents
-# This ensures that routes like /vocabulary/ are redirected to /vocabulary
-# so that React Router can match them correctly.
-# Only add explicit redirects for known frontend routes (React Router routes) that should NOT have trailing slashes.
-# API routes (like /lessons/, /reference/, /exercises/, /vocabulary/decks/) use trailing slashes intentionally.
-
-@app.get("/vocabulary/")
-async def redirect_vocabulary_slash():
-    """Redirect /vocabulary/ to /vocabulary for React Router compatibility."""
-    return RedirectResponse(url="/vocabulary", status_code=307)
-
-
-@app.get("/scenarios/")
-async def redirect_scenarios_slash():
-    """Redirect /scenarios/ to /scenarios for React Router compatibility."""
-    return RedirectResponse(url="/scenarios", status_code=307)
-
-
-@app.get("/home/")
-async def redirect_home_slash():
-    """Redirect /home/ to /home for React Router compatibility."""
-    return RedirectResponse(url="/home", status_code=307)
-
-
 @app.on_event("startup")
 async def startup():
     async with engine.begin() as conn:
