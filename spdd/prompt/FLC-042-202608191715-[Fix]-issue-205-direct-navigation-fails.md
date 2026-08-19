@@ -302,15 +302,33 @@ Implementation completed successfully. The following changes were made:
 
 ---
 
-**Issue 3 - Vite proxy config**: Navigating to `/vocabulary` directly through Vite dev server (port 5173) showed blank page.
+**Issue 3 - Vite proxy config (First attempt)**: Navigating to `/vocabulary` directly through Vite dev server (port 5173) showed blank page.
 
 **Root cause**: Vite proxy config had `'/vocabulary': 'http://localhost:8000'` which proxied the frontend route `/vocabulary` itself to FastAPI. FastAPI served `static/index.html` (which references `/src/main.tsx` that doesn't exist on FastAPI).
 
-**Solution**: Changed proxy from `'/vocabulary'` to `'/vocabulary/'` (with trailing slash). This ensures:
-- `/vocabulary` (frontend route) is served by Vite with proper React bootstrap
-- `/vocabulary/decks/` (API route) is still proxied to FastAPI
+**Solution**: Changed proxy from `'/vocabulary'` to `'/vocabulary/'` (with trailing slash).
 
-This was the actual root cause of the blank page when navigating directly.
+**Problem with this solution**: `/vocabulary/` still matched the proxy pattern and was proxied to FastAPI.
+
+---
+
+**Issue 4 - Vite proxy config (Final fix)**: `/vocabulary/` still showed blank page.
+
+**Root cause**: The proxy pattern `'/vocabulary/'` still matched `/vocabulary/` and proxied it to FastAPI.
+
+**Solution**: Changed to proxy only specific API subpaths:
+- `'/vocabulary/decks'` - catches /vocabulary/decks/, /vocabulary/decks/123, etc.
+- `'/vocabulary/due'` - catches /vocabulary/due/, /vocabulary/due/123, etc.
+- `'/vocabulary/review'` - catches /vocabulary/review/, /vocabulary/review/123, etc.
+
+This ensures:
+- `/vocabulary` (frontend route) is served by Vite with proper React bootstrap
+- `/vocabulary/` (frontend route) is served by Vite with proper React bootstrap
+- `/vocabulary/decks/` (API route) is proxied to FastAPI
+- `/vocabulary/due/` (API route) is proxied to FastAPI
+- `/vocabulary/review/` (API route) is proxied to FastAPI
+
+This was the final fix needed to resolve the /vocabulary/ issue.
 
 ### Additional Context
 
