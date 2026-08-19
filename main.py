@@ -90,7 +90,19 @@ app.include_router(card_review_router)
 
 @app.get("/")
 async def root():
-    return RedirectResponse(url="/static/index.html")
+    """
+    Root route - serves the React app's index.html directly.
+    
+    This allows React Router to handle the root path and maintain
+    consistent behavior with the SPA fallback route.
+    """
+    try:
+        with open("static/index.html", "r") as f:
+            content = f.read()
+        return HTMLResponse(content=content, status_code=200)
+    except FileNotFoundError:
+        # Fallback if static/index.html doesn't exist
+        return HTMLResponse(content="<html><body>Not Found</body></html>", status_code=404)
 
 
 # SPA Fallback: Serve index.html for all routes not matching API endpoints
@@ -111,5 +123,5 @@ async def serve_spa(full_path: str):
             content = f.read()
         return HTMLResponse(content=content, status_code=200)
     except FileNotFoundError:
-        # Fallback redirect if static/index.html doesn't exist
-        return RedirectResponse(url="/static/index.html")
+        # Fallback if static/index.html doesn't exist
+        return HTMLResponse(content="<html><body>Not Found</body></html>", status_code=404)

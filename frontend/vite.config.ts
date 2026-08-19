@@ -23,7 +23,12 @@ export default defineConfig({
       // Proxy API endpoints to backend server
       '/sessions': 'http://localhost:8000',
       '/grammar': 'http://localhost:8000',
-      '/vocabulary': 'http://localhost:8000',
+      // Proxy only vocabulary API endpoints (with additional path segments)
+      // This ensures /vocabulary and /vocabulary/ (frontend routes) are served by Vite
+      // while /vocabulary/decks/, /vocabulary/due/, etc. (API routes) are proxied to FastAPI
+      '/vocabulary/decks': 'http://localhost:8000',
+      '/vocabulary/due': 'http://localhost:8000',
+      '/vocabulary/review': 'http://localhost:8000',
       // Static files in development
       '/static': 'http://localhost:8000'
     }
