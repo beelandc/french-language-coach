@@ -150,6 +150,7 @@ def test_spa_fallback_serves_index_html():
 - [x] `static/index.html` - Replaced with content matching `frontend/index.html` (React bootstrap HTML)
 - [x] `main.py` - Updated root route (`/`) to serve index.html directly instead of redirecting to `/static/index.html`
 - [x] `main.py` - Updated SPA fallback route to return 404 consistently (instead of redirect)
+- [x] `frontend/src/App.tsx` - Added duplicate routes with trailing slashes for all frontend routes to handle both `/vocabulary` and `/vocabulary/` consistently
 
 ### Tests
 
@@ -158,7 +159,7 @@ def test_spa_fallback_serves_index_html():
 - [x] Automated test: /vocabulary serves index.html via SPA fallback
 - [x] Automated test: /lessons serves index.html via SPA fallback
 - [x] Automated test: /exercises serves index.html via SPA fallback
-- [x] Automated test: /vocabulary/nonexistent serves index.html
+- [x] Automated test: /vocabulary/ serves index.html via SPA fallback (after adding trailing slash route)
 - [x] Automated test: API routes still return JSON
 - [x] Automated test: Static files still served correctly
 
@@ -270,6 +271,7 @@ Implementation completed successfully. The following changes were made:
 - [x] Updated static/index.html with React bootstrap content (matched frontend/index.html exactly)
 - [x] Updated main.py root route to serve index.html directly without redirect
 - [x] Updated main.py SPA fallback to return 404 consistently (instead of redirect loop)
+- [x] Updated frontend/src/App.tsx to add duplicate routes with trailing slashes for consistent path handling
 - [x] Created and ran test suite (test_issue_205.py) to verify all acceptance criteria
 - [x] Verified all acceptance criteria pass
 
@@ -280,13 +282,17 @@ Implementation completed successfully. The following changes were made:
 - [x] No breaking changes introduced (API routes still return JSON, static files still served)
 - [x] Documentation updated (SPDD artifacts created)
 - [x] Tests pass (8/8 tests passed)
+- [x] Architecture is consistent - React Router handles all frontend routes with and without trailing slashes
 
 ### Issues Found
 
-- [x] **None during implementation** - The fix was straightforward:
-  - The SPA fallback route was already reading from static/index.html
-  - Only needed to update the file content and the root route
-  - Also fixed the SPA fallback's FileNotFoundError handler to be consistent with root route
+**Issue discovered during testing**: Navigating to `/vocabulary/` (with trailing slash) showed a blank page.
+
+**Root cause**: React Router routes were defined without trailing slashes (e.g., `/vocabulary`), so `/vocabulary/` couldn't be matched.
+
+**Initial (incorrect) approach**: Added backend redirect routes for trailing slashes. This was rejected as it created inconsistency and technical debt.
+
+**Correct solution**: Added duplicate routes with trailing slashes in frontend/src/App.tsx for all frontend routes. This ensures React Router handles both `/vocabulary` and `/vocabulary/` consistently, which is the proper architectural approach.
 
 ### Additional Context
 
