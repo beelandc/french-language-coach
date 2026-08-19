@@ -28,26 +28,34 @@ function App() {
           
           {/* Conversation Practice / Scenario Selection Route */}
           <Route path="/scenarios" element={<ScenarioPage />} />
+          <Route path="/scenarios/" element={<ScenarioPage />} />
           
           {/* Legacy HomePage kept for backward compatibility */}
           <Route path="/home" element={<HomePage />} />
+          <Route path="/home/" element={<HomePage />} />
           
           <Route path="/chat/:sessionId" element={<ChatPage />} />
           <Route path="/feedback/:sessionId" element={<FeedbackPage />} />
           <Route path="/sessions/:sessionId" element={<SessionDetailPage />} />
           {/* Grammar Lessons Routes (Phase 2) */}
           <Route path="/lessons" element={<LessonPage />} />
+          <Route path="/lessons/" element={<LessonPage />} />
           <Route path="/lessons/:lessonId" element={<LessonDetailPage />} />
           {/* Grammar Reference Routes (Phase 2) */}
           <Route path="/reference" element={<ReferencePage />} />
+          <Route path="/reference/" element={<ReferencePage />} />
           {/* Grammar Exercise Routes (Phase 2) */}
           <Route path="/exercises" element={<ExerciseBrowserPage />} />
+          <Route path="/exercises/" element={<ExerciseBrowserPage />} />
           <Route path="/exercises/:exerciseId" element={<ExercisePage />} />
           {/* Vocabulary Routes (Issue #67) */}
           <Route path="/vocabulary" element={<VocabularyPage />} />
+          <Route path="/vocabulary/" element={<VocabularyPage />} />
           {/* Vocabulary Deck Detail Routes (Issue #201) */}
           <Route path="/vocabulary/decks/:deckId" element={<DeckDetailPage />} />
+          <Route path="/vocabulary/decks/:deckId/" element={<DeckDetailPage />} />
           <Route path="/vocabulary/decks/:deckId/cards" element={<DeckCardsPage />} />
+          <Route path="/vocabulary/decks/:deckId/cards/" element={<DeckCardsPage />} />
         </Routes>
       </main>
     </div>
