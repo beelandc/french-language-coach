@@ -531,7 +531,7 @@ This ensures:
 - Prompt: `spdd/prompt/FLC-039-202606161015-[Feat]-issue-69-flashcard-review-session.md`
 
 #### Reference
-- [Structured Prompt Driven Development (Wei Zhang & Jessie Jie Xia)](https://martinfowler.com/articles/structured-prompt-driven.html)
+- [Structured Prompt Driven Development (Wei Zhang & Jessie Jie Xia)](https://martinfowler.com/articles/structured-prompt-driven/)
 
 > **Note**: We are currently using Mistral Vibe directly without the open-spdd utility. If we adopt open-spdd in the future, this workflow will be updated accordingly.
 
