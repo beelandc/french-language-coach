@@ -13,7 +13,7 @@ Users start at a modern central navigation hub that provides access to all appli
 - **Grammar Reference Guide**: 50+ searchable reference entries for quick lookup of grammar terms and concepts
 - **Grammar Exercises**: 5 interactive exercises with 5 types (fill-in-the-blank, multiple-choice, translation, conjugation, sentence transformation) for practicing grammar skills
 
-The landing page also features a Quick Access section showing recent sessions with resume capability.
+The Conversation Practice (scenarios) page also features a Quick Access section showing recent conversation sessions with resume capability.
 
 ## Usage
 
@@ -24,7 +24,7 @@ The landing page also features a Quick Access section showing recent sessions wi
 3. **Browse Grammar Lessons**: Click "Grammar Lessons" to browse, search, and filter 20+ interactive lessons
 4. **Search Grammar Reference**: Click "Grammar Reference" to access 50+ searchable reference entries
 5. **Practice Exercises**: Click "Grammar Exercises" to practice with fill-in-the-blank, multiple-choice, translation, conjugation, and sentence transformation exercises
-6. **Resume Recent Session**: Use the Quick Access section to resume any of your last 5 sessions
+6. **Resume Recent Session**: From the Conversation Practice page, use the Quick Access section to resume any of your last 5 conversation sessions
 
 ### Conversation Practice Flow:
 
@@ -58,8 +58,8 @@ Each scenario supports three difficulty levels that affect the AI's system promp
 
 ## Features
 
-- **Central Navigation Hub**: Modern landing page with feature cards for all application functionality and Quick Access to recent sessions
-- **Conversation Practice**: AI stays strictly in character and responds only in French
+- **Central Navigation Hub**: Modern landing page with feature cards for all application functionality
+- **Conversation Practice**: AI stays strictly in character and responds only in French, with a Quick Access section for resuming recent conversation sessions
 - **Session Management**: Conversation history stored in SQLite with resume capability
 - **Structured Feedback**: Grammar, vocabulary, and fluency scores with example corrections and explanations
 - **Session Detail View**: Full conversation transcript alongside feedback
@@ -295,7 +295,7 @@ french-language-coach/
 │   │   │   └── index.ts
 │   │   ├── pages/           # Page-level components (React Router routes)
 │   │   │   ├── IndexPage.tsx         # Modern landing page with central navigation hub (Issue #177)
-│   │   │   ├── ScenarioPage.tsx      # Scenario selection interface (Issue #177)
+│   │   │   ├── ScenarioPage.tsx      # Conversation Practice: scenario selection + recent sessions (Issues #177, #214)
 │   │   │   ├── HomePage.tsx          # Legacy scenario selection page (kept for backward compatibility)
 │   │   │   ├── ChatPage.tsx
 │   │   │   ├── FeedbackPage.tsx
@@ -373,7 +373,7 @@ french-language-coach/
 | Path | Component | Description |
 |------|-----------|-------------|
 | `/` | IndexPage | Modern landing page with central navigation hub (Issue #177) |
-| `/scenarios` | ScenarioPage | Scenario selection interface |
+| `/scenarios` | ScenarioPage | Conversation Practice: scenario selection + recent conversation sessions (Issues #177, #214) |
 | `/chat/:sessionId` | ChatPage | Interactive chat interface for a session |
 | `/feedback/:sessionId` | FeedbackPage | Feedback report display for a completed session |
 | `/sessions/:sessionId` | SessionDetailPage | Full session details with transcript and feedback |
