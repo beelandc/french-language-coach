@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Link } from 'react-router-dom'
 import HomePage from './pages/HomePage'
 import IndexPage from './pages/IndexPage'
 import ScenarioPage from './pages/ScenarioPage'
@@ -18,6 +18,15 @@ function App() {
   return (
     <div className="app">
       <header>
+        <Link 
+          to="/" 
+          className="home-button" 
+          aria-label="Home"
+          data-testid="home-button"
+          title="Return to Home"
+        >
+          🏠
+        </Link>
         <h1>French Language Coach</h1>
       </header>
       

@@ -24,11 +24,50 @@ header {
     padding: 20px 0;
     border-bottom: 1px solid #e0e0e0;
     margin-bottom: 30px;
+    position: relative;
 }
 
 header h1 {
     color: #2c3e50;
     font-size: 2.5rem;
+}
+
+/* Home Button */
+.home-button {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #4a90e2;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+.home-button:hover {
+    background: #357ab8;
+    transform: translateY(-50%) scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.home-button:focus {
+    outline: 3px solid #2196f3;
+    outline-offset: 2px;
+}
+
+.home-button:active {
+    transform: translateY(-50%) scale(0.95);
 }
 
 /* View layout - for page-level containers */
@@ -377,6 +416,18 @@ header h1 {
 
     .session-header h2 {
         align-self: flex-start;
+    }
+
+    /* Home button adjustments for mobile */
+    .home-button {
+        width: 44px;
+        height: 44px;
+        font-size: 1.3rem;
+    }
+
+    header h1 {
+        font-size: 1.8rem;
+        margin-left: 50px; /* Make room for home button */
     }
 }
 
