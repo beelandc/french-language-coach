@@ -64,25 +64,12 @@ export default function IndexPage() {
     }
   }, [navigate])
 
-  // Handle "Get Started" button click - navigate to scenario selection
-  const handleGetStarted = useCallback(() => {
-    navigate('/scenarios')
-  }, [navigate])
-
   return (
     <div className="index-page" data-testid="index-page">
       {/* Hero Section */}
       <section className="hero-section" data-testid="hero-section">
         <h1 className="hero-title">Welcome to French Language Coach</h1>
         <p className="hero-description">{appDescription}</p>
-        <button 
-          className="hero-cta btn-primary"
-          onClick={handleGetStarted}
-          aria-label="Get started with French Language Coach"
-          data-testid="hero-cta"
-        >
-          Get Started
-        </button>
       </section>
 
       {/* Feature Cards Grid */}
