@@ -1,18 +1,10 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import IndexPage from './IndexPage'
-import { sessionApi } from '../utils/api'
 
 // Mock useNavigate
 const mockNavigate = jest.fn()
 jest.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate,
-}))
-
-// Mock sessionApi
-jest.mock('../utils/api', () => ({
-  sessionApi: {
-    listSessions: jest.fn(),
-  },
 }))
 
 describe('IndexPage Component', () => {
@@ -68,123 +60,19 @@ describe('IndexPage Component', () => {
       expect(screen.getByText('Vocabulary Flashcards')).toBeInTheDocument()
     })
 
-    it('renders QuickAccessSection', () => {
-      render(<IndexPage />)
-      
-      expect(screen.getByTestId('quick-access-section')).toBeInTheDocument()
-      expect(screen.getByText('Recent Sessions')).toBeInTheDocument()
-    })
-
-    it('renders View All Sessions button', () => {
-      render(<IndexPage />)
-      
-      expect(screen.getByTestId('view-all-sessions-btn')).toBeInTheDocument()
-      expect(screen.getByText('View All Sessions')).toBeInTheDocument()
-    })
-
     it('Vocabulary Flashcards card shows Coming Soon', () => {
       render(<IndexPage />)
       
       const vocabCard = screen.getByTestId('feature-card-vocabulary')
       expect(vocabCard).toHaveTextContent('Coming Soon')
     })
-  })
 
-  describe('Session Fetching', () => {
-    const mockSessions = [
-      {
-        id: 1,
-        scenario_id: 'cafe_order',
-        scenario_name: 'Ordering at a Café',
-        difficulty: 'intermediate' as const,
-        created_at: '2026-06-04T10:00:00Z',
-        ended_at: '2026-06-04T10:15:00Z',
-        overall_score: 85,
-        is_locked: false,
-        locked_at: null,
-        locked_by: null,
-      },
-      {
-        id: 2,
-        scenario_id: 'ask_directions',
-        scenario_name: 'Asking for Directions',
-        difficulty: 'beginner' as const,
-        created_at: '2026-06-04T11:00:00Z',
-        ended_at: null,
-        overall_score: null,
-        is_locked: false,
-        locked_at: null,
-        locked_by: null,
-      },
-    ]
-
-    it('displays loading state initially', () => {
-      // Mock API to return a promise that never resolves
-      ;(sessionApi.listSessions as jest.Mock).mockImplementation(() => 
-        new Promise(() => {})
-      )
-      
+    it('does not render the Quick Access / Recent Sessions section (moved to ScenarioPage)', () => {
       render(<IndexPage />)
       
-      expect(screen.getByTestId('quick-access-loading')).toBeInTheDocument()
-      expect(screen.getByText('Loading recent sessions...')).toBeInTheDocument()
-    })
-
-    it('displays sessions when fetch succeeds', async () => {
-      ;(sessionApi.listSessions as jest.Mock).mockResolvedValue({
-        sessions: mockSessions,
-        pagination: {
-          total: 2,
-          page: 1,
-          per_page: 5,
-          total_pages: 1,
-        },
-      })
-      
-      render(<IndexPage />)
-      
-      await waitFor(() => {
-        expect(screen.getByTestId('quick-access-list')).toBeInTheDocument()
-      })
-      
-      // Should show both sessions
-      expect(screen.getByText('Ordering at a Café')).toBeInTheDocument()
-      expect(screen.getByText('Asking for Directions')).toBeInTheDocument()
-    })
-
-    it('displays empty state when no sessions', async () => {
-      ;(sessionApi.listSessions as jest.Mock).mockResolvedValue({
-        sessions: [],
-        pagination: {
-          total: 0,
-          page: 1,
-          per_page: 5,
-          total_pages: 0,
-        },
-      })
-      
-      render(<IndexPage />)
-      
-      await waitFor(() => {
-        expect(screen.getByTestId('quick-access-empty')).toBeInTheDocument()
-      })
-      
-      expect(screen.getByText('No recent sessions. Start a new one!')).toBeInTheDocument()
-    })
-
-    it('displays error state when fetch fails', async () => {
-      ;(sessionApi.listSessions as jest.Mock).mockRejectedValue(
-        new Error('Network error')
-      )
-      
-      render(<IndexPage />)
-      
-      await waitFor(() => {
-        expect(screen.getByTestId('quick-access-error')).toBeInTheDocument()
-      })
-      
-      expect(screen.getByText('Failed to load recent sessions')).toBeInTheDocument()
-      expect(screen.getByTestId('quick-access-retry-btn')).toBeInTheDocument()
+      expect(screen.queryByTestId('quick-access-section')).not.toBeInTheDocument()
+      expect(screen.queryByTestId('view-all-sessions-btn')).not.toBeInTheDocument()
+      expect(screen.queryByText('Recent Sessions')).not.toBeInTheDocument()
     })
   })
 
@@ -234,38 +122,6 @@ describe('IndexPage Component', () => {
       // Should not call navigate since it's disabled
       expect(mockNavigate).not.toHaveBeenCalled()
     })
-
-    it('navigates to /sessions when View All Sessions button is clicked', () => {
-      render(<IndexPage />)
-      
-      const button = screen.getByTestId('view-all-sessions-btn')
-      fireEvent.click(button)
-      
-      expect(mockNavigate).toHaveBeenCalledWith('/sessions')
-    })
-
-    it('navigates to /scenarios when Start Now button in empty state is clicked', async () => {
-      ;(sessionApi.listSessions as jest.Mock).mockResolvedValue({
-        sessions: [],
-        pagination: {
-          total: 0,
-          page: 1,
-          per_page: 5,
-          total_pages: 0,
-        },
-      })
-      
-      render(<IndexPage />)
-      
-      await waitFor(() => {
-        expect(screen.getByTestId('quick-access-empty')).toBeInTheDocument()
-      })
-      
-      const button = screen.getByTestId('quick-access-start-btn')
-      fireEvent.click(button)
-      
-      expect(mockNavigate).toHaveBeenCalledWith('/scenarios')
-    })
   })
 
   describe('Accessibility', () => {
@@ -280,13 +136,6 @@ describe('IndexPage Component', () => {
       
       const button = screen.getByTestId('hero-cta')
       expect(button).toHaveAttribute('aria-label', 'Get started with French Language Coach')
-    })
-
-    it('View All Sessions button has correct aria-label', () => {
-      render(<IndexPage />)
-      
-      const button = screen.getByTestId('view-all-sessions-btn')
-      expect(button).toHaveAttribute('aria-label', 'View all sessions')
     })
   })
 })
