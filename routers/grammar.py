@@ -15,6 +15,7 @@ and schemas/grammar_exercise.py for validation.
 from math import ceil
 from pathlib import Path
 from typing import Optional
+import re
 
 from fastapi import APIRouter, HTTPException, Query
 
@@ -23,6 +24,7 @@ from schemas.grammar import (
     LessonResponse,
     LessonSummary,
     PaginationInfo,
+    RecommendationResponse,
     ReferenceListResponse,
     ReferenceResponse,
 )
@@ -278,6 +280,169 @@ def paginate(
 
 
 # ============================================================================
+# Recommendation Helpers
+# ============================================================================
+
+# Maximum number of lessons returned by the recommendations endpoint.
+MAX_RECOMMENDATIONS = 3
+
+# Mapping from focus_area keywords to grammar lesson topics. The keys cover both
+# English and French terms because the Mistral feedback prompt emits French focus
+# areas while some test fixtures use English. A single focus_area may match one or
+# more topics; matching is case-insensitive substring containment.
+FOCUS_AREA_TO_TOPIC: dict[str, str] = {
+    # Nouns and Adjectives
+    "noun": "Nouns and Adjectives",
+    "nouns": "Nouns and Adjectives",
+    "adjective": "Nouns and Adjectives",
+    "adjectives": "Nouns and Adjectives",
+    "articles": "Nouns and Adjectives",
+    "gender": "Nouns and Adjectives",
+    "agreement": "Nouns and Adjectives",
+    "nom": "Nouns and Adjectives",
+    "adjectif": "Nouns and Adjectives",
+    "genre": "Nouns and Adjectives",
+    "accord": "Nouns and Adjectives",
+    # Verb Tenses
+    "verb tense": "Verb Tenses",
+    "verb tenses": "Verb Tenses",
+    "present tense": "Verb Tenses",
+    "conjugation": "Verb Tenses",
+    "conjugate": "Verb Tenses",
+    "verbe": "Verb Tenses",
+    "conjugaison": "Verb Tenses",
+    # Past Tenses
+    "past tense": "Past Tenses",
+    "past tenses": "Past Tenses",
+    "passé composé": "Past Tenses",
+    "passe compose": "Past Tenses",
+    "imparfait": "Past Tenses",
+    "imperfect": "Past Tenses",
+    "plus-que-parfait": "Past Tenses",
+    "pluperfect": "Past Tenses",
+    "passé": "Past Tenses",
+    # Future Tenses
+    "future tense": "Future Tenses",
+    "future tenses": "Future Tenses",
+    "futur": "Future Tenses",
+    "futur proche": "Future Tenses",
+    "futur simple": "Future Tenses",
+    # Moods
+    "mood": "Moods",
+    "moods": "Moods",
+    "conditional": "Moods",
+    "conditionnel": "Moods",
+    "subjunctive": "Moods",
+    "subjonctif": "Moods",
+    "imperative": "Moods",
+    "impératif": "Moods",
+    # Pronouns
+    "pronoun": "Pronouns",
+    "pronouns": "Pronouns",
+    "object pronoun": "Pronouns",
+    "relative pronoun": "Pronouns",
+    "pronom": "Pronouns",
+    "pronoms": "Pronouns",
+    # Questions
+    "question": "Questions",
+    "questions": "Questions",
+    "est-ce-que": "Questions",
+    "inversion": "Questions",
+    "question word": "Questions",
+    "question words": "Questions",
+    # Sentence Structure
+    "sentence structure": "Sentence Structure",
+    "negation": "Sentence Structure",
+    "négation": "Sentence Structure",
+    "preposition": "Sentence Structure",
+    "prepositions": "Sentence Structure",
+    "conjunction": "Sentence Structure",
+    "adverb": "Sentence Structure",
+    "adverbs": "Sentence Structure",
+    "préposition": "Sentence Structure",
+    "conjonction": "Sentence Structure",
+    "adverbe": "Sentence Structure",
+    # Verbs
+    "verbs": "Verbs",
+    "verb": "Verbs",
+    "verbes": "Verbs",
+}
+
+
+def map_focus_area_to_topics(focus_area: str) -> list[str]:
+    """Map a feedback focus_area string to matching grammar lesson topics.
+
+    Matching is case-insensitive and uses whole-word (word-boundary) matching
+    against the ``FOCUS_AREA_TO_TOPIC`` keyword dictionary. Word boundaries
+    prevent short keywords (e.g. "nouns") from matching inside longer words
+    (e.g. "pronouns"). A single focus_area may match more than one topic.
+
+    Args:
+        focus_area: The feedback focus_area string (free-form LLM output).
+
+    Returns:
+        A de-duplicated list of matching lesson topic strings. Empty if the
+        focus_area is blank, whitespace-only, or matches no known keyword.
+    """
+    if not focus_area:
+        return []
+
+    normalized = focus_area.strip()
+    if not normalized:
+        return []
+
+    matched: list[str] = []
+    seen: set[str] = set()
+    for keyword, topic in FOCUS_AREA_TO_TOPIC.items():
+        pattern = r"\b" + re.escape(keyword) + r"\b"
+        if re.search(pattern, normalized, re.IGNORECASE) and topic not in seen:
+            matched.append(topic)
+            seen.add(topic)
+
+    return matched
+
+
+def get_recommendations(focus_area: str) -> tuple[list[str], list[GrammarLesson]]:
+    """Compute grammar lesson recommendations for a given focus_area.
+
+    Loads the lesson catalog, filters by the topics matched from the
+    focus_area, sorts the matches deterministically by lesson id, and caps
+    the result at ``MAX_RECOMMENDATIONS``. When no topic matches, returns a
+    fallback of general beginner lessons (still capped at
+    ``MAX_RECOMMENDATIONS``).
+
+    Args:
+        focus_area: The feedback focus_area string.
+
+    Returns:
+        A tuple of (matched_topics, recommended_lessons). When the focus_area
+        does not match any topic, ``matched_topics`` is empty and
+        ``recommended_lessons`` contains fallback beginner lessons.
+    """
+    lessons_dict = get_lessons()
+
+    matched_topics = map_focus_area_to_topics(focus_area)
+
+    if matched_topics:
+        recommended = [
+            lesson for lesson in lessons_dict.values()
+            if lesson.topic in matched_topics
+        ]
+    else:
+        # Fallback: general beginner lessons when the focus_area is unknown.
+        recommended = [
+            lesson for lesson in lessons_dict.values()
+            if lesson.difficulty == DifficultyLevel.BEGINNER
+        ]
+
+    # Deterministic ordering by lesson id, then cap at MAX_RECOMMENDATIONS.
+    recommended.sort(key=lambda lesson: lesson.id)
+    recommended = recommended[:MAX_RECOMMENDATIONS]
+
+    return matched_topics, recommended
+
+
+# ============================================================================
 # Endpoint: GET /grammar/lessons/
 # ============================================================================
 
@@ -489,3 +654,49 @@ async def get_exercise(exercise_id: str):
     
     # Return the full exercise as a dictionary
     return exercises_dict[exercise_id].model_dump()
+
+
+# ============================================================================
+# Endpoint: GET /grammar/recommendations/
+# ============================================================================
+
+@router.get("/recommendations/", response_model=RecommendationResponse)
+async def get_grammar_recommendations(
+    focus_area: str = Query(
+        ...,
+        description="The conversation feedback focus_area to map to grammar lessons",
+    ),
+) -> RecommendationResponse:
+    """Recommend grammar lessons for a given conversation feedback focus_area.
+
+    Maps the provided focus_area to matching grammar lesson topics via a
+    curated bilingual (English + French) keyword dictionary, then returns up
+    to 3 relevant lesson summaries. When the focus_area does not match any
+    known topic (including blank or whitespace-only values), a fallback set of
+    general beginner lessons is returned instead of an error.
+
+    Args:
+        focus_area: The focus_area string from session feedback.
+
+    Returns:
+        A RecommendationResponse containing the echoed focus_area, the
+        matched topic strings (empty on fallback), and up to 3 recommended
+        lesson summaries.
+    """
+    matched_topics, recommended_lessons = get_recommendations(focus_area)
+
+    lesson_summaries = [
+        LessonSummary(
+            id=lesson.id,
+            title=lesson.title,
+            topic=lesson.topic,
+            difficulty=lesson.difficulty,
+        )
+        for lesson in recommended_lessons
+    ]
+
+    return RecommendationResponse(
+        focus_area=focus_area,
+        matched_topics=matched_topics,
+        lessons=lesson_summaries,
+    )

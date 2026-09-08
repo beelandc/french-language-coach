@@ -131,9 +131,9 @@ class LessonListResponse(BaseModel):
 
 class ReferenceListResponse(BaseModel):
     """Response for GET /grammar/reference/ endpoint.
-    
+
     Contains a paginated list of reference entries.
-    
+
     Attributes:
         references: List of reference entries
         pagination: Pagination metadata
@@ -145,4 +145,29 @@ class ReferenceListResponse(BaseModel):
     pagination: PaginationInfo = Field(
         ...,
         description="Pagination metadata"
+    )
+
+
+# ============================================================================
+# Recommendation Schema
+# ============================================================================
+
+class RecommendationResponse(BaseModel):
+    """Response for GET /grammar/recommendations/ endpoint.
+
+    Maps a conversation feedback focus_area to relevant grammar lessons.
+
+    Attributes:
+        focus_area: The focus_area string queried (echoed back for traceability)
+        matched_topics: Lesson topics matched by the focus_area (empty on fallback)
+        lessons: Up to 3 recommended lesson summaries
+    """
+    focus_area: str = Field(..., description="The focus_area queried")
+    matched_topics: list[str] = Field(
+        default_factory=list,
+        description="Lesson topics matched by the focus_area"
+    )
+    lessons: list[LessonSummary] = Field(
+        default_factory=list,
+        description="Up to 3 recommended lesson summaries"
     )

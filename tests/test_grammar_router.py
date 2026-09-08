@@ -22,6 +22,7 @@ from schemas.grammar import (
     LessonResponse,
     LessonSummary,
     PaginationInfo,
+    RecommendationResponse,
     ReferenceListResponse,
     ReferenceResponse,
 )
@@ -665,3 +666,227 @@ class TestEdgeCases:
             assert response.status_code == 200
             data = response.json()
             assert isinstance(data["references"], list)
+
+
+# ============================================================================
+# Unit Tests for focus_area -> topic mapping (Issue #40)
+# ============================================================================
+
+class TestFocusAreaMapping:
+    """Unit tests for map_focus_area_to_topics()."""
+
+    def test_known_topic_exact(self):
+        """Exact topic name maps to itself."""
+        from routers.grammar import map_focus_area_to_topics
+
+        topics = map_focus_area_to_topics("Past Tenses")
+        assert "Past Tenses" in topics
+
+    def test_known_topic_case_insensitive(self):
+        """Mapping is case-insensitive."""
+        from routers.grammar import map_focus_area_to_topics
+
+        assert "Past Tenses" in map_focus_area_to_topics("past tenses")
+        assert "Pronouns" in map_focus_area_to_topics("PRONOUNS")
+
+    def test_partial_keyword_match(self):
+        """Substring keyword matching works."""
+        from routers.grammar import map_focus_area_to_topics
+
+        # "pronouns" contains the keyword "pronoun"
+        assert "Pronouns" in map_focus_area_to_topics("work on pronouns")
+
+    def test_french_keyword_match(self):
+        """French keywords map to topics."""
+        from routers.grammar import map_focus_area_to_topics
+
+        assert "Pronouns" in map_focus_area_to_topics("pronoms")
+        assert "Past Tenses" in map_focus_area_to_topics("passé composé")
+        assert "Moods" in map_focus_area_to_topics("subjonctif")
+
+    def test_unknown_focus_area(self):
+        """Unknown focus_area returns empty list."""
+        from routers.grammar import map_focus_area_to_topics
+
+        assert map_focus_area_to_topics("flibbertigibbet") == []
+
+    def test_empty_focus_area(self):
+        """Empty string returns empty list."""
+        from routers.grammar import map_focus_area_to_topics
+
+        assert map_focus_area_to_topics("") == []
+
+    def test_whitespace_only_focus_area(self):
+        """Whitespace-only string returns empty list."""
+        from routers.grammar import map_focus_area_to_topics
+
+        assert map_focus_area_to_topics("   ") == []
+        assert map_focus_area_to_topics("\t\n") == []
+
+    def test_none_focus_area(self):
+        """None returns empty list."""
+        from routers.grammar import map_focus_area_to_topics
+
+        assert map_focus_area_to_topics(None) == []
+
+    def test_multiple_topics_matched(self):
+        """A single focus_area can match multiple topics."""
+        from routers.grammar import map_focus_area_to_topics
+
+        # "tense" keyword appears in several topic keywords -> multiple topics
+        topics = map_focus_area_to_topics("verb tenses and past tenses")
+        assert "Verb Tenses" in topics
+        assert "Past Tenses" in topics
+
+    def test_no_duplicate_topics(self):
+        """Matched topics are de-duplicated."""
+        from routers.grammar import map_focus_area_to_topics
+
+        topics = map_focus_area_to_topics("pronoun pronouns pronom")
+        assert topics.count("Pronouns") == 1
+
+
+# ============================================================================
+# Integration Tests for GET /grammar/recommendations/ (Issue #40)
+# ============================================================================
+
+@pytest.mark.asyncio
+class TestRecommendationsEndpoint:
+    """Integration tests for GET /grammar/recommendations/ endpoint."""
+
+    async def test_recommendations_known_topic(self, client):
+        """Known topic returns matching lessons."""
+        response = client.get(
+            "/grammar/recommendations/", params={"focus_area": "Past Tenses"}
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["focus_area"] == "Past Tenses"
+        assert "Past Tenses" in data["matched_topics"]
+        assert len(data["lessons"]) <= 3
+        assert len(data["lessons"]) > 0
+        # All returned lessons should be from the matched topic
+        assert all(lesson["topic"] == "Past Tenses" for lesson in data["lessons"])
+        # Each lesson summary has an id (AC: returns lesson IDs)
+        assert all("id" in lesson for lesson in data["lessons"])
+
+    async def test_recommendations_case_insensitive(self, client):
+        """Topic matching is case-insensitive."""
+        response = client.get(
+            "/grammar/recommendations/", params={"focus_area": "past tenses"}
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert "Past Tenses" in data["matched_topics"]
+
+    async def test_recommendations_partial_keyword(self, client):
+        """Partial keyword match works."""
+        response = client.get(
+            "/grammar/recommendations/", params={"focus_area": "pronouns"}
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert "Pronouns" in data["matched_topics"]
+        assert all(l["topic"] == "Pronouns" for l in data["lessons"])
+
+    async def test_recommendations_french_keyword(self, client):
+        """French keyword maps to topic."""
+        response = client.get(
+            "/grammar/recommendations/", params={"focus_area": "pronoms"}
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert "Pronouns" in data["matched_topics"]
+
+    async def test_recommendations_unknown_fallback(self, client):
+        """Unknown focus_area returns fallback beginner lessons, not an error."""
+        response = client.get(
+            "/grammar/recommendations/", params={"focus_area": "zzzunknown"}
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["matched_topics"] == []
+        assert len(data["lessons"]) <= 3
+        # Fallback lessons are beginner difficulty
+        assert all(l["difficulty"] == "beginner" for l in data["lessons"])
+
+    async def test_recommendations_llm_fallback_value(self, client):
+        """The LLM fallback value 'Pratiquer davantage' triggers general fallback."""
+        response = client.get(
+            "/grammar/recommendations/", params={"focus_area": "Pratiquer davantage"}
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["matched_topics"] == []
+        assert len(data["lessons"]) <= 3
+
+    async def test_recommendations_empty_string(self, client):
+        """Empty focus_area triggers fallback."""
+        response = client.get(
+            "/grammar/recommendations/", params={"focus_area": ""}
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["matched_topics"] == []
+        assert all(l["difficulty"] == "beginner" for l in data["lessons"])
+
+    async def test_recommendations_whitespace_only(self, client):
+        """Whitespace-only focus_area triggers fallback."""
+        response = client.get(
+            "/grammar/recommendations/", params={"focus_area": "   "}
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["matched_topics"] == []
+
+    async def test_recommendations_cap_at_three(self, client):
+        """Pronouns has 4 lessons; result is capped at 3."""
+        response = client.get(
+            "/grammar/recommendations/", params={"focus_area": "Pronouns"}
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert len(data["lessons"]) == 3
+        # Deterministic ordering by id ascending
+        ids = [l["id"] for l in data["lessons"]]
+        assert ids == sorted(ids)
+
+    async def test_recommendations_multiple_topics_capped(self, client):
+        """A focus_area matching multiple topics is still capped at 3."""
+        response = client.get(
+            "/grammar/recommendations/",
+            params={"focus_area": "verb tenses and past tenses"},
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert len(data["lessons"]) <= 3
+        # Matched topics should include both
+        assert "Verb Tenses" in data["matched_topics"]
+        assert "Past Tenses" in data["matched_topics"]
+
+    async def test_recommendations_response_schema(self, client):
+        """Response matches RecommendationResponse schema."""
+        response = client.get(
+            "/grammar/recommendations/", params={"focus_area": "Pronouns"}
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert "focus_area" in data
+        assert "matched_topics" in data
+        assert "lessons" in data
+        assert isinstance(data["matched_topics"], list)
+        assert isinstance(data["lessons"], list)
+        for lesson in data["lessons"]:
+            assert {"id", "title", "topic", "difficulty"} <= set(lesson.keys())
+
+    async def test_recommendations_deterministic(self, client):
+        """Same input yields same output across calls."""
+        params = {"focus_area": "Past Tenses"}
+        r1 = client.get("/grammar/recommendations/", params=params).json()
+        r2 = client.get("/grammar/recommendations/", params=params).json()
+        assert r1["lessons"] == r2["lessons"]
+
+    async def test_recommendations_missing_param(self, client):
+        """Missing required focus_area param returns 422."""
+        response = client.get("/grammar/recommendations/")
+        assert response.status_code == 422
