@@ -27,13 +27,6 @@ describe('IndexPage Component', () => {
       expect(description).toBeInTheDocument()
     })
 
-    it('renders Get Started button', () => {
-      render(<IndexPage />)
-      
-      expect(screen.getByTestId('hero-cta')).toBeInTheDocument()
-      expect(screen.getByText('Get Started')).toBeInTheDocument()
-    })
-
     it('renders FeatureCardsSection', () => {
       render(<IndexPage />)
       
@@ -77,15 +70,6 @@ describe('IndexPage Component', () => {
   })
 
   describe('Navigation', () => {
-    it('navigates to /scenarios when Get Started button is clicked', () => {
-      render(<IndexPage />)
-      
-      const button = screen.getByTestId('hero-cta')
-      fireEvent.click(button)
-      
-      expect(mockNavigate).toHaveBeenCalledWith('/scenarios')
-    })
-
     it('navigates to /lessons when Grammar Lessons card is clicked', () => {
       render(<IndexPage />)
       
@@ -129,13 +113,6 @@ describe('IndexPage Component', () => {
       render(<IndexPage />)
       
       expect(screen.getByTestId('index-page')).toBeInTheDocument()
-    })
-
-    it('Get Started button has correct aria-label', () => {
-      render(<IndexPage />)
-      
-      const button = screen.getByTestId('hero-cta')
-      expect(button).toHaveAttribute('aria-label', 'Get started with French Language Coach')
     })
   })
 })

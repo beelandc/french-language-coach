@@ -2796,20 +2796,6 @@ header h1 {
     line-height: 1.6;
 }
 
-.hero-cta {
-    padding: 14px 32px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
-    transition: all 0.2s;
-}
-
-.hero-cta:hover {
-    background: #357ab8;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(74, 144, 226, 0.4);
-}
-
 /* Feature Cards Grid */
 .feature-cards-section {
     margin-bottom: 50px;
@@ -3063,11 +3049,6 @@ header h1 {
     }
     
     .hero-description {
-        font-size: 1rem;
-    }
-    
-    .hero-cta {
-        padding: 12px 24px;
         font-size: 1rem;
     }
     

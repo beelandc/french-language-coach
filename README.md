@@ -20,7 +20,7 @@ The Conversation Practice (scenarios) page also features a Quick Access section 
 ### From the Central Navigation Hub (Landing Page):
 
 1. **Explore Features**: The landing page displays cards for all major features - click any to get started
-2. **Start Conversation Practice**: Click "Conversation Practice" or "Get Started" to select from 10 built-in scenarios
+2. **Start Conversation Practice**: Click "Conversation Practice" to select from 10 built-in scenarios
 3. **Browse Grammar Lessons**: Click "Grammar Lessons" to browse, search, and filter 20+ interactive lessons
 4. **Search Grammar Reference**: Click "Grammar Reference" to access 50+ searchable reference entries
 5. **Practice Exercises**: Click "Grammar Exercises" to practice with fill-in-the-blank, multiple-choice, translation, conjugation, and sentence transformation exercises
