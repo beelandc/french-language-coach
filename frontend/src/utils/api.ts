@@ -3,8 +3,9 @@ import type {
   Feedback, 
   Session, 
   SessionLockResponse,
-  LessonListResponse, 
-  LessonResponse, 
+  LessonListResponse,
+  LessonResponse,
+  RecommendationResponse,
   LessonSummary,
   Difficulty,
   ReferenceCategory,
@@ -138,6 +139,15 @@ export const grammarApi = {
   // Get a single lesson by ID
   getLesson: (lessonId: string) =>
     api<LessonResponse>(`/grammar/lessons/${lessonId}`, { method: 'GET' }),
+
+  // Get recommended grammar lessons for a conversation feedback focus_area
+  // Backend maps the focus_area to 1-3 lesson summaries, falling back to general
+  // beginner lessons for unknown values (always returns 200).
+  getRecommendations: (focusArea: string) =>
+    api<RecommendationResponse>(
+      `/grammar/recommendations/?focus_area=${encodeURIComponent(focusArea)}`,
+      { method: 'GET' }
+    ),
 
   // Search grammar reference entries with optional filtering and pagination
   searchReferences: (
@@ -273,6 +283,7 @@ export type {
   LessonSection,
   LessonResponse,
   LessonListResponse,
+  RecommendationResponse,
   LessonCardProps,
   LessonSearchProps,
   LessonBrowserProps,
