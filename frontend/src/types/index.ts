@@ -245,6 +245,14 @@ export interface LessonListResponse {
 // Response for GET /grammar/lessons/{id} (single lesson)
 export interface LessonResponse extends Lesson {}
 
+// Response for GET /grammar/recommendations/?focus_area= (recommended lessons)
+// Matches RecommendationResponse in schemas/grammar.py
+export interface RecommendationResponse {
+  focus_area: string
+  matched_topics: string[]
+  lessons: LessonSummary[]
+}
+
 // Props for LessonCard component
 export interface LessonCardProps {
   lesson: LessonSummary

@@ -33,6 +33,13 @@ vi.mock('./CorrectionItem', () => ({
   )
 }));
 
+vi.mock('./RecommendedLessons', () => ({
+  default: ({ focusArea }: { focusArea: string }) =>
+    focusArea && focusArea.trim() ? (
+      <div data-testid="recommended-lessons-mock">Recommended for: {focusArea}</div>
+    ) : null
+}));
+
 // Mock hook implementation
 const mockGetFeedback = vi.fn();
 

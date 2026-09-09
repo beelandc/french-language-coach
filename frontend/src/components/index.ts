@@ -17,6 +17,7 @@ export { default as ConfirmationModal } from './ConfirmationModal'
 export { default as LessonCard } from './LessonCard'
 export { default as LessonSearch } from './LessonSearch'
 export { default as LessonBrowser } from './LessonBrowser'
+export { default as RecommendedLessons } from './RecommendedLessons'
 
 // Grammar Reference Components (Phase 2)
 export { default as ReferenceCard } from './ReferenceCard'

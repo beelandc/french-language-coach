@@ -4,6 +4,7 @@ import { useSessions } from '../hooks/useSessions'
 import type { FeedbackViewProps, Feedback } from '../types'
 import ScoreCard from './ScoreCard'
 import CorrectionItem from './CorrectionItem'
+import RecommendedLessons from './RecommendedLessons'
 import { generateFeedbackPDF } from '../utils/pdfExport'
 
 export default function FeedbackView({ sessionId }: FeedbackViewProps) {
@@ -165,6 +166,11 @@ export default function FeedbackView({ sessionId }: FeedbackViewProps) {
             <h4 data-testid="focus-area-priority">Priority: Improve your {feedback.focus_area}</h4>
           </div>
         </div>
+
+        {/* Recommended Lessons Section (issue #220) */}
+        {feedback.focus_area && feedback.focus_area.trim() && (
+          <RecommendedLessons focusArea={feedback.focus_area} />
+        )}
 
         {/* Corrections Section */}
         {feedback.example_corrections && feedback.example_corrections.length > 0 && (
