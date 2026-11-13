@@ -1,6 +1,8 @@
 # French Language Coach
 
-A comprehensive French language learning platform developed with Mistral Vibe and Claude Code and powered by the Mistral API, combining immersive AI conversation practice with structured grammar lessons, a searchable reference guide, and interactive exercises.
+French Language Coach is an app for practising French. It offers AI conversation practice (scenario role-play with end-of-session feedback), grammar lessons, a searchable grammar reference, interactive exercises, and spaced-repetition vocabulary flashcards. Its LLM features are designed to run on either the Mistral API or Anthropic's Claude API, chosen per feature: Mistral is the default today, and Claude support is being added in [#228](https://github.com/beelandc/french-language-coach/issues/228).
+
+The repo also serves as a testbed for AI-assisted development and model selection. It is built with two coding agents, Mistral Vibe and Claude Code, which follow the same project instructions. Every AI-generated change goes through [SPDD](SPDD.md) (an analysis artifact, then a prompt artifact, then code) and CI (a single `status-gateway` check and an 80% test coverage target) before a human merges it. Next, we plan to compare Mistral and Claude on the app's own feedback workload, measuring accuracy, cost and latency (see the [Model evaluation milestone](https://github.com/beelandc/french-language-coach/milestone/6)); there are no results yet.
 
 ## What it does
 
@@ -544,6 +546,10 @@ This ensures:
 - Analysis: `spdd/analysis/FLC-049-202611131000-[Analysis]-issue-225-claude-code-config.md`
 - Prompt: `spdd/prompt/FLC-049-202611131002-[Feat]-issue-225-claude-code-config.md`
 
+**Issue #227 - README and VISION Positioning**:
+- Analysis: `spdd/analysis/FLC-050-202611131644-[Analysis]-issue-227-readme-vision-positioning.md`
+- Prompt: `spdd/prompt/FLC-050-202611131654-[Feat]-issue-227-readme-vision-positioning.md`
+
 #### Reference
 - [Structured Prompt Driven Development (Wei Zhang & Jessie Jie Xia)](https://martinfowler.com/articles/structured-prompt-driven/)
 
@@ -665,7 +671,7 @@ npm run test:jest:watch
 
 > **Note:** Frontend test scripts are defined in `frontend/package.json`. If Vitest is not yet configured, you can add it with: `cd frontend && npm install -D vitest @testing-library/react @testing-library/jest-dom`
 >
-> **Jest Coverage Note:** Due to TypeScript compilation errors in some source files, Jest coverage collection currently excludes certain directories (styles, mocks, hooks, pages, utils, types, ExerciseTypes) and files (main.tsx, App.tsx, setupTests.ts, testSetup.ts). These exclusions are configured in `frontend/jest.config.cjs` and can be reduced as TypeScript errors are fixed.
+> **Jest Coverage Note:** Jest coverage is collected from a limited set of files, so the Jest coverage figure does not represent the whole frontend. `collectCoverageFrom` in `frontend/jest.config.cjs` excludes the `styles`, `mocks`, `hooks`, `pages`, `utils`, `types` and `components/ExerciseTypes` directories, five components (`Exercise.tsx`, `QuickAccessSession.tsx`, `SessionHistoryItem.tsx`, `LessonViewer.tsx`, `SessionDetail.tsx`), and entry/setup files (`main.tsx`, `App.tsx`, `setupTests.ts`, `testSetup.ts`, `utils/storybookMocks.tsx`). This is a known gap, tracked in [Issue #233](https://github.com/beelandc/french-language-coach/issues/233) (a follow-up to [#184](https://github.com/beelandc/french-language-coach/issues/184), which narrowed the coverage scope but left these exclusions in place).
 
 **Available frontend test files:**
 - `frontend/src/sample.jest.test.tsx` - Jest setup verification tests

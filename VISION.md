@@ -1,13 +1,13 @@
 # French Language Coach — Project Vision Document
 
-*Built with Mistral Vibe · Powered by Mistral AI API*  
-*Author: Cecil Beeland · Last updated: May 2026*
+*Built with Mistral Vibe and Claude Code · LLM features on the Mistral API, with Claude API support in progress*  
+*Author: Cecil Beeland · Last updated: November 2026*
 
 ---
 
 ## The One-Sentence Pitch
 
-A comprehensive French language learning platform that combines immersive AI conversation practice with structured grammar lessons, spaced-repetition vocabulary training, and rich cultural context — built using Mistral's own AI coding tool, powered by Mistral's API, for intermediate learners seeking fluency.
+A French learning app for intermediate learners that pairs AI conversation practice and feedback with grammar lessons and spaced-repetition vocabulary (cultural content is planned), developed with Mistral Vibe and Claude Code as a testbed for AI-assisted development and model selection.
 
 ---
 
@@ -19,7 +19,7 @@ Language learning is fragmented. Conversation apps lack structure. Grammar books
 
 ## The Solution
 
-French Language Coach is a comprehensive learning platform with four integrated pillars:
+French Language Coach is organized around four pillars, the first three of which have shipped in some form:
 
 1. **Conversation Practice** — Immersive AI scenarios with natural French exchange and actionable feedback
 2. **Grammar Mastery** — Interactive lessons and searchable reference with practical exercises
@@ -32,14 +32,14 @@ Each pillar reinforces the others: vocabulary words appear in conversations, gra
 
 ## Why Mistral
 
-Mistral's models have demonstrably stronger French language quality than most alternatives — an expected outcome for a Paris-based company whose training data and research culture are deeply French. For a comprehensive French language platform, this means:
+Mistral's models have demonstrably stronger French language quality than most alternatives — an expected outcome for a Paris-based company whose training data and research culture are deeply French. For a French learning app, this means:
 
 - **Conversation:** More natural phrasing, better idiomatic corrections, and more culturally authentic scenario responses
 - **Grammar:** More accurate explanations of nuanced French grammar rules
 - **Vocabulary:** Better context-aware word suggestions and usage examples
 - **Culture:** Deeper understanding of regional variations and cultural subtleties
 
-This project is also built entirely using Mistral Vibe, Mistral's AI-assisted coding environment, making it a genuine end-to-end demonstration of the Mistral developer ecosystem.
+The project was originally built with Mistral Vibe, Mistral's AI-assisted coding environment, and is now developed with both Mistral Vibe and Claude Code, Anthropic's AI coding agent. That makes it a testbed for AI-assisted development and model selection: a planned evaluation will compare Mistral and Claude on the app's own feedback workload (accuracy, cost, latency) to test the French-quality claim above rather than assume it (see the "Model evaluation (Claude vs Mistral)" milestone, #228–#232).
 
 ---
 
@@ -64,11 +64,53 @@ The user engages in realistic French conversation scenarios with AI role-play. F
 - **Immersive Chat:** Multi-turn conversation with AI staying in character
 - **Structured Feedback:** End-of-session report with grammar/vocabulary/fluency/overall scores, strengths, focus area, and example corrections
 - **Session Persistence:** SQLite async database storing full conversation transcripts and feedback
+- **Phase 1.5 additions:** Beginner/intermediate/advanced difficulty per scenario, session history with resume (Quick Access on the scenarios page), session detail view (transcript alongside feedback), session deletion, and session locking
 
-**Backend API (3 endpoints):**
-- `POST /sessions/` — creates a new session for a given scenario
+**Backend API:**
+- `POST /sessions/` — creates a new session for a given scenario and difficulty
+- `GET /sessions/` — lists sessions
+- `GET /sessions/{session_id}` — gets a session with its messages and feedback
+- `DELETE /sessions/{session_id}` — deletes a session
+- `POST /sessions/{session_id}/lock`, `POST /sessions/{session_id}/unlock` — locks or unlocks a session
 - `POST /sessions/{session_id}/messages/` — sends user message, returns AI response
 - `POST /sessions/{session_id}/feedback/` — generates structured feedback report
+
+### ✅ Grammar (Phase 2 - Mostly Shipped)
+
+Structured grammar study alongside conversation practice. Features implemented:
+
+- **Grammar Lessons:** 21 interactive lessons covering core topics (present tense, passé composé, imparfait, subjunctive, pronouns, negation, questions and more), with a browser, search and filters
+- **Reference Guide:** 50 searchable reference entries for quick lookup of grammar terms and concepts
+- **Exercises:** 5 interactive exercises across 5 types (fill-in-the-blank, multiple-choice, translation, conjugation, sentence transformation) with immediate answer checking
+- **Progress Tracking:** Lesson progress recorded per lesson
+- **Recommendations:** Grammar lessons suggested from conversation feedback and shown in the feedback view
+
+**Backend API:**
+- `GET /grammar/lessons/`, `GET /grammar/lessons/{lesson_id}` — lists lessons, gets lesson content
+- `GET /grammar/reference/` — lists and searches reference entries
+- `GET /grammar/exercises/`, `GET /grammar/exercises/{exercise_id}` — lists exercises, gets an exercise
+- `GET /grammar/recommendations/` — recommends lessons based on conversation feedback
+- `POST /grammar/progress/`, `GET /grammar/progress/` — records and lists lesson progress
+
+*Still open:* contextual practice using vocabulary from the user's conversations, and the remaining Phase 2 test and E2E issues.
+
+### ✅ Vocabulary & Spaced Repetition (Phase 3 - Partly Shipped)
+
+Flashcard study with SM-2 spaced repetition. Features implemented:
+
+- **Themed Decks:** 11 pre-built decks with 553 cards, seeded automatically on startup
+- **Deck Browsing:** Browse and search decks, view a deck and its cards
+- **Flashcards:** Click/tap to flip between French and English with an example; swipe support on mobile
+- **Review Sessions:** Cards due for review, rated Again/Hard/Good/Easy, with SM-2 interval and ease-factor updates
+
+**Backend API:**
+- `GET /vocabulary/decks/`, `POST /vocabulary/decks/` — lists decks, creates a deck
+- `GET /vocabulary/decks/{deck_id}` — gets a deck
+- `GET /vocabulary/decks/{deck_id}/cards/`, `POST /vocabulary/decks/{deck_id}/cards/` — lists cards, adds a card
+- `GET /vocabulary/due/` — lists cards due for review
+- `POST /vocabulary/review/`, `POST /card-review/` — records a review and updates spaced-repetition state
+
+*Still open:* vocabulary extraction from conversations, a daily review scheduler, custom deck creation in the UI, a card editor, and a progress dashboard.
 
 ### 🔧 Technical Foundation (Complete)
 
@@ -160,13 +202,13 @@ Future endpoints:
 ### Phase 1 — Conversation Foundation (✅ Complete)
 *Core conversation practice with feedback and session persistence*
 
-### Phase 2 — Grammar Mastery (Next)
+### Phase 2 — Grammar Mastery (Mostly shipped)
 *Interactive lessons, reference guide, and contextual practice*
 - Build grammar lesson database
 - Implement lesson viewer and progress tracker
 - Connect grammar concepts to conversation feedback
 
-### Phase 3 — Vocabulary Builder
+### Phase 3 — Vocabulary Builder (In progress)
 *Spaced-repetition flashcards integrated with conversation*
 - Implement Anki-style algorithm
 - Create vocabulary extraction from conversations
