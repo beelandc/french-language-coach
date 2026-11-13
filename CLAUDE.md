@@ -14,8 +14,8 @@ Don't copy rules from that file into this one. Edit `.vibe/instructions.md` (in 
 
 ## Guardrails (Claude-specific emphasis)
 
-- **The app's LLM backend is the Mistral API** (`services/mistral.py`, model `mistral-large-latest`). Don't replace it with, or add, Anthropic/Claude API calls unless a GitHub issue explicitly asks for it.
-- **Never read, print, or commit `.env`.** It holds `MISTRAL_API_KEY`. Use `.env.example` for reference.
+- **All app LLM calls go through the provider layer in `services/llm/`.** Mistral (`mistral-large-latest`) is the default provider for both features. Issue #228 authorizes Anthropic (Claude) API calls, but only behind this layer, selected per feature with `CHAT_PROVIDER` / `FEEDBACK_PROVIDER=anthropic`. Don't call either SDK from routers or anywhere else, and don't change the default provider or model unless a GitHub issue asks for it.
+- **Never read, print, or commit `.env`.** It holds `MISTRAL_API_KEY` and `ANTHROPIC_API_KEY`. Use `.env.example` for reference.
 - **Never commit to `main`, force-push, or merge your own PR.** Open the PR with `gh pr create` and stop. A human reviews and merges.
 - **No issue, no work.** If the user hasn't given an issue number, ask for one, or offer to create it with `gh issue create` (and wait for a yes) before branching.
 - **Ask before architectural decisions** (new dependencies, schema changes, new top-level directories, state-management changes).
@@ -73,7 +73,7 @@ npm run storybook           # :6006
 
 ## Architecture map
 
-- **Backend (FastAPI, async SQLAlchemy, SQLite)**: `main.py` (app, router registration, SPA fallback; auto-seeds vocabulary decks on startup) → `routers/` (HTTP layer) → `services/mistral.py` (chat + JSON feedback) → `models/` (ORM) with `schemas/` (Pydantic). Scenario system prompts live in `scenarios.py`. Static content is JSON under `data/` (grammar lessons, reference, exercises, vocabulary decks).
+- **Backend (FastAPI, async SQLAlchemy, SQLite)**: `main.py` (app, router registration, SPA fallback; auto-seeds vocabulary decks on startup) → `routers/` (HTTP layer) → `services/llm/` (`llm_service`: per-feature Mistral/Claude providers for chat + JSON feedback, logs each call to `llm_calls`; `services/mistral.py` is a compatibility alias) → `models/` (ORM) with `schemas/` (Pydantic). Scenario system prompts live in `scenarios.py`. Static content is JSON under `data/` (grammar lessons, reference, exercises, vocabulary decks, LLM price table `llm_pricing.json`).
 - **Frontend (React 19 + TS + Vite, react-router)**: `frontend/src/pages/` (routes, wired in `App.tsx`), `components/` (each with `.stories.tsx` and tests), `hooks/`, `utils/api.ts` (typed API client), `types/index.ts`.
 - **Tests**: `tests/` (pytest; `conftest.py` uses in-memory SQLite, factory-boy factories in `tests/factories.py`), `frontend/src/**` (Vitest / Jest), `frontend/cypress/` (E2E).
 - **CI**: `.github/workflows/`. Path-filtered pytest/vitest/jest/cypress jobs plus `status-gateway.yml`, the one required check.

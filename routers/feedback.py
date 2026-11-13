@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from database import get_db
 from models.session import Session as SessionModel
 from schemas.session import FeedbackResponse
-from services.mistral import mistral_client
+from services.llm import llm_service
 
 router = APIRouter(prefix="/sessions/{session_id}/feedback", tags=["feedback"])
 
@@ -29,7 +29,7 @@ async def generate_feedback(
             detail="Not enough messages for feedback. Have at least one exchange."
         )
 
-    feedback = mistral_client.get_feedback(messages)
+    feedback = await llm_service.get_feedback(messages, db=db, session_id=session.id)
 
     session.ended_at = datetime.utcnow()
     session.feedback_dict = feedback

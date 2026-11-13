@@ -1,0 +1,51 @@
+{
+  "description": "LLM prices used to estimate the cost of each call in llm_calls (issue #228). Prices are USD per million tokens. When a vendor changes prices, re-check the source page and update the values and checked_on.",
+  "currency": "USD",
+  "unit": "per_million_tokens",
+  "models": [
+    {
+      "provider": "mistral",
+      "model": "mistral-large-latest",
+      "input_per_mtok": 0.50,
+      "output_per_mtok": 1.50,
+      "cache_read_per_mtok": 0.05,
+      "checked_on": "2026-11-13",
+      "source": "https://mistral.ai/pricing",
+      "notes": "The pricing page lists 'Mistral Large' without a version. Cache read is 10% of the input price per https://docs.mistral.ai/inference/conversations/advanced/prompt-caching"
+    },
+    {
+      "provider": "anthropic",
+      "model": "claude-sonnet-5-5",
+      "input_per_mtok": 2.00,
+      "output_per_mtok": 10.00,
+      "cache_read_per_mtok": 0.10,
+      "checked_on": "2026-11-13",
+      "source": "https://platform.claude.com/docs/en/about-claude/pricing"
+    },
+    {
+      "provider": "anthropic",
+      "model": "claude-haiku-5-5",
+      "input_per_mtok": 0.10,
+      "output_per_mtok": 0.50,
+      "cache_read_per_mtok": 0.01,
+      "long_context": {
+        "threshold_tokens": 100000,
+        "input_per_mtok": 0.50,
+        "output_per_mtok": 2.50,
+        "cache_read_per_mtok": 0.05
+      },
+      "checked_on": "2026-11-13",
+      "source": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "notes": "Prompts over 100,000 tokens (input including cache reads) are billed at the long_context prices."
+    },
+    {
+      "provider": "anthropic",
+      "model": "claude-opus-5-5",
+      "input_per_mtok": 4.00,
+      "output_per_mtok": 20.00,
+      "cache_read_per_mtok": 0.20,
+      "checked_on": "2026-11-13",
+      "source": "https://platform.claude.com/docs/en/about-claude/pricing"
+    }
+  ]
+}
