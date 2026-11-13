@@ -1,6 +1,6 @@
 # French Language Coach
 
-A comprehensive French language learning platform built end-to-end with Mistral Vibe and Mistral API, combining immersive AI conversation practice with structured grammar lessons, a searchable reference guide, and interactive exercises.
+A comprehensive French language learning platform developed with Mistral Vibe and Claude Code and powered by the Mistral API, combining immersive AI conversation practice with structured grammar lessons, a searchable reference guide, and interactive exercises.
 
 ## What it does
 
@@ -329,6 +329,13 @@ french-language-coach/
 │   ├── index.html          # Legacy single-page app (development fallback)
 │   ├── style.css           # Legacy styles
 │   └── app.js              # Legacy frontend logic
+├── CLAUDE.md                # Claude Code instructions (imports .vibe/instructions.md + Claude-specific guidance)
+├── .vibe/
+│   └── instructions.md      # Shared AI agent instructions (single source of truth for Mistral Vibe and Claude Code)
+├── .claude/
+│   ├── settings.json        # Claude Code shared project permissions (committed)
+│   └── skills/              # Claude Code project skills: /spdd-analysis, /spdd-prompt
+├── spdd/                    # SPDD artifacts: analysis/, prompt/, template/
 ├── .env.example             # Template: MISTRAL_API_KEY=, DATABASE_URL=
 ├── .gitignore               # Python, .env, __pycache__, *.db
 ├── requirements.txt         # fastapi, uvicorn, sqlalchemy, aiosqlite, mistralai, python-dotenv, pydantic
@@ -454,7 +461,7 @@ The `response_format={"type": "json_object"}` parameter ensures Mistral returns 
 
 Mistral's models have demonstrably stronger French language quality than most alternatives. Mistral trains its models with native French fluency — giving Mistral Large demonstrated benchmark advantages in French language comprehension and generation compared to models trained primarily on English. For a French language coaching application, this is not a minor detail: it means more natural phrasing, better idiomatic corrections, and more culturally authentic conversation scenarios.
 
-This project is also built entirely using Mistral Vibe, Mistral's AI-assisted coding environment, making it an end-to-end demonstration of the Mistral developer ecosystem.
+The codebase was originally built with Mistral Vibe, Mistral's AI-assisted coding environment, and is now developed with both Mistral Vibe and Claude Code, Anthropic's AI coding agent.
 
 ### References
 
@@ -468,11 +475,13 @@ This project is also built entirely using Mistral Vibe, Mistral's AI-assisted co
 
 ## Development
 
-This project was developed using **Mistral Vibe**, an AI coding agent that provides:
+This project is developed using two AI coding agents, **Mistral Vibe** and **Claude Code**, which provide:
 - Intelligent code generation and completion
 - Context-aware suggestions based on the codebase
 - Multi-file refactoring assistance
 - Debugging and error resolution support
+
+Both agents follow the same rules. `.vibe/instructions.md` is the single source of truth for agent instructions: Mistral Vibe reads it directly, and Claude Code loads it through an import in `CLAUDE.md`, which adds only Claude-specific guidance (commands, architecture pointers, gotchas). Claude Code's shared project permissions live in `.claude/settings.json`, and the `/spdd-analysis` and `/spdd-prompt` project skills in `.claude/skills/` create correctly named SPDD artifacts from the templates.
 
 ### AI-Assisted Development Workflow
 
@@ -531,10 +540,14 @@ This ensures:
 - Analysis: `spdd/analysis/FLC-039-202606161000-[Analysis]-issue-69-flashcard-review-session.md`
 - Prompt: `spdd/prompt/FLC-039-202606161015-[Feat]-issue-69-flashcard-review-session.md`
 
+**Issue #225 - Claude Code Configuration**:
+- Analysis: `spdd/analysis/FLC-049-202611131000-[Analysis]-issue-225-claude-code-config.md`
+- Prompt: `spdd/prompt/FLC-049-202611131002-[Feat]-issue-225-claude-code-config.md`
+
 #### Reference
 - [Structured Prompt Driven Development (Wei Zhang & Jessie Jie Xia)](https://martinfowler.com/articles/structured-prompt-driven/)
 
-> **Note**: We are currently using Mistral Vibe directly without the open-spdd utility. If we adopt open-spdd in the future, this workflow will be updated accordingly.
+> **Note**: We are currently using Mistral Vibe and Claude Code directly, without the open-spdd utility. If we adopt open-spdd in the future, this workflow will be updated accordingly.
 
 ### Git Workflow
 
