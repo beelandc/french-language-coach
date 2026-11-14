@@ -4737,3 +4737,436 @@ header h1 {
         font-size: 1rem;
     }
 }
+
+/* ========================================================================
+   App footer (Issue #237): low-key admin entry point
+   ======================================================================== */
+
+.app-footer {
+    margin-top: 48px;
+    padding: 16px 0 8px;
+    border-top: 1px solid #e0e0e0;
+    text-align: center;
+    font-size: 0.85rem;
+}
+
+.app-footer a {
+    color: #6b7280;
+    text-decoration: none;
+}
+
+.app-footer a:hover,
+.app-footer a:focus-visible {
+    color: #2c3e50;
+    text-decoration: underline;
+}
+
+/* ========================================================================
+   Admin LLM metrics dashboard (Issue #237)
+   ======================================================================== */
+
+.llm-metrics-page {
+    min-width: 0;
+}
+
+.llm-metrics-page h2 {
+    color: #2c3e50;
+    margin-bottom: 4px;
+}
+
+.llm-metrics-intro {
+    color: #4b5563;
+}
+
+.llm-metrics-admin-note {
+    color: #6b7280;
+    font-size: 0.85rem;
+    margin-bottom: 16px;
+}
+
+.llm-metrics-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 0;
+}
+
+/* Filters */
+.llm-metrics-filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 12px;
+    padding: 16px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+}
+
+.llm-metrics-filter {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 140px;
+}
+
+.llm-metrics-filter label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #4b5563;
+}
+
+.llm-metrics-filter select,
+.llm-metrics-filter input {
+    padding: 6px 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: #fff;
+    font-size: 0.9rem;
+    color: #1f2937;
+}
+
+.llm-metrics-filter-custom {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+.llm-metrics-filter-hint {
+    flex-basis: 100%;
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+.llm-metrics-button {
+    padding: 6px 14px;
+    border: 1px solid #2563eb;
+    border-radius: 6px;
+    background: #2563eb;
+    color: #fff;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.llm-metrics-button:hover:not(:disabled) {
+    background: #1d4ed8;
+}
+
+.llm-metrics-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.llm-metrics-button-secondary {
+    background: #fff;
+    color: #2563eb;
+}
+
+.llm-metrics-button-secondary:hover:not(:disabled) {
+    background: #eff6ff;
+}
+
+/* Panels */
+.llm-metrics-panel {
+    min-width: 0;
+    padding: 16px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+}
+
+.llm-metrics-panel-title {
+    font-size: 1.1rem;
+    color: #2c3e50;
+    margin-bottom: 12px;
+}
+
+.llm-metrics-panel-status,
+.llm-metrics-panel-empty {
+    color: #6b7280;
+    padding: 12px 0;
+}
+
+.llm-metrics-panel-error {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 6px;
+    background: #fef2f2;
+    color: #991b1b;
+}
+
+/* Summary cards */
+.llm-metrics-cards {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+}
+
+.llm-metrics-card {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #f9fafb;
+}
+
+.llm-metrics-card-warn {
+    border-color: #f59e0b;
+    background: #fffbeb;
+}
+
+.llm-metrics-card-label {
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+.llm-metrics-card-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    font-variant-numeric: tabular-nums;
+}
+
+.llm-metrics-card-hint {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+/* Tables */
+.llm-metrics-table-wrapper {
+    /* position: relative keeps absolutely positioned descendants (e.g. .visually-hidden
+       link text) inside the scroll box, so they can't widen the page on mobile */
+    position: relative;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.llm-metrics-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.llm-metrics-table th,
+.llm-metrics-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: left;
+    vertical-align: top;
+    /* Tables scroll sideways on small screens instead of wrapping ids mid-word */
+    white-space: nowrap;
+}
+
+.llm-metrics-table th {
+    font-weight: 600;
+    color: #374151;
+    background: #f9fafb;
+    white-space: nowrap;
+}
+
+.llm-metrics-table .llm-metrics-numeric {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.llm-metrics-nowrap {
+    white-space: nowrap;
+}
+
+.llm-metrics-sort-button {
+    border: none;
+    background: none;
+    padding: 0;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+}
+
+.llm-metrics-sort-button:hover,
+.llm-metrics-sort-button:focus-visible {
+    text-decoration: underline;
+}
+
+.llm-metrics-badge {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.llm-metrics-badge-ok {
+    background: #ecfdf5;
+    color: #065f46;
+}
+
+.llm-metrics-badge-error {
+    background: #fef2f2;
+    color: #991b1b;
+}
+
+.llm-metrics-row-error td {
+    border-bottom: none;
+}
+
+.llm-metrics-error-row td {
+    background: #fef2f2;
+    color: #7f1d1d;
+}
+
+.llm-metrics-error-row td {
+    white-space: normal;
+}
+
+/* Sticks to the left edge so the message stays readable while the table scrolls */
+.llm-metrics-error-content {
+    position: sticky;
+    left: 10px;
+    max-width: calc(100vw - 96px);
+    max-height: 6em;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.llm-metrics-error-label {
+    font-weight: 600;
+}
+
+.llm-metrics-pagination {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 12px;
+    font-size: 0.9rem;
+}
+
+.llm-metrics-price-detail {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+/* Charts */
+.llm-metrics-chart-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+@media (min-width: 900px) {
+    .llm-metrics-chart-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+.llm-metrics-chart {
+    min-width: 0;
+}
+
+.llm-metrics-chart-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #374151;
+    margin-bottom: 4px;
+}
+
+.llm-metrics-chart-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    min-height: 160px;
+}
+
+.llm-metrics-axis text,
+text.llm-metrics-axis,
+.llm-metrics-axis-label {
+    font-size: 11px;
+    fill: #6b7280;
+}
+
+.llm-metrics-gridline {
+    stroke: #e5e7eb;
+    stroke-width: 1;
+}
+
+.llm-metrics-legend {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    margin-top: 8px;
+    font-size: 0.8rem;
+    color: #374151;
+    word-break: break-word;
+}
+
+.llm-metrics-legend li {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.llm-metrics-swatch {
+    display: inline-block;
+    flex-shrink: 0;
+    width: 18px;
+    border-top: 3px solid;
+}
+
+.llm-metrics-swatch-dashed {
+    border-top-style: dashed;
+}
+
+.llm-metrics-swatch-dot {
+    width: 10px;
+    height: 10px;
+    border: none;
+    border-radius: 50%;
+}
+
+.llm-metrics-chart-note {
+    margin-top: 6px;
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+@media (max-width: 768px) {
+    .llm-metrics-filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .llm-metrics-filter,
+    .llm-metrics-filter-custom {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .llm-metrics-filter-custom {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .llm-metrics-panel {
+        padding: 12px;
+    }
+
+    .llm-metrics-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .llm-metrics-card-value {
+        font-size: 1.2rem;
+    }
+}

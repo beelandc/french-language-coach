@@ -36,6 +36,9 @@ module.exports = {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   
+  // Polyfills that must exist before modules load (TextEncoder for react-router v7)
+  setupFiles: ['<rootDir>/jest.polyfills.cjs'],
+
   // Setup files
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
   

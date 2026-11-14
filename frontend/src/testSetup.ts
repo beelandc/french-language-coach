@@ -6,6 +6,12 @@
  */
 
 import { vi, beforeAll, afterEach, afterAll } from 'vitest'
+import {
+  sampleCallLog,
+  samplePricing,
+  sampleSummary,
+  sampleTimeseries,
+} from './components/LLMMetrics/fixtures'
 
 // Create a mock sessionApi module to prevent real HTTP requests
 // This mock is used by components that import sessionApi directly (like SessionHistory)
@@ -77,9 +83,19 @@ const mockSessionApi = {
   deleteSession: vi.fn(async (sessionId: string) => undefined),
 }
 
+// Mock metrics API for the admin LLM metrics dashboard (Issue #237).
+// Stories can override these per story with vi.mocked(metricsApi.x).mockResolvedValue(...)
+const mockMetricsApi = {
+  getSummary: vi.fn(async () => sampleSummary),
+  listCalls: vi.fn(async () => sampleCallLog),
+  getTimeseries: vi.fn(async () => sampleTimeseries),
+  getPricing: vi.fn(async () => samplePricing),
+}
+
 // Mock the utils/api module
 vi.mock('./utils/api', () => ({
   sessionApi: mockSessionApi,
+  metricsApi: mockMetricsApi,
   grammarApi: {
     listLessons: vi.fn(),
     getLesson: vi.fn(),
@@ -103,6 +119,7 @@ vi.mock('./utils/api', () => ({
 // Mock with .ts extension for Vite resolution
 vi.mock('./utils/api.ts', () => ({
   sessionApi: mockSessionApi,
+  metricsApi: mockMetricsApi,
   grammarApi: {
     listLessons: vi.fn(),
     getLesson: vi.fn(),
@@ -126,6 +143,7 @@ vi.mock('./utils/api.ts', () => ({
 // Also mock the @ alias import path
 vi.mock('@/utils/api', () => ({
   sessionApi: mockSessionApi,
+  metricsApi: mockMetricsApi,
   grammarApi: {
     listLessons: vi.fn(),
     getLesson: vi.fn(),
@@ -149,6 +167,7 @@ vi.mock('@/utils/api', () => ({
 // Mock @ alias with .ts extension
 vi.mock('@/utils/api.ts', () => ({
   sessionApi: mockSessionApi,
+  metricsApi: mockMetricsApi,
   grammarApi: {
     listLessons: vi.fn(),
     getLesson: vi.fn(),
@@ -172,6 +191,7 @@ vi.mock('@/utils/api.ts', () => ({
 // Also mock the absolute path import
 vi.mock('/src/utils/api', () => ({
   sessionApi: mockSessionApi,
+  metricsApi: mockMetricsApi,
   grammarApi: {
     listLessons: vi.fn(),
     getLesson: vi.fn(),
@@ -195,6 +215,7 @@ vi.mock('/src/utils/api', () => ({
 // Mock with .ts extension for Vite resolution
 vi.mock('/src/utils/api.ts', () => ({
   sessionApi: mockSessionApi,
+  metricsApi: mockMetricsApi,
   grammarApi: {
     listLessons: vi.fn(),
     getLesson: vi.fn(),
@@ -218,6 +239,7 @@ vi.mock('/src/utils/api.ts', () => ({
 // Mock relative imports from components directory
 vi.mock('../utils/api', () => ({
   sessionApi: mockSessionApi,
+  metricsApi: mockMetricsApi,
   grammarApi: {
     listLessons: vi.fn(),
     getLesson: vi.fn(),
@@ -241,6 +263,7 @@ vi.mock('../utils/api', () => ({
 // Mock relative imports with .ts extension
 vi.mock('../utils/api.ts', () => ({
   sessionApi: mockSessionApi,
+  metricsApi: mockMetricsApi,
   grammarApi: {
     listLessons: vi.fn(),
     getLesson: vi.fn(),

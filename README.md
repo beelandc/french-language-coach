@@ -327,6 +327,8 @@ french-language-coach/
 │   │   │   │   └── SentenceTransformationExercise.tsx
 │   │   │   ├── Flashcard.tsx         # Vocabulary flashcard with flip animation (Phase 3, Issue #69)
 │   │   │   ├── ReviewSession.tsx     # Spaced repetition review session (Phase 3, Issue #69)
+│   │   │   ├── LLMMetrics/           # Admin LLM metrics dashboard (Issue #237): container, panels,
+│   │   │   │                         # SVG charts, metricsUtils.ts helpers, stories and Jest tests
 │   │   │   └── index.ts
 │   │   ├── pages/           # Page-level components (React Router routes)
 │   │   │   ├── IndexPage.tsx         # Modern landing page with central navigation hub (Issue #177)
@@ -338,6 +340,7 @@ french-language-coach/
 │   │   │   ├── LessonPage.tsx        # Grammar lessons browser (Phase 2)
 │   │   │   ├── LessonDetailPage.tsx  # Individual lesson viewer (Phase 2)
 │   │   │   ├── ReferencePage.tsx     # Grammar reference search page (Phase 2)
+│   │   │   ├── AdminMetricsPage.tsx  # Admin LLM metrics dashboard at /admin/metrics (Issue #237)
 │   │   │   ├── ExerciseBrowserPage.tsx # Exercise listing/browsing page (Phase 2)
 │   │   │   └── ExercisePage.tsx      # Individual exercise page (Phase 2)
 │   │   ├── hooks/           # Custom React hooks
@@ -434,6 +437,7 @@ french-language-coach/
 | `/vocabulary` | VocabularyPage | Browse all vocabulary decks (Phase 3, Issue #67) |
 | `/vocabulary/decks/:deckId` | DeckDetailPage | View deck details, progress, and card preview (Phase 3, Issue #201) |
 | `/vocabulary/decks/:deckId/cards` | DeckCardsPage | Browse all cards in a specific deck with pagination (Phase 3, Issue #201) |
+| `/admin/metrics` | AdminMetricsPage | Admin dashboard for LLM call metrics: summary, per-model breakdown, trends, call log, pricing (Issue #237). Linked from the page footer. No authentication until Phase 5 |
 
 ### Data Flow
 
@@ -518,6 +522,8 @@ Mistral uses JSON mode (`response_format={"type": "json_object"}`). Claude uses 
 Each provider call writes one row to the `llm_calls` table: feature, provider, model, session id, input tokens (uncached), output tokens, cache-read tokens, latency in ms, estimated cost in USD, status (`success` or `error`) and an error message. Logging is best-effort: a failure to write a row never breaks the user's request. `GET /metrics/llm` returns totals and p50/p95 latency per feature, provider and model.
 
 All metrics endpoints accept the same filters (date range, feature, provider, model, status). `GET /metrics/llm/calls` lists individual calls, `GET /metrics/llm/timeseries` gives hourly or daily statistics, and `GET /metrics/llm/pricing` shows the prices behind the estimates (Issue #236). `GET /metrics/llm/report` compares models within each feature against a baseline (Mistral by default) on reliability, latency, tokens and cost, as JSON, Markdown or CSV. It covers operational metrics only: feedback quality comes from the eval harness (#231). Live traffic is not a controlled experiment, so the report shows each model's sample size and date range and warns when they are too thin to compare.
+
+The **LLM metrics dashboard** at `/admin/metrics` (Issue #237) puts these endpoints in the browser. Shared filters (date range presets or a custom UTC date range, feature, provider, model, status) drive summary cards, a sortable per-model breakdown, charts of calls, cost and p50/p95 latency over time, a cost-per-call vs p95-latency comparison, a paginated call log (failed calls show their error, and calls link to their session), and the price table with check dates and sources. Filters live in the URL query string, so a view can be bookmarked. A small "Admin: LLM metrics" link in the page footer leads there. The page has **no authentication** until Phase 5, so anyone who can reach the app can see it; that's fine for the current single-user local setup.
 
 Costs are estimated from `data/llm_pricing.json`, the only place prices live. Each entry gives USD per million input, output and cache-read tokens, the date the price was checked (`checked_on`) and a `source` link (Claude Haiku 5.5 also has a higher tier for prompts over 100,000 tokens). Calls to a model missing from the table are logged with a `null` cost. When a vendor changes prices, update the values and `checked_on` in that file.
 
@@ -627,7 +633,7 @@ This project uses **GitHub Flow with Issue-Based Branching**: one dedicated bran
 
 ## Limitations
 
-- No user authentication
+- No user authentication (this includes the admin LLM metrics page at `/admin/metrics`)
 - Single-user only (all sessions stored in one database)
 - Requires an API key for each configured LLM provider (Mistral by default, Anthropic for Claude); both are paid services
 - LLM cost figures in `/metrics/llm` are estimates from the price table, not vendor invoices
@@ -740,6 +746,10 @@ npm run test:jest:watch
 - `frontend/src/sample.jest.test.tsx` - Jest setup verification tests
 - `frontend/src/components/Flashcard.jest.test.tsx` - Tests for Flashcard component (Issue #69)
 - `frontend/src/components/ReviewSession.jest.test.tsx` - Tests for ReviewSession component (Issue #69)
+- `frontend/src/components/LLMMetrics/*.jest.test.ts(x)` - Tests for the admin LLM metrics dashboard components and helpers (Issue #237)
+- `frontend/cypress/e2e/admin-metrics.cy.ts` - Cypress E2E test: load `/admin/metrics` and apply a filter (Issue #237)
+
+> **Jest polyfills:** `frontend/jest.polyfills.cjs` (Jest `setupFiles`) adds `TextEncoder`/`TextDecoder`, which jsdom lacks and react-router v7 needs, so Jest tests can render routed components.
 
 ## GitHub Actions CI/CD
 

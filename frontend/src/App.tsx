@@ -13,6 +13,7 @@ import ExerciseBrowserPage from './pages/ExerciseBrowserPage'
 import VocabularyPage from './pages/VocabularyPage'
 import DeckDetailPage from './pages/DeckDetailPage'
 import DeckCardsPage from './pages/DeckCardsPage'
+import AdminMetricsPage from './pages/AdminMetricsPage'
 
 function App() {
   return (
@@ -65,8 +66,17 @@ function App() {
           <Route path="/vocabulary/decks/:deckId/" element={<DeckDetailPage />} />
           <Route path="/vocabulary/decks/:deckId/cards" element={<DeckCardsPage />} />
           <Route path="/vocabulary/decks/:deckId/cards/" element={<DeckCardsPage />} />
+          {/* Admin LLM metrics dashboard (Issue #237). Not under /metrics: that prefix is proxied to the API */}
+          <Route path="/admin/metrics" element={<AdminMetricsPage />} />
+          <Route path="/admin/metrics/" element={<AdminMetricsPage />} />
         </Routes>
       </main>
+
+      <footer className="app-footer">
+        <Link to="/admin/metrics" data-testid="admin-metrics-link">
+          Admin: LLM metrics
+        </Link>
+      </footer>
     </div>
   )
 }

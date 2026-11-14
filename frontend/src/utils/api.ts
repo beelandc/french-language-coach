@@ -22,6 +22,13 @@ import type {
   ReviewResponse,
   DeckCreateRequest,
   DeckSummary,
+  // LLM metrics types (Issue #237)
+  LLMMetricsApiParams,
+  LLMMetricsResponse,
+  LLMCallLogResponse,
+  LLMTimeseriesResponse,
+  LLMTimeBucket,
+  LLMPriceTable,
 } from '../types/index'
 
 // Use relative paths for development (Vite proxy handles routing)
@@ -264,6 +271,48 @@ export const vocabularyApi = {
     }),
 }
 
+/**
+ * Build a query string from metrics filter params, skipping empty values.
+ * Returns '' when there are no parameters, otherwise '?a=1&b=2'.
+ */
+function metricsQuery(params: object, extra: Record<string, string | number> = {}): string {
+  const search = new URLSearchParams()
+  for (const [key, value] of Object.entries(extra)) {
+    search.set(key, String(value))
+  }
+  for (const [key, value] of Object.entries(params)) {
+    if (value !== undefined && value !== null && value !== '') {
+      search.set(key, String(value))
+    }
+  }
+  const text = search.toString()
+  return text ? `?${text}` : ''
+}
+
+// LLM call metrics API functions (Issue #237, endpoints from issues #228 and #236)
+export const metricsApi = {
+  // Totals and per feature/provider/model statistics
+  getSummary: (params: LLMMetricsApiParams = {}) =>
+    api<LLMMetricsResponse>(`/metrics/llm${metricsQuery(params)}`, { method: 'GET' }),
+
+  // Paginated call log, newest first
+  listCalls: (params: LLMMetricsApiParams = {}, page: number = 1, perPage: number = 20) =>
+    api<LLMCallLogResponse>(
+      `/metrics/llm/calls${metricsQuery(params, { page, per_page: perPage })}`,
+      { method: 'GET' }
+    ),
+
+  // Hourly or daily statistics per feature/provider/model
+  getTimeseries: (params: LLMMetricsApiParams = {}, bucket: LLMTimeBucket = 'day') =>
+    api<LLMTimeseriesResponse>(
+      `/metrics/llm/timeseries${metricsQuery(params, { bucket })}`,
+      { method: 'GET' }
+    ),
+
+  // Price table used for cost estimates (no filters)
+  getPricing: () => api<LLMPriceTable>('/metrics/llm/pricing', { method: 'GET' }),
+}
+
 // Re-export types for convenience
 export type {
   Scenario,
@@ -341,4 +390,21 @@ export type {
   DeckCardsPageProps,
   CardListState,
   CardSortOption,
+  // LLM metrics types (Issue #237)
+  LLMMetricsStats,
+  LLMMetricsGroup,
+  LLMMetricsResponse,
+  LLMCallLogItem,
+  LLMCallLogResponse,
+  LLMTimeBucket,
+  LLMTimeseriesPoint,
+  LLMTimeseriesResponse,
+  LLMPriceTier,
+  LLMLongContextTier,
+  LLMPriceEntry,
+  LLMPriceTable,
+  LLMMetricsRange,
+  LLMCallStatus,
+  LLMMetricsFilters,
+  LLMMetricsApiParams,
 } from '../types/index'
