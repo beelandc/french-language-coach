@@ -5,7 +5,7 @@ from database import get_db
 from models.session import Session as SessionModel
 from schemas.session import MessageRequest, MessageResponse
 from scenarios import get_scenario
-from services.mistral import mistral_client
+from services.llm import llm_service
 
 router = APIRouter(prefix="/sessions/{session_id}/messages", tags=["messages"])
 
@@ -33,8 +33,8 @@ async def send_message(
     user_message = {"role": "user", "content": message_request.content}
     messages.append(user_message)
 
-    ai_response = mistral_client.get_chat_response(
-        messages, scenario["system_prompt"]
+    ai_response = await llm_service.get_chat_response(
+        messages, scenario["system_prompt"], db=db, session_id=session.id
     )
 
     ai_message = {"role": "assistant", "content": ai_response}

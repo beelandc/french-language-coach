@@ -1,3 +1,3 @@
-from .mistral import MistralClient
+from .llm import LLMService, llm_service
 
-__all__ = ["MistralClient"]
+__all__ = ["LLMService", "llm_service"]

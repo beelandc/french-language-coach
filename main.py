@@ -13,6 +13,7 @@ from routers import (
     grammar_progress_router,
     vocabulary_router,
     card_review_router,
+    metrics_router,
 )
 from models.deck import Deck
 from sqlalchemy import select
@@ -86,6 +87,7 @@ app.include_router(grammar_router)
 app.include_router(grammar_progress_router)
 app.include_router(vocabulary_router)
 app.include_router(card_review_router)
+app.include_router(metrics_router)
 
 
 @app.get("/")

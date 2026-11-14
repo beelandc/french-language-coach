@@ -29,6 +29,8 @@ export default defineConfig({
       '/vocabulary/decks': 'http://localhost:8000',
       '/vocabulary/due': 'http://localhost:8000',
       '/vocabulary/review': 'http://localhost:8000',
+      // LLM call metrics API (issue #228)
+      '/metrics': 'http://localhost:8000',
       // Static files in development
       '/static': 'http://localhost:8000'
     }

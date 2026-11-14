@@ -1,8 +1,8 @@
 # French Language Coach
 
-French Language Coach is an app for practising French. It offers AI conversation practice (scenario role-play with end-of-session feedback), grammar lessons, a searchable grammar reference, interactive exercises, and spaced-repetition vocabulary flashcards. Its LLM features are designed to run on either the Mistral API or Anthropic's Claude API, chosen per feature: Mistral is the default today, and Claude support is being added in [#228](https://github.com/beelandc/french-language-coach/issues/228).
+French Language Coach is an app for practising French. It offers AI conversation practice (scenario role-play with end-of-session feedback), grammar lessons, a searchable grammar reference, interactive exercises, and spaced-repetition vocabulary flashcards.
 
-The repo also serves as a testbed for AI-assisted development and model selection. It is built with two coding agents, Mistral Vibe and Claude Code, which follow the same project instructions. Every AI-generated change goes through [SPDD](SPDD.md) (an analysis artifact, then a prompt artifact, then code) and CI (a single `status-gateway` check and an 80% test coverage target) before a human merges it. Next, we plan to compare Mistral and Claude on the app's own feedback workload, measuring accuracy, cost and latency (see the [Model evaluation milestone](https://github.com/beelandc/french-language-coach/milestone/6)); there are no results yet.
+The repo also serves as a testbed for AI-assisted development and model selection. It is built with two coding agents, Mistral Vibe and Claude Code, which follow the same project instructions. Every AI-generated change goes through [SPDD](SPDD.md) (an analysis artifact, then a prompt artifact, then code) and CI (a single `status-gateway` check and an 80% test coverage target) before a human merges it. The app's LLM features run on either the Mistral API or Anthropic's Claude API, chosen per feature in configuration: Mistral is the default, and Claude can be selected for chat, feedback or both (see [LLM Integration](#llm-integration)). Every LLM call is logged with token counts, latency and estimated cost. Next, we plan to compare Mistral and Claude on the app's own feedback workload, measuring accuracy, cost and latency (see the [Model evaluation milestone](https://github.com/beelandc/french-language-coach/milestone/6)); there are no results yet.
 
 ## What it does
 
@@ -117,6 +117,27 @@ Each scenario supports three difficulty levels that affect the AI's system promp
    ```
    MISTRAL_API_KEY=your_api_key_here
    ```
+   The defaults run both LLM features on Mistral. To use Claude for a feature, also add an Anthropic API key from [https://platform.claude.com/](https://platform.claude.com/) and set that feature's provider and model:
+   ```
+   ANTHROPIC_API_KEY=your_api_key_here
+   FEEDBACK_PROVIDER=anthropic
+   FEEDBACK_MODEL=claude-sonnet-5-5
+   ```
+
+   | Variable | Default | Description |
+   |----------|---------|-------------|
+   | `MISTRAL_API_KEY` | (none) | Mistral API key. Required when any feature uses `mistral` (the default). |
+   | `ANTHROPIC_API_KEY` | (none) | Anthropic API key. Required when any feature uses `anthropic`. |
+   | `CHAT_PROVIDER` | `mistral` | Provider for scenario chat and the opening greeting: `mistral` or `anthropic` (Claude). |
+   | `CHAT_MODEL` | `mistral-large-latest` | Model for chat, e.g. `claude-haiku-5-5` or `claude-sonnet-5-5` with `anthropic`. |
+   | `FEEDBACK_PROVIDER` | `mistral` | Provider for end-of-session feedback: `mistral` or `anthropic`. |
+   | `FEEDBACK_MODEL` | `mistral-large-latest` | Model for feedback. |
+   | `CLAUDE_CHAT_EFFORT` | `low` when unset | Optional Claude effort for chat: `low`, `medium`, `high`, `xhigh`, `max`. |
+   | `CLAUDE_FEEDBACK_EFFORT` | `medium` when unset | Optional Claude effort for feedback. |
+   | `LLM_PRICING_FILE` | `data/llm_pricing.json` | Optional path to the LLM price table used for cost estimates. |
+   | `DATABASE_URL` | `sqlite+aiosqlite:///./french_coach.db` | Database connection string. |
+
+   The app refuses to start if a configured provider has no API key.
 
 6. Run the backend server:
    ```bash
@@ -160,7 +181,7 @@ Each scenario supports three difficulty levels that affect the AI's system promp
 - **Frontend**: React 19 + TypeScript + Vite, React Router v6
 - **Storybook**: Component documentation at http://localhost:6006
 - **Database**: SQLite via SQLAlchemy (async)
-- **AI**: Mistral API (model: `mistral-large-latest`)
+- **AI**: Mistral API (default model: `mistral-large-latest`) and Anthropic Claude API (`claude-sonnet-5-5`, `claude-haiku-5-5`, optionally `claude-opus-5-5`), chosen per feature through the provider layer in `services/llm/`
 - **Package management**: pip + requirements.txt (backend), npm (frontend)
 
 ## Architecture
@@ -189,8 +210,8 @@ The application follows a clean separation of concerns with the following layers
 │                      FastAPI Backend                        │
 │  ┌──────────────┐   ┌──────────────┐   ┌──────────────┐     │
 │  │  routers/    │   │   services/  │   │   models/    │     │
-│  │  - REST API  │──▶│  - Mistral   │──▶│  - Sessions  │     │
-│  │  - Endpoints │   │  - Chat      │   │  - Messages  │     │
+│  │  - REST API  │──▶│  - llm/      │──▶│  - Sessions  │     │
+│  │  - Endpoints │   │  (providers) │   │  - llm_calls │     │
 │  └──────────────┘   └──────────────┘   └──────────────┘     │
 │  ┌──────────────┐  ┌──────────────┐                         │
 │  │   schemas/   │  │ scenarios.py │                         │
@@ -200,9 +221,9 @@ The application follows a clean separation of concerns with the following layers
               │                             │
               ▼                             ▼
 ┌──────────────────────────┐    ┌─────────────────────────────┐
-│    SQLite Database       │    │    Mistral API (External)   │ 
-│  - Session storage       │    │  - Chat completions         │
-│  - JSON fields           │    │  - Feedback generation      │
+│    SQLite Database       │    │  Mistral API / Claude API   │ 
+│  - Session storage       │    │  (External, per feature)    │
+│  - LLM call metrics      │    │  - Chat + feedback          │
 │                          │    │                             │
 └─────────────────────────-┘    └─────────────────────────────┘
 ```
@@ -212,13 +233,14 @@ The application follows a clean separation of concerns with the following layers
 ```
 french-language-coach/
 ├── main.py                  # FastAPI app entry point, mounts static files, includes routers
-├── config.py                # Settings loaded from .env (MISTRAL_API_KEY, DATABASE_URL)
+├── config.py                # Settings loaded from .env (API keys, per-feature LLM provider/model, DATABASE_URL)
 ├── database.py              # SQLite + SQLAlchemy async engine and session setup
 ├── models/
 │   ├── session.py           # SQLAlchemy ORM model for a conversation session
 │   ├── deck.py              # SQLAlchemy ORM model for vocabulary decks (Phase 3)
 │   ├── card.py              # SQLAlchemy ORM model for vocabulary cards with spaced repetition (Phase 3)
-│   └── card_review.py       # SQLAlchemy ORM model for card review tracking (Issue #59, Phase 3)
+│   ├── card_review.py       # SQLAlchemy ORM model for card review tracking (Issue #59, Phase 3)
+│   └── llm_call.py          # SQLAlchemy ORM model: one llm_calls row per LLM call (Issue #228)
 ├── schemas/
 │   ├── session.py           # Pydantic schemas for API request/response
 │   ├── grammar_lesson.py    # Pydantic models for grammar lesson validation (Phase 2)
@@ -226,9 +248,17 @@ french-language-coach/
 │   ├── grammar_exercise.py  # Pydantic models for grammar exercise validation (Phase 2)
 │   ├── vocabulary_card.py   # Pydantic models for vocabulary card schema (Issue #49, Phase 3)
 │   ├── vocabulary.py        # Pydantic schemas for vocabulary router endpoints (Phase 3)
-│   └── card_review.py       # Pydantic schemas for card review endpoints (Issue #59, Phase 3)
+│   ├── card_review.py       # Pydantic schemas for card review endpoints (Issue #59, Phase 3)
+│   └── llm_metrics.py       # Pydantic schemas for GET /metrics/llm (Issue #228)
 ├── services/
-│   └── mistral.py           # Mistral API client: chat completion + feedback generation
+│   ├── llm/                 # LLM provider layer (Issue #228)
+│   │   ├── base.py          # Provider interface (chat, feedback), LLMResult, shared feedback prompt + JSON schema
+│   │   ├── mistral_provider.py   # Mistral provider (async client)
+│   │   ├── anthropic_provider.py # Claude provider (async client, first-party Anthropic API)
+│   │   ├── pricing.py       # Loads the price table, estimates cost per call
+│   │   ├── recorder.py      # Writes one llm_calls row per call
+│   │   └── service.py       # LLMService: routes each feature to its configured provider/model, logs calls
+│   └── mistral.py           # Backward-compatibility alias for services.llm.llm_service
 ├── routers/
 │   ├── __init__.py
 │   ├── sessions.py          # POST /sessions (start), GET /sessions/{id}, DELETE /sessions/{id}
@@ -237,9 +267,11 @@ french-language-coach/
 │   ├── grammar.py           # GET /grammar/lessons/, /grammar/reference/, /grammar/exercises/ endpoints (Phase 2)
 │   ├── grammar_progress.py  # GET /grammar/progress/, POST /grammar/progress/ endpoints (Phase 2)
 │   ├── vocabulary.py        # GET /vocabulary/decks/, POST /vocabulary/decks/, GET /vocabulary/decks/{id}/cards/, POST /vocabulary/review/, GET /vocabulary/due/ (Phase 3)
-│   └── card_review.py       # POST /card-review/ endpoint for spaced repetition tracking (Issue #59, Phase 3)
+│   ├── card_review.py       # POST /card-review/ endpoint for spaced repetition tracking (Issue #59, Phase 3)
+│   └── metrics.py           # GET /metrics/llm: LLM call totals and latency percentiles (Issue #228)
 ├── scenarios.py             # Static list of 10 built-in conversation scenarios with system prompts
 ├── data/
+│   ├── llm_pricing.json     # LLM price table (USD per million tokens, with date checked and source link) (Issue #228)
 │   ├── grammar_lessons/     # Grammar lesson JSON files for Phase 2 (20+ lessons)
 │   ├── grammar/reference/   # Grammar reference entry JSON files for Phase 2 (50+ entries)
 │   ├── grammar/exercises/   # Grammar exercise JSON files for Phase 2 (5 exercises: fill-in-the-blank, multiple-choice, translation, conjugation, sentence-transformation)
@@ -338,9 +370,9 @@ french-language-coach/
 │   ├── settings.json        # Claude Code shared project permissions (committed)
 │   └── skills/              # Claude Code project skills: /spdd-analysis, /spdd-prompt
 ├── spdd/                    # SPDD artifacts: analysis/, prompt/, template/
-├── .env.example             # Template: MISTRAL_API_KEY=, DATABASE_URL=
+├── .env.example             # Template: API keys, per-feature LLM provider/model, DATABASE_URL
 ├── .gitignore               # Python, .env, __pycache__, *.db
-├── requirements.txt         # fastapi, uvicorn, sqlalchemy, aiosqlite, mistralai, python-dotenv, pydantic
+├── requirements.txt         # fastapi, uvicorn, sqlalchemy, aiosqlite, mistralai, anthropic, python-dotenv, pydantic
 ├── tests/                  # pytest tests for backend
 │   ├── __init__.py
 │   ├── conftest.py         # Pytest fixtures and configuration
@@ -361,6 +393,7 @@ french-language-coach/
 | POST | `/sessions/{id}/unlock` | Unlock a session to allow deletion. Requires matching `X-Client-ID` header unless lock has expired. Returns lock status. |
 | POST | `/sessions/{id}/messages` | Send a message, get AI reply. Uses session's difficulty level for system prompt |
 | POST | `/sessions/{id}/feedback` | Generate end-of-session feedback |
+| GET | `/metrics/llm` | LLM call metrics (Issue #228). Returns `totals` and `groups` (one per feature, provider and model), each with `calls`, `errors`, `input_tokens`, `output_tokens`, `cache_read_tokens`, `estimated_cost_usd` (sum over priced calls), `unpriced_calls`, `latency_p50_ms` and `latency_p95_ms` (nearest rank; `null` when there are no calls) |
 | GET | `/grammar/lessons/` | List all grammar lessons with pagination and filtering. Query parameters: `page` (default 1), `per_page` (default 10, max 100), `topic` (filter by grammatical topic), `difficulty` (filter by level: beginner, intermediate, advanced). Returns summary: id, title, topic, difficulty |
 | GET | `/grammar/lessons/{id}` | Get a specific grammar lesson by ID. Returns full lesson content including sections with titles, content, and examples. Returns 404 if lesson not found |
 | GET | `/grammar/reference/` | Search grammar reference entries with pagination and filtering. Query parameters: `page` (default 1), `per_page` (default 10, max 100), `q` (search query - case-insensitive partial match on term, definition, examples, common_pitfalls), `category` (filter by grammatical category), `difficulty` (filter by level: beginner, intermediate, advanced). Returns full reference entries |
@@ -399,10 +432,12 @@ french-language-coach/
 
 ### Data Flow
 
-1. **User selects scenario** → POST /sessions/ creates session record
-2. **User sends message** → POST /sessions/{id}/messages/ → Mistral chat API → AI response stored in session
-3. **User requests feedback** → POST /sessions/{id}/feedback/ → Mistral chat API with feedback prompt → structured JSON feedback stored in session
+1. **User selects scenario** → POST /sessions/ creates session record → chat provider generates the opening greeting
+2. **User sends message** → POST /sessions/{id}/messages/ → chat provider (Mistral by default) → AI response stored in session
+3. **User requests feedback** → POST /sessions/{id}/feedback/ → feedback provider (Mistral by default) with feedback prompt → structured JSON feedback stored in session
 4. **Frontend displays** conversation history and feedback report
+
+Each LLM call writes one row to `llm_calls` (tokens, latency, estimated cost, success or error), summarised by `GET /metrics/llm`.
 
 ### Session Locking (Issue #160)
 
@@ -420,11 +455,18 @@ This allows users to:
 - Continue incomplete sessions from SessionDetail
 - Prevent accidental deletion of sessions currently in use
 
-## Mistral LLM Integration
+## LLM Integration
 
-The application integrates with the Mistral API in two key ways:
+All LLM calls go through the provider layer in `services/llm/` (Issue #228). `LLMService` routes each feature to the provider and model set in configuration:
 
-### 1. Conversation Mode (`services/mistral.py:get_chat_response`)
+| Feature | Used by | Config |
+|---------|---------|--------|
+| `chat` | Opening greeting (`POST /sessions/`) and each turn (`POST /sessions/{id}/messages/`) | `CHAT_PROVIDER`, `CHAT_MODEL` |
+| `feedback` | End-of-session report (`POST /sessions/{id}/feedback/`) | `FEEDBACK_PROVIDER`, `FEEDBACK_MODEL` |
+
+Both providers use async SDK clients, so LLM calls don't block the FastAPI event loop. Defaults: both features on Mistral `mistral-large-latest`. Set a provider to `anthropic` to use Claude on the first-party Anthropic API (models in scope: `claude-sonnet-5-5`, `claude-haiku-5-5`, optionally `claude-opus-5-5`).
+
+### 1. Conversation Mode (`chat`)
 
 For each scenario, a system prompt instructs the model to:
 - Respond **only in French** (never break into English)
@@ -437,11 +479,11 @@ Example scenario prompt (from `scenarios.py`):
 Réponds UNIQUEMENT en français. Reste absolument dans ton rôle..."
 ```
 
-The conversation history (user + assistant messages) is sent to `mistral-large-latest` via the chat API, and the assistant's response is returned and stored.
+The conversation history (user + assistant messages) is sent with the scenario prompt, and the assistant's response is returned and stored. Claude requires the first message to come from the user, so when a history is empty (the greeting) or starts with the assistant's greeting, the Claude provider prepends a neutral turn, `(Début de la conversation.)`.
 
-### 2. Feedback Mode (`services/mistral.py:get_feedback`)
+### 2. Feedback Mode (`feedback`)
 
-When a user ends a session, the full conversation history is sent with a separate system prompt that instructs Mistral to analyze the conversation and return a **strictly JSON** response with this structure:
+When a user ends a session, the full conversation history is sent with a separate system prompt that asks the model to analyze the conversation and return a **strictly JSON** response with this structure:
 
 ```json
 {
@@ -457,7 +499,20 @@ When a user ends a session, the full conversation history is sent with a separat
 }
 ```
 
-The `response_format={"type": "json_object"}` parameter ensures Mistral returns valid JSON that can be directly parsed and stored in the database.
+Mistral uses JSON mode (`response_format={"type": "json_object"}`). Claude uses structured outputs (`output_config.format` with a JSON schema matching `FeedbackResponse`). If the output still can't be parsed, default scores are returned (until [#229](https://github.com/beelandc/french-language-coach/issues/229)) and the call is logged as an error.
+
+### Claude settings
+
+- **Effort** is set explicitly per feature so models with different default efforts are compared on equal terms: `low` for chat and `medium` for feedback, overridable with `CLAUDE_CHAT_EFFORT` / `CLAUDE_FEEDBACK_EFFORT`.
+- Only the text of the reply is used; thinking blocks are ignored.
+- A refusal (`stop_reason: "refusal"`) raises an error and is logged; there is no automatic fallback to a different model.
+- Prompt caching is not enabled.
+
+### Cost and latency logging
+
+Each provider call writes one row to the `llm_calls` table: feature, provider, model, session id, input tokens (uncached), output tokens, cache-read tokens, latency in ms, estimated cost in USD, status (`success` or `error`) and an error message. Logging is best-effort: a failure to write a row never breaks the user's request. `GET /metrics/llm` returns totals and p50/p95 latency per feature, provider and model.
+
+Costs are estimated from `data/llm_pricing.json`, the only place prices live. Each entry gives USD per million input, output and cache-read tokens, the date the price was checked (`checked_on`) and a `source` link (Claude Haiku 5.5 also has a higher tier for prompts over 100,000 tokens). Calls to a model missing from the table are logged with a `null` cost. When a vendor changes prices, update the values and `checked_on` in that file.
 
 ## Why Mistral
 
@@ -567,7 +622,8 @@ This project uses **GitHub Flow with Issue-Based Branching**: one dedicated bran
 
 - No user authentication
 - Single-user only (all sessions stored in one database)
-- Requires Mistral API key (paid service)
+- Requires an API key for each configured LLM provider (Mistral by default, Anthropic for Claude); both are paid services
+- LLM cost figures in `/metrics/llm` are estimates from the price table, not vendor invoices
 
 ## Running Tests
 

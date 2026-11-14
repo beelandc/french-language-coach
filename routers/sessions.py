@@ -11,7 +11,7 @@ from models.session import Session as SessionModel
 from pydantic import BaseModel
 from schemas.session import SessionCreate, SessionResponse, SessionListResponse, SessionSummary, PaginationInfo
 from scenarios import get_scenario, VALID_DIFFICULTIES, SCENARIOS
-from services.mistral import mistral_client
+from services.llm import llm_service
 
 router = APIRouter(prefix="/sessions", tags=["sessions"])
 
@@ -52,8 +52,11 @@ async def create_session(
     messages = []
     try:
         # Generate AI greeting using the scenario's system prompt with empty message history
-        ai_greeting = mistral_client.get_chat_response(
-            messages, scenario_with_difficulty["system_prompt"]
+        ai_greeting = await llm_service.get_chat_response(
+            messages,
+            scenario_with_difficulty["system_prompt"],
+            db=db,
+            session_id=new_session.id,
         )
         # Add AI greeting as the first message
         initial_message = {"role": "assistant", "content": ai_greeting}
