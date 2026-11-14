@@ -926,3 +926,134 @@ export const CARD_SORT_OPTIONS: { value: CardSortOption; label: string }[] = [
   { value: 'next-review-asc', label: 'Next Review (Soon-Later)' },
   { value: 'next-review-desc', label: 'Next Review (Later-Soon)' },
 ];
+
+// ============================================================================
+// LLM Metrics types (Issue #237, backend API from issues #228 and #236)
+// Mirror schemas/llm_metrics.py and services/llm/pricing.py.
+// Datetimes are naive UTC strings (no "Z"); parse them with parseUtc().
+// ============================================================================
+
+/** Aggregated statistics over a set of LLM calls. */
+export interface LLMMetricsStats {
+  calls: number
+  errors: number
+  input_tokens: number
+  output_tokens: number
+  cache_read_tokens: number
+  /** Sum of estimated costs; calls without a price are excluded. */
+  estimated_cost_usd: number
+  /** Calls whose model had no price entry. */
+  unpriced_calls: number
+  latency_p50_ms: number | null
+  latency_p95_ms: number | null
+}
+
+/** Statistics for one feature, provider and model. */
+export interface LLMMetricsGroup extends LLMMetricsStats {
+  feature: string
+  provider: string
+  model: string
+}
+
+/** Response for GET /metrics/llm. */
+export interface LLMMetricsResponse {
+  totals: LLMMetricsStats
+  groups: LLMMetricsGroup[]
+}
+
+/** One row of the call log. */
+export interface LLMCallLogItem {
+  id: number
+  created_at: string | null
+  feature: string
+  provider: string
+  model: string
+  session_id: number | null
+  input_tokens: number
+  output_tokens: number
+  cache_read_tokens: number
+  latency_ms: number
+  estimated_cost_usd: number | null
+  status: string
+  error_message: string | null
+}
+
+/** Response for GET /metrics/llm/calls (newest first). */
+export interface LLMCallLogResponse {
+  calls: LLMCallLogItem[]
+  pagination: PaginationInfo
+}
+
+/** Time-series bucket size. */
+export type LLMTimeBucket = 'hour' | 'day'
+
+/** Statistics for one time bucket and one feature, provider and model. */
+export interface LLMTimeseriesPoint extends LLMMetricsGroup {
+  bucket_start: string
+}
+
+/** Response for GET /metrics/llm/timeseries (only buckets with calls). */
+export interface LLMTimeseriesResponse {
+  bucket: LLMTimeBucket
+  points: LLMTimeseriesPoint[]
+}
+
+/** Prices in USD per million tokens. */
+export interface LLMPriceTier {
+  input_per_mtok: number
+  output_per_mtok: number
+  cache_read_per_mtok: number
+}
+
+/** Higher prices for prompts over threshold_tokens. */
+export interface LLMLongContextTier extends LLMPriceTier {
+  threshold_tokens: number
+}
+
+/** Prices for one provider and model. */
+export interface LLMPriceEntry extends LLMPriceTier {
+  provider: string
+  model: string
+  long_context?: LLMLongContextTier | null
+  checked_on: string
+  source: string
+  notes?: string | null
+}
+
+/** Response for GET /metrics/llm/pricing. */
+export interface LLMPriceTable {
+  currency: string
+  unit: string
+  description?: string | null
+  models: LLMPriceEntry[]
+}
+
+/** Date range choice in the metrics filter bar. */
+export type LLMMetricsRange = '24h' | '7d' | '30d' | 'all' | 'custom'
+
+/** Call status filter values. */
+export type LLMCallStatus = 'success' | 'error'
+
+/**
+ * Dashboard filter state, as stored in the URL query string.
+ * dateFrom/dateTo (YYYY-MM-DD, UTC days) are only used with range 'custom'.
+ */
+export interface LLMMetricsFilters {
+  range: LLMMetricsRange
+  dateFrom?: string
+  dateTo?: string
+  feature?: string
+  provider?: string
+  model?: string
+  status?: LLMCallStatus
+}
+
+/** Query parameters shared by the metrics endpoints. */
+export interface LLMMetricsApiParams {
+  date_from?: string
+  date_to?: string
+  feature?: string
+  provider?: string
+  model?: string
+  status?: LLMCallStatus
+}

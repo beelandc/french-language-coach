@@ -66,7 +66,7 @@ jobs:
         working-directory: frontend
         run: |
           # Run Cypress tests headlessly
-          npx cypress run --browser chrome --spec 'cypress/e2e/conversation-flow.cy.ts'
+          npx cypress run --browser chrome --spec 'cypress/e2e/conversation-flow.cy.ts,cypress/e2e/admin-metrics.cy.ts'
         env:
           # Configuration for headless testing
           CYPRESS_baseUrl: http://localhost:5173
@@ -128,4 +128,4 @@ jobs:
       - name: Run Cypress on ${{ matrix.browser }}
         working-directory: frontend
         run: |
-          npx cypress run --browser ${{ matrix.browser }} --spec 'cypress/e2e/conversation-flow.cy.ts'
+          npx cypress run --browser ${{ matrix.browser }} --spec 'cypress/e2e/conversation-flow.cy.ts,cypress/e2e/admin-metrics.cy.ts'
