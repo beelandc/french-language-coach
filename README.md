@@ -249,12 +249,13 @@ french-language-coach/
 │   ├── vocabulary_card.py   # Pydantic models for vocabulary card schema (Issue #49, Phase 3)
 │   ├── vocabulary.py        # Pydantic schemas for vocabulary router endpoints (Phase 3)
 │   ├── card_review.py       # Pydantic schemas for card review endpoints (Issue #59, Phase 3)
-│   └── llm_metrics.py       # Pydantic schemas for GET /metrics/llm (Issue #228)
+│   └── llm_metrics.py       # Pydantic schemas for the /metrics/llm endpoints (Issues #228, #236)
 ├── services/
 │   ├── llm/                 # LLM provider layer (Issue #228)
 │   │   ├── base.py          # Provider interface (chat, feedback), LLMResult, shared feedback prompt + JSON schema
 │   │   ├── mistral_provider.py   # Mistral provider (async client)
 │   │   ├── anthropic_provider.py # Claude provider (async client, first-party Anthropic API)
+│   │   ├── metrics.py       # Metrics filters, summaries, time series, model comparison report + Markdown/CSV (Issue #236)
 │   │   ├── pricing.py       # Loads the price table, estimates cost per call
 │   │   ├── recorder.py      # Writes one llm_calls row per call
 │   │   └── service.py       # LLMService: routes each feature to its configured provider/model, logs calls
@@ -268,7 +269,7 @@ french-language-coach/
 │   ├── grammar_progress.py  # GET /grammar/progress/, POST /grammar/progress/ endpoints (Phase 2)
 │   ├── vocabulary.py        # GET /vocabulary/decks/, POST /vocabulary/decks/, GET /vocabulary/decks/{id}/cards/, POST /vocabulary/review/, GET /vocabulary/due/ (Phase 3)
 │   ├── card_review.py       # POST /card-review/ endpoint for spaced repetition tracking (Issue #59, Phase 3)
-│   └── metrics.py           # GET /metrics/llm: LLM call totals and latency percentiles (Issue #228)
+│   └── metrics.py           # GET /metrics/llm (+ /calls, /timeseries, /pricing, /report): LLM call metrics (Issues #228, #236)
 ├── scenarios.py             # Static list of 10 built-in conversation scenarios with system prompts
 ├── data/
 │   ├── llm_pricing.json     # LLM price table (USD per million tokens, with date checked and source link) (Issue #228)
@@ -393,7 +394,11 @@ french-language-coach/
 | POST | `/sessions/{id}/unlock` | Unlock a session to allow deletion. Requires matching `X-Client-ID` header unless lock has expired. Returns lock status. |
 | POST | `/sessions/{id}/messages` | Send a message, get AI reply. Uses session's difficulty level for system prompt |
 | POST | `/sessions/{id}/feedback` | Generate end-of-session feedback |
-| GET | `/metrics/llm` | LLM call metrics (Issue #228). Returns `totals` and `groups` (one per feature, provider and model), each with `calls`, `errors`, `input_tokens`, `output_tokens`, `cache_read_tokens`, `estimated_cost_usd` (sum over priced calls), `unpriced_calls`, `latency_p50_ms` and `latency_p95_ms` (nearest rank; `null` when there are no calls) |
+| GET | `/metrics/llm` | LLM call metrics (Issue #228). Returns `totals` and `groups` (one per feature, provider and model), each with `calls`, `errors`, `input_tokens`, `output_tokens`, `cache_read_tokens`, `estimated_cost_usd` (sum over priced calls), `unpriced_calls`, `latency_p50_ms` and `latency_p95_ms` (nearest rank; `null` when there are no calls). Accepts the shared metrics filters (Issue #236): `date_from`, `date_to` (inclusive, UTC; `YYYY-MM-DD` covers the whole day, or an ISO 8601 datetime; URL-encode a `+` offset as `%2B` or use `Z`), `feature`, `provider`, `model` (exact match) and `status` (`success` or `error`). Invalid dates or `date_from` after `date_to` return 400; an unknown `status` returns 422 |
+| GET | `/metrics/llm/calls` | LLM call log, newest first (Issue #236). Query parameters: `page` (default 1), `per_page` (default 10, max 100) and the shared metrics filters. Returns `calls` (id, created_at, feature, provider, model, session_id, input/output/cache-read tokens, latency_ms, estimated_cost_usd, status, error_message) and `pagination` (same shape as `/sessions/`). A page past the end returns an empty `calls` list |
+| GET | `/metrics/llm/timeseries` | LLM call statistics over time (Issue #236). Query parameters: `bucket` (`hour` or `day`, default `day`) and the shared metrics filters. Returns `points`, one per bucket and feature/provider/model that has calls (empty buckets are omitted), each with `bucket_start` and the same statistics as `/metrics/llm` groups |
+| GET | `/metrics/llm/pricing` | The price table from `data/llm_pricing.json` used for cost estimates (Issue #236): currency, unit and per-model prices with `checked_on`, `source`, notes and any long-context tier |
+| GET | `/metrics/llm/report` | Model comparison report (Issue #236). Query parameters: `baseline` (`provider:model`, default `mistral:mistral-large-latest`; 400 if malformed), `format` (`json` default, `markdown` or `csv`, the last two as a file download) and the shared metrics filters. Per feature, one row per provider and model: calls, errors, error rate, refusals, mean/p50/p95 latency and mean input/output tokens (successful calls only), mean cost per call, cost per 1,000 calls, total cost, first/last call, and deltas against the baseline (percent; error rate in percentage points). Metadata: generation time, filters, date range covered, price check dates and sources, notes and warnings (fewer than 20 calls, unpriced calls, models seen in only part of the date range, missing baseline) |
 | GET | `/grammar/lessons/` | List all grammar lessons with pagination and filtering. Query parameters: `page` (default 1), `per_page` (default 10, max 100), `topic` (filter by grammatical topic), `difficulty` (filter by level: beginner, intermediate, advanced). Returns summary: id, title, topic, difficulty |
 | GET | `/grammar/lessons/{id}` | Get a specific grammar lesson by ID. Returns full lesson content including sections with titles, content, and examples. Returns 404 if lesson not found |
 | GET | `/grammar/reference/` | Search grammar reference entries with pagination and filtering. Query parameters: `page` (default 1), `per_page` (default 10, max 100), `q` (search query - case-insensitive partial match on term, definition, examples, common_pitfalls), `category` (filter by grammatical category), `difficulty` (filter by level: beginner, intermediate, advanced). Returns full reference entries |
@@ -511,6 +516,8 @@ Mistral uses JSON mode (`response_format={"type": "json_object"}`). Claude uses 
 ### Cost and latency logging
 
 Each provider call writes one row to the `llm_calls` table: feature, provider, model, session id, input tokens (uncached), output tokens, cache-read tokens, latency in ms, estimated cost in USD, status (`success` or `error`) and an error message. Logging is best-effort: a failure to write a row never breaks the user's request. `GET /metrics/llm` returns totals and p50/p95 latency per feature, provider and model.
+
+All metrics endpoints accept the same filters (date range, feature, provider, model, status). `GET /metrics/llm/calls` lists individual calls, `GET /metrics/llm/timeseries` gives hourly or daily statistics, and `GET /metrics/llm/pricing` shows the prices behind the estimates (Issue #236). `GET /metrics/llm/report` compares models within each feature against a baseline (Mistral by default) on reliability, latency, tokens and cost, as JSON, Markdown or CSV. It covers operational metrics only: feedback quality comes from the eval harness (#231). Live traffic is not a controlled experiment, so the report shows each model's sample size and date range and warns when they are too thin to compare.
 
 Costs are estimated from `data/llm_pricing.json`, the only place prices live. Each entry gives USD per million input, output and cache-read tokens, the date the price was checked (`checked_on`) and a `source` link (Claude Haiku 5.5 also has a higher tier for prompts over 100,000 tokens). Calls to a model missing from the table are logged with a `null` cost. When a vendor changes prices, update the values and `checked_on` in that file.
 

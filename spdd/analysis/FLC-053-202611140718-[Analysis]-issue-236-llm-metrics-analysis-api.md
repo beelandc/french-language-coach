@@ -93,7 +93,7 @@ The Model evaluation milestone needs to compare Mistral and Claude on live traff
 
 - [ ] Frontend dashboard (#237) and report UI (#238)
 - [ ] Eval harness and quality/accuracy metrics (#231); including eval results in the report (#232)
-- [ ] **A `source` column on `llm_calls`** to separate eval traffic from live traffic. Recommended deferral, pending human approval (see Key Design Decisions)
+- [ ] **A `source` column on `llm_calls`** to separate eval traffic from live traffic. Deferred to #231 (approved by the user, 2026-11-14; see Key Design Decisions)
 - [ ] Changes to how calls are recorded (`recorder.py`, `service.py`), including a dedicated `refusal` status
 - [ ] Retroactive re-pricing of stored rows when the price table changes; the report uses the stored `estimated_cost_usd`
 - [ ] Authentication or access control (Phase 5, `VISION.md:223`)
@@ -210,13 +210,13 @@ The Model evaluation milestone needs to compare Mistral and Claude on live traff
 
 | Decision | Trade-offs | Recommendation |
 |----------|------------|----------------|
-| **`source` column on `llm_calls` to separate eval traffic (#231)** | Adding it now future-proofs filtering. But it is a schema change with no migration tool: `Base.metadata.create_all` (`main.py:76`) never adds columns to an existing table, so every existing `french_coach.db` would break (`no such column`) until manually altered or recreated. #231 has not decided whether eval calls go through `record_call` at all (it can pass `db=None`, or use its own DB). | **Defer to #231** and do not change the schema here. #231 owns the eval traffic and can add the column with a migration step once its design is known. The filter layer (`MetricsFilters`) is built so adding a `source` filter later is one field. **Needs human approval.** |
+| **`source` column on `llm_calls` to separate eval traffic (#231)** | Adding it now future-proofs filtering. But it is a schema change with no migration tool: `Base.metadata.create_all` (`main.py:76`) never adds columns to an existing table, so every existing `french_coach.db` would break (`no such column`) until manually altered or recreated. #231 has not decided whether eval calls go through `record_call` at all (it can pass `db=None`, or use its own DB). | **Defer to #231** and do not change the schema here. #231 owns the eval traffic and can add the column with a migration step once its design is known. The filter layer (`MetricsFilters`) is built so adding a `source` filter later is one field. **Approved by the user, 2026-11-14.** |
 | Where aggregation runs | SQL `GROUP BY` is faster, but SQLite has no percentile function, and #228 already aggregates in Python. | Filter in SQL (`WHERE`), aggregate in Python, as #228 does. Fine at testbed scale; noted as a risk. |
 | Shared filter definition | Repeating six `Query` params on four handlers drifts; a dependency keeps one definition and one validation point. | One FastAPI dependency returning `MetricsFilters`. |
 | Date parsing | `datetime` query params turn `2026-11-13` into midnight, so `date_to=2026-11-13` would silently exclude that day, contradicting "inclusive". | Parse the raw string in the dependency: date-only → whole day; datetime → exact; aware → converted to UTC naive; unparseable → 400 with the bad value. Internally use `start <= created_at < end`. |
 | Validation status codes | Issue allows 400 or 422. | Enumerated values (`status`, `bucket`, `format`, `page`, `per_page`) use `Literal`/`Query` constraints → FastAPI 422 with allowed values. Cross-field and custom-format errors (date order, unparseable date, bad baseline) → 400, matching `routers/sessions.py:112-116`. |
 | `feature`/`provider` validation | Restricting to `chat|feedback`, `mistral|anthropic` gives clearer errors but must change whenever a feature or provider is added (e.g. eval). | Free text, exact match. Only `status` is enumerated (it is a closed set in the model). |
-| Report latency/tokens basis | All calls matches `GET /metrics/llm`; successful calls gives a fairer serving comparison (timeouts and instant auth failures skew latency; failed calls have no output tokens). | Successful calls only for latency and token means; error rate shown alongside; basis stated in metadata. **Flagged for the user; easy to flip.** |
+| Report latency/tokens basis | All calls matches `GET /metrics/llm`; successful calls gives a fairer serving comparison (timeouts and instant auth failures skew latency; failed calls have no output tokens). | Successful calls only for latency and token means; error rate shown alongside; basis stated in metadata. **Approved by the user, 2026-11-14.** |
 | Error-rate delta | Relative change of small rates is noisy (1% → 2% = +100%). | Percentage points. |
 | Time series zero-filling | Zero-filled points make charts easy but multiply rows (groups × buckets) and need a range when no dates are given. | Sparse points; #237 can fill gaps client-side. Document it. |
 | Pricing loader | Reading the JSON again in the router duplicates path/validation logic. | `load_price_document()` in `pricing.py`, cached; `load_price_table()` derives from it. Existing pricing tests keep passing. |
@@ -242,8 +242,8 @@ The Model evaluation milestone needs to compare Mistral and Claude on live traff
 
 | Ambiguity | What needs clarification | Recommendation |
 |-----------|-------------------------|----------------|
-| `source` column for eval traffic | Add now or defer? | Defer to #231 (schema change without a migration path). **User decision.** |
-| Latency/token basis in the report | All calls or successful calls? | Successful calls, stated in metadata. **User decision (default chosen if no answer).** |
+| `source` column for eval traffic | Add now or defer? | **Resolved (user, 2026-11-14):** defer to #231. |
+| Latency/token basis in the report | All calls or successful calls? | **Resolved (user, 2026-11-14):** successful calls only, stated in metadata. |
 | "Refusal count" | There is no refusal status; how to count? | Count `error` rows whose `error_message` starts with `refusal`. Mistral reports none; the report says so. |
 | `date_to` inclusive with date-only values | Whole day or midnight? | Whole day. |
 | Which deltas | Issue gives latency and cost examples. | Mean/p50/p95 latency, mean input/output tokens, mean cost per call (relative %), error rate (percentage points). |
@@ -334,11 +334,11 @@ FastAPI router (`routers/metrics.py`, prefix `/metrics`, already registered in `
 - PEP 8, type hints, docstrings on public functions (match `services/llm/*.py` style)
 - 80%+ coverage on new code; pytest with `client`/`test_db` fixtures from `tests/conftest.py`; Given/When/Then comments as in `tests/test_metrics_router.py`
 - README updated in the same PR (API table, project structure, LLM metrics paragraph)
-- No new dependencies; no schema changes (pending the `source` decision)
+- No new dependencies; no schema changes (`source` column deferred to #231)
 - Commit `feat(#236): …` on `feature/issue-236-llm-metrics-analysis-api`
 
 ### Omissions
-Frontend (#237, #238); eval harness and quality metrics (#231, #232); `source` column (deferred, pending approval); changes to call recording; a `refusal` status; re-pricing stored rows; auth; significance testing; zero-filled time series; an index on `created_at`.
+Frontend (#237, #238); eval harness and quality metrics (#231, #232); `source` column (deferred to #231); changes to call recording; a `refusal` status; re-pricing stored rows; auth; significance testing; zero-filled time series; an index on `created_at`.
 
 ### Notes
 - Seed test rows with explicit `created_at` (the `LLMCall` constructor accepts it) to make date and bucket tests deterministic.

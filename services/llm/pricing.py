@@ -72,8 +72,8 @@ def _resolve(path: str) -> Path:
 
 
 @lru_cache(maxsize=None)
-def load_price_table(path: Optional[str] = None) -> dict[tuple[str, str], PriceEntry]:
-    """Load and validate the price table, keyed by ``(provider, model)``.
+def load_price_document(path: Optional[str] = None) -> PriceTable:
+    """Load and validate the whole price table file (issue #236).
 
     Args:
         path: Price table path; defaults to ``settings.LLM_PRICING_FILE``.
@@ -84,13 +84,28 @@ def load_price_table(path: Optional[str] = None) -> dict[tuple[str, str], PriceE
     """
     file_path = _resolve(path or settings.LLM_PRICING_FILE)
     table = PriceTable(**json.loads(file_path.read_text(encoding="utf-8")))
-    entries: dict[tuple[str, str], PriceEntry] = {}
+    seen: set[tuple[str, str]] = set()
     for entry in table.models:
         key = (entry.provider, entry.model)
-        if key in entries:
+        if key in seen:
             raise ValueError(f"Duplicate price entry for {entry.provider}/{entry.model}")
-        entries[key] = entry
-    return entries
+        seen.add(key)
+    return table
+
+
+@lru_cache(maxsize=None)
+def load_price_table(path: Optional[str] = None) -> dict[tuple[str, str], PriceEntry]:
+    """Load and validate the price table, keyed by ``(provider, model)``.
+
+    Args:
+        path: Price table path; defaults to ``settings.LLM_PRICING_FILE``.
+
+    Raises:
+        FileNotFoundError: If the file does not exist.
+        ValueError: If the file is invalid or lists a provider/model twice.
+    """
+    table = load_price_document(path)
+    return {(entry.provider, entry.model): entry for entry in table.models}
 
 
 def estimate_cost_usd(
