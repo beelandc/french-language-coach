@@ -179,10 +179,12 @@ Local (macOS, Node from the developer machine), 2026-11-13:
 - `npx playwright install chromium` → Chrome Headless Shell 156.0.8078.4 (chromium-headless-shell v1248) downloaded
 - `npm run test` → **21 test files passed, 115 tests passed**
 
-CI: see the PR's Vitest Unit Tests (20) and (22) runs (Ubuntu 26.04).
+CI (PR #240, Vitest run 43550896957, `ubuntu-latest` = Ubuntu 26.04 "resolute"):
+- "Install Playwright Browsers" succeeded on Node 20 and 22, with no "not officially supported" warning; Chrome for Testing 156.0.8078.4 (chromium v1248) downloaded
+- "Run Vitest Tests": **21 files, 115 tests passed** on Node 20 and 22; "Run Vitest Tests with Coverage" (Node 20): 21 files, 115 tests passed
 
 - [x] AC1: `playwright`/`playwright-core` 1.64.1 (supports `ubuntu26.04-x64`)
-- [ ] AC2: both Vitest jobs pass on the PR (pending CI run)
+- [x] AC2: both Vitest jobs pass on the PR (Node 20 and 22)
 - [x] AC3: `npm run test` passes locally
 - [x] AC4: no other dependency changes
 - [x] Code follows project conventions
