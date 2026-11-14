@@ -510,6 +510,8 @@ When a user ends a session, the full conversation history is sent with a separat
 
 Mistral uses JSON mode (`response_format={"type": "json_object"}`). Claude uses structured outputs (`output_config.format` with a JSON schema matching `FeedbackResponse`). If the output still can't be parsed, default scores are returned (until [#229](https://github.com/beelandc/french-language-coach/issues/229)) and the call is logged as an error.
 
+Mistral can return a reply as a list of content chunks, with a reasoning (`thinking`) chunk before the text. For both chat and feedback, only the text chunks are used and reasoning is never stored or shown (Issue #243). A Mistral response with no text at all raises an `empty_response` error and is logged as a failed call. It doesn't fall back to default scores.
+
 ### Claude settings
 
 - **Effort** is set explicitly per feature so models with different default efforts are compared on equal terms: `low` for chat and `medium` for feedback, overridable with `CLAUDE_CHAT_EFFORT` / `CLAUDE_FEEDBACK_EFFORT`.

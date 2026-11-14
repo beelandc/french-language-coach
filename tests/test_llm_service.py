@@ -239,10 +239,18 @@ class TestFeedback:
         assert "expected a JSON object" in row.error_message
 
     @pytest.mark.asyncio
-    async def test_none_content_falls_back(self):
-        client = make_mistral_client(make_mistral_response(None))
+    async def test_no_text_content_raises_and_records_error(self, test_db):
+        # Issue #243: a response with no text is a failed call, not fallback feedback
+        client = make_mistral_client(make_mistral_response(None, prompt_tokens=80, completion_tokens=10))
         service = LLMService(settings=make_settings(), providers={"mistral": MistralProvider("m", client=client)})
-        assert await service.get_feedback(HISTORY) == FEEDBACK_FALLBACK
+
+        with pytest.raises(LLMProviderError, match="^empty_response"):
+            await service.get_feedback(HISTORY, db=test_db, session_id=5)
+
+        [row] = await all_calls(test_db)
+        assert (row.feature, row.status, row.session_id) == ("feedback", "error", 5)
+        assert row.error_message == "empty_response: Mistral returned no text content"
+        assert (row.input_tokens, row.output_tokens) == (80, 10)
 
     @pytest.mark.asyncio
     async def test_fallback_copy_is_independent(self):
