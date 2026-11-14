@@ -24,7 +24,11 @@ def make_mistral_response(
     details_as_dict: bool = True,
     usage: Any = "default",
 ) -> SimpleNamespace:
-    """Build an object shaped like a Mistral chat completion response."""
+    """Build an object shaped like a Mistral chat completion response.
+
+    ``text`` becomes ``message.content`` unchanged, so it may be a string, a list of
+    content chunks (SDK ``TextChunk``/``ThinkChunk`` objects or dicts) or ``None``.
+    """
     if usage == "default":
         details = None
         if cached_tokens is not None:

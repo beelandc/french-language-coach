@@ -4,6 +4,7 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 import pytest
+from mistralai.client.models import TextChunk, ThinkChunk
 
 from services.llm.anthropic_provider import (
     CONVERSATION_START,
@@ -17,7 +18,7 @@ from services.llm.base import (
     LLMProviderError,
     build_transcript,
 )
-from services.llm.mistral_provider import MistralProvider
+from services.llm.mistral_provider import EMPTY_RESPONSE_ERROR, MistralProvider
 from tests.llm_fakes import (
     VALID_FEEDBACK_JSON,
     make_claude_client,
@@ -30,6 +31,7 @@ HISTORY = [
     {"role": "assistant", "content": "Bonjour ! Que désirez-vous ?"},
     {"role": "user", "content": "Un café, s'il vous plaît."},
 ]
+THINKING = "Je réfléchis à la réponse…"
 
 
 class TestBuildTranscript:
@@ -117,6 +119,109 @@ class TestMistralProvider:
         with patch("services.llm.mistral_provider.Mistral") as sdk:
             MistralProvider(api_key="secret")
         sdk.assert_called_once_with(api_key="secret")
+
+
+async def mistral_chat_text(content, **usage):
+    """Run ``MistralProvider.chat`` against a mocked response with ``content``."""
+    client = make_mistral_client(make_mistral_response(content, **usage))
+    return await MistralProvider(api_key="t", client=client).chat([], "SYS", "m")
+
+
+def think(text: str = THINKING) -> ThinkChunk:
+    return ThinkChunk(thinking=[TextChunk(text=text)])
+
+
+class TestMistralContentChunks:
+    """Issue #243: chunked ``message.content`` (reasoning models) yields only final text."""
+
+    @pytest.mark.asyncio
+    async def test_plain_string_unchanged(self):
+        result = await mistral_chat_text("Très bien.")
+        assert result.text == "Très bien."
+
+    @pytest.mark.asyncio
+    async def test_empty_plain_string_unchanged(self):
+        # Plain strings behave exactly as before #243, even when empty
+        result = await mistral_chat_text("")
+        assert result.text == ""
+
+    @pytest.mark.asyncio
+    async def test_text_and_thinking_sdk_chunks_return_text_only(self):
+        # Given a reasoning response made of real SDK chunk objects
+        content = [think(), TextChunk(text="Bienvenue !")]
+
+        # When
+        result = await mistral_chat_text(content)
+
+        # Then only the final text is returned, as a plain str
+        assert result.text == "Bienvenue !"
+        assert isinstance(result.text, str)
+        assert THINKING not in result.text
+
+    @pytest.mark.asyncio
+    async def test_text_and_thinking_dict_chunks_return_text_only(self):
+        content = [
+            {"type": "thinking", "thinking": [{"type": "text", "text": THINKING}]},
+            {"type": "text", "text": "Bonjour"},
+        ]
+        result = await mistral_chat_text(content)
+        assert result.text == "Bonjour"
+
+    @pytest.mark.asyncio
+    async def test_multiple_text_chunks_joined_in_order(self):
+        content = [TextChunk(text="Bon"), think(), TextChunk(text="jour"), {"type": "text", "text": " !"}]
+        result = await mistral_chat_text(content)
+        assert result.text == "Bonjour !"
+
+    @pytest.mark.asyncio
+    async def test_other_chunk_types_and_malformed_text_chunks_skipped(self):
+        content = [
+            {"type": "image_url", "image_url": "https://example.com/x.png"},
+            {"type": "reference", "reference_ids": [1]},
+            {"type": "text", "text": None},
+            {"type": "text"},
+            {"text": "no type"},
+            {"type": "text", "text": "ok"},
+        ]
+        result = await mistral_chat_text(content)
+        assert result.text == "ok"
+
+    @pytest.mark.asyncio
+    async def test_thinking_only_raises_empty_response_with_usage(self):
+        # Given a response with reasoning but no final text
+        with pytest.raises(LLMProviderError) as exc_info:
+            # When
+            await mistral_chat_text([think()], prompt_tokens=300, completion_tokens=50, cached_tokens=100)
+
+        # Then the call fails with the usage attached so it can be logged and costed
+        exc = exc_info.value
+        assert str(exc) == EMPTY_RESPONSE_ERROR
+        assert (exc.result.input_tokens, exc.result.output_tokens, exc.result.cache_read_tokens) == (200, 50, 100)
+        assert exc.result.text == ""
+        assert exc.result.stop_reason == "stop"
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "content",
+        [None, [], [TextChunk(text="")], [{"type": "text", "text": ""}], 42],
+        ids=["none", "empty-list", "empty-text-chunk", "empty-text-dict", "unexpected-type"],
+    )
+    async def test_no_text_content_raises_empty_response(self, content):
+        with pytest.raises(LLMProviderError, match="^empty_response: Mistral returned no text content$"):
+            await mistral_chat_text(content)
+
+    @pytest.mark.asyncio
+    async def test_feedback_json_in_text_chunks(self):
+        # Given feedback JSON split across text chunks after a reasoning chunk
+        half = len(VALID_FEEDBACK_JSON) // 2
+        content = [think(), TextChunk(text=VALID_FEEDBACK_JSON[:half]), TextChunk(text=VALID_FEEDBACK_JSON[half:])]
+        client = make_mistral_client(make_mistral_response(content))
+
+        # When
+        result = await MistralProvider(api_key="t", client=client).feedback(HISTORY, "m")
+
+        # Then the raw JSON string is returned without the reasoning
+        assert result.text == VALID_FEEDBACK_JSON
 
 
 class TestToClaudeMessages:

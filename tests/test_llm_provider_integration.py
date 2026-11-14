@@ -6,6 +6,7 @@ Both SDKs are mocked; no network calls.
 from unittest.mock import patch
 
 import pytest
+from mistralai.client.models import TextChunk, ThinkChunk
 from sqlalchemy import select
 
 from config import Settings
@@ -13,7 +14,7 @@ from models.llm_call import LLMCall
 from models.session import Session as SessionModel
 from schemas.session import FeedbackResponse
 from services.llm.anthropic_provider import AnthropicProvider
-from services.llm.mistral_provider import MistralProvider
+from services.llm.mistral_provider import EMPTY_RESPONSE_ERROR, MistralProvider
 from services.llm.service import LLMService
 from tests.llm_fakes import (
     VALID_FEEDBACK_JSON,
@@ -127,3 +128,97 @@ class TestClaudeFeedbackPath:
         [group] = client.get("/metrics/llm").json()["groups"]
         assert (group["feature"], group["provider"], group["model"]) == ("feedback", "anthropic", "claude-sonnet-5-5")
         assert group["estimated_cost_usd"] == pytest.approx(0.008)
+
+
+THINKING = "Je réfléchis à la réponse…"
+
+
+def reasoning_content(text: str) -> list:
+    """Chunked ``message.content`` as a reasoning model returns it: thinking, then text."""
+    return [ThinkChunk(thinking=[TextChunk(text=THINKING)]), TextChunk(text=text)]
+
+
+class TestMistralContentChunks:
+    """Issue #243: chunked Mistral responses (ThinkChunk + TextChunk) work end to end."""
+
+    @pytest.mark.asyncio
+    async def test_session_creation_with_chunked_greeting(self, client, test_db):
+        # Given the default Mistral chat provider returning reasoning + text chunks
+        mistral = make_mistral_client(
+            make_mistral_response(reasoning_content("Bienvenue !"), prompt_tokens=200, completion_tokens=40)
+        )
+        service = LLMService(settings=make_settings(), providers={"mistral": MistralProvider("m", client=mistral)})
+
+        # When a session is started
+        with patch("routers.sessions.llm_service", service):
+            response = client.post("/sessions/", json={"scenario_id": "cafe_order"})
+
+        # Then it succeeds with a plain-string greeting and no reasoning anywhere
+        assert response.status_code == 200
+        session_id = response.json()["id"]
+        assert response.json()["messages"] == [{"role": "assistant", "content": "Bienvenue !"}]
+        stored = client.get(f"/sessions/{session_id}").json()
+        assert stored["messages"] == [{"role": "assistant", "content": "Bienvenue !"}]
+        assert THINKING not in response.text + str(stored)
+        rows = (await test_db.execute(select(LLMCall))).scalars().all()
+        assert [(r.feature, r.session_id, r.status) for r in rows] == [("chat", session_id, "success")]
+
+    @pytest.mark.asyncio
+    async def test_chat_message_with_chunked_reply(self, client, test_db):
+        session_id = await create_session(test_db, '[{"role": "assistant", "content": "Bonjour !"}]')
+        mistral = make_mistral_client(make_mistral_response(reasoning_content("Un café, très bien.")))
+        service = LLMService(settings=make_settings(), providers={"mistral": MistralProvider("m", client=mistral)})
+
+        with patch("routers.messages.llm_service", service):
+            response = client.post(f"/sessions/{session_id}/messages/", json={"content": "Un café"})
+
+        assert response.status_code == 200
+        assert response.json()["content"] == "Un café, très bien."
+        stored = client.get(f"/sessions/{session_id}").json()
+        assert stored["messages"][-1] == {"role": "assistant", "content": "Un café, très bien."}
+        assert THINKING not in response.text + str(stored)
+
+    @pytest.mark.asyncio
+    async def test_feedback_with_chunked_json(self, client, test_db):
+        # Given the default Mistral feedback provider returning JSON in text chunks after reasoning
+        session_id = await create_session(
+            test_db,
+            '[{"role": "assistant", "content": "Bonjour !"}, {"role": "user", "content": "Un café"}]',
+        )
+        mistral = make_mistral_client(make_mistral_response(reasoning_content(VALID_FEEDBACK_JSON)))
+        service = LLMService(settings=make_settings(), providers={"mistral": MistralProvider("m", client=mistral)})
+
+        # When
+        with patch("routers.feedback.llm_service", service):
+            response = client.post(f"/sessions/{session_id}/feedback/")
+
+        # Then the real feedback is parsed (not the fallback) and the call is a success
+        assert response.status_code == 200
+        feedback = FeedbackResponse(**response.json())
+        assert feedback.overall_score == 69
+        assert feedback.focus_area == "Accord du participe passé"
+        assert THINKING not in response.text
+        [row] = (await test_db.execute(select(LLMCall))).scalars().all()
+        assert (row.feature, row.status, row.error_message) == ("feedback", "success", None)
+
+    @pytest.mark.asyncio
+    async def test_thinking_only_greeting_logged_as_error(self, client, test_db):
+        # Given a greeting response with reasoning but no text
+        mistral = make_mistral_client(
+            make_mistral_response(
+                [ThinkChunk(thinking=[TextChunk(text=THINKING)])], prompt_tokens=200, completion_tokens=40
+            )
+        )
+        service = LLMService(settings=make_settings(), providers={"mistral": MistralProvider("m", client=mistral)})
+
+        # When a session is started
+        with patch("routers.sessions.llm_service", service):
+            response = client.post("/sessions/", json={"scenario_id": "cafe_order"})
+
+        # Then the session is created without a greeting (existing behaviour on greeting failure)
+        assert response.status_code == 200
+        assert response.json()["messages"] == []
+        # and the call is recorded as an error with its usage, never as a success
+        [row] = (await test_db.execute(select(LLMCall))).scalars().all()
+        assert (row.feature, row.status, row.error_message) == ("chat", "error", EMPTY_RESPONSE_ERROR)
+        assert (row.input_tokens, row.output_tokens) == (200, 40)
