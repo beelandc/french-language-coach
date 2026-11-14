@@ -435,9 +435,9 @@ french-language-coach/
 1. **User selects scenario** → POST /sessions/ creates session record → chat provider generates the opening greeting
 2. **User sends message** → POST /sessions/{id}/messages/ → chat provider (Mistral by default) → AI response stored in session
 3. **User requests feedback** → POST /sessions/{id}/feedback/ → feedback provider (Mistral by default) with feedback prompt → structured JSON feedback stored in session
+4. **Frontend displays** conversation history and feedback report
 
 Each LLM call writes one row to `llm_calls` (tokens, latency, estimated cost, success or error), summarised by `GET /metrics/llm`.
-4. **Frontend displays** conversation history and feedback report
 
 ### Session Locking (Issue #160)
 
