@@ -7,6 +7,8 @@ in config (``CHAT_PROVIDER``/``CHAT_MODEL``, ``FEEDBACK_PROVIDER``/``FEEDBACK_MO
 from services.llm.base import (
     FEATURE_CHAT,
     FEATURE_FEEDBACK,
+    FeedbackCorrection,
+    FeedbackValidationError,
     LLMProvider,
     LLMProviderError,
     LLMResult,
@@ -16,6 +18,8 @@ from services.llm.service import LLMService, llm_service
 __all__ = [
     "FEATURE_CHAT",
     "FEATURE_FEEDBACK",
+    "FeedbackCorrection",
+    "FeedbackValidationError",
     "LLMProvider",
     "LLMProviderError",
     "LLMResult",

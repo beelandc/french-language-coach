@@ -68,11 +68,25 @@ class MessageResponse(BaseModel):
     session_id: int
 
 
+class ExampleCorrection(BaseModel):
+    """One corrected learner sentence in end-of-session feedback."""
+
+    original: str
+    corrected: str
+    explanation: str
+
+
 class FeedbackResponse(BaseModel):
-    grammar_score: int
-    vocabulary_score: int
-    fluency_score: int
-    overall_score: int
+    """End-of-session feedback, as produced by the feedback model.
+
+    LLM output is validated against this model in strict mode before it is shown or
+    stored (issue #229). Scores are integers from 0 to 100; extra keys are ignored.
+    """
+
+    grammar_score: int = Field(ge=0, le=100)
+    vocabulary_score: int = Field(ge=0, le=100)
+    fluency_score: int = Field(ge=0, le=100)
+    overall_score: int = Field(ge=0, le=100)
     strengths: list[str]
     focus_area: str
-    example_corrections: list[dict[str, str]]
+    example_corrections: list[ExampleCorrection]

@@ -12,10 +12,11 @@ from services.llm.base import (
     FEATURE_FEEDBACK,
     FEEDBACK_JSON_SCHEMA,
     FEEDBACK_PROMPT,
+    FeedbackCorrection,
     LLMProvider,
     LLMProviderError,
     LLMResult,
-    build_transcript,
+    build_feedback_turns,
 )
 
 # Explicit effort per feature, so models with different default efforts are compared
@@ -84,13 +85,22 @@ class AnthropicProvider(LLMProvider):
         )
         return self._to_result(response)
 
-    async def feedback(self, messages: list[dict[str, str]], model: str) -> LLMResult:
-        """Return feedback JSON constrained to the ``FeedbackResponse`` schema."""
+    async def feedback(
+        self,
+        messages: list[dict[str, str]],
+        model: str,
+        correction: Optional[FeedbackCorrection] = None,
+    ) -> LLMResult:
+        """Return feedback JSON constrained to the ``FeedbackResponse`` schema.
+
+        On the corrective retry, the failed output and the correction turn follow the
+        transcript (see :func:`build_feedback_turns`); the schema is kept.
+        """
         response = await self._client.messages.create(
             model=model,
             max_tokens=MAX_TOKENS,
             system=FEEDBACK_PROMPT,
-            messages=[{"role": "user", "content": build_transcript(messages)}],
+            messages=build_feedback_turns(messages, correction),
             output_config={
                 "effort": self.feedback_effort,
                 "format": {"type": "json_schema", "schema": FEEDBACK_JSON_SCHEMA},

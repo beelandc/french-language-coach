@@ -6,10 +6,11 @@ from mistralai.client import Mistral
 
 from services.llm.base import (
     FEEDBACK_PROMPT,
+    FeedbackCorrection,
     LLMProvider,
     LLMProviderError,
     LLMResult,
-    build_transcript,
+    build_feedback_turns,
 )
 
 #: Error recorded when a response carries no usable text (issue #243).
@@ -72,14 +73,21 @@ class MistralProvider(LLMProvider):
         )
         return self._to_result(response)
 
-    async def feedback(self, messages: list[dict[str, str]], model: str) -> LLMResult:
-        """Request feedback in JSON mode with the shared French feedback prompt."""
+    async def feedback(
+        self,
+        messages: list[dict[str, str]],
+        model: str,
+        correction: Optional[FeedbackCorrection] = None,
+    ) -> LLMResult:
+        """Request feedback in JSON mode with the shared French feedback prompt.
+
+        On the corrective retry, the failed output and the correction turn follow the
+        transcript (see :func:`build_feedback_turns`); JSON mode is kept.
+        """
         response = await self._client.chat.complete_async(
             model=model,
-            messages=[
-                {"role": "system", "content": FEEDBACK_PROMPT},
-                {"role": "user", "content": build_transcript(messages)},
-            ],
+            messages=[{"role": "system", "content": FEEDBACK_PROMPT}]
+            + build_feedback_turns(messages, correction),
             response_format={"type": "json_object"},
         )
         return self._to_result(response)

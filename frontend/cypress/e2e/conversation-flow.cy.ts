@@ -327,6 +327,56 @@ describe('Conversation Flow', () => {
     })
   })
 
+  // Issue #229: feedback generation fails (502) and the user retries
+  describe('Issue #229: Feedback generation failure', () => {
+    const FEEDBACK_502_DETAIL =
+      'Feedback could not be generated: the AI returned invalid feedback twice. Your session is still open — please try again.'
+
+    it('should show the 502 error, keep the session open, and succeed on retry', () => {
+      // Given: the first feedback request fails with 502, the second succeeds
+      let feedbackRequests = 0
+      cy.intercept('POST', `/sessions/${SESSION_ID}/feedback/`, (req) => {
+        feedbackRequests += 1
+        if (feedbackRequests === 1) {
+          req.reply({ statusCode: 502, body: { detail: FEEDBACK_502_DETAIL } })
+        } else {
+          req.reply({
+            grammar_score: 72,
+            vocabulary_score: 65,
+            fluency_score: 70,
+            overall_score: 69,
+            strengths: ['Bonne prononciation'],
+            focus_area: 'Accord du participe passé',
+            example_corrections: [],
+          })
+        }
+      }).as('getFeedbackWithRetry')
+
+      cy.getByTestId(`scenario-${SCENARIO_ID}`).click()
+      cy.wait('@createSession')
+      cy.shouldBeOnPage('chat')
+
+      // When: the user ends the session and feedback generation fails
+      cy.getByTestId('end-session-button').click()
+      cy.wait('@getFeedbackWithRetry')
+
+      // Then: the error is shown once, with a retry button, and the user stays in the chat
+      cy.getByTestId('feedback-error').should('contain.text', FEEDBACK_502_DETAIL)
+      cy.contains(FEEDBACK_502_DETAIL).should('have.length', 1)
+      cy.getByTestId('sessions-error').should('not.exist')
+      cy.shouldBeOnPage('chat')
+      cy.getByTestId('message-input').should('not.be.disabled')
+
+      // When: the user retries
+      cy.getByTestId('retry-feedback-button').click()
+      cy.wait('@getFeedbackWithRetry')
+
+      // Then: the feedback page is displayed
+      cy.url().should('include', `/feedback/${SESSION_ID}`)
+      cy.getByTestId('feedback-view').should('exist')
+    })
+  })
+
   // AC-6: Test feedback display
   describe('AC-6: Feedback Display', () => {
     it('should display all score categories', () => {

@@ -1,4 +1,4 @@
-"""Tests for issue #228: Mistral and Claude provider implementations (SDKs mocked)."""
+"""Tests for issues #228 and #229: Mistral and Claude provider implementations (SDKs mocked)."""
 
 from types import SimpleNamespace
 from unittest.mock import patch
@@ -13,9 +13,12 @@ from services.llm.anthropic_provider import (
     to_claude_messages,
 )
 from services.llm.base import (
+    FEEDBACK_CORRECTION_PROMPT,
     FEEDBACK_JSON_SCHEMA,
     FEEDBACK_PROMPT,
+    FeedbackCorrection,
     LLMProviderError,
+    build_feedback_turns,
     build_transcript,
 )
 from services.llm.mistral_provider import EMPTY_RESPONSE_ERROR, MistralProvider
@@ -32,6 +35,31 @@ HISTORY = [
     {"role": "user", "content": "Un café, s'il vous plaît."},
 ]
 THINKING = "Je réfléchis à la réponse…"
+
+
+class TestBuildFeedbackTurns:
+    """Issue #229: turns for the initial feedback request and the corrective retry."""
+
+    def test_without_correction_is_transcript_only(self):
+        assert build_feedback_turns(HISTORY) == [{"role": "user", "content": build_transcript(HISTORY)}]
+
+    def test_correction_replays_output_then_quotes_error(self):
+        correction = FeedbackCorrection(previous_output='{"grammar_score": 7', error="invalid_json: EOF")
+
+        turns = build_feedback_turns(HISTORY, correction)
+
+        assert turns == [
+            {"role": "user", "content": build_transcript(HISTORY)},
+            {"role": "assistant", "content": '{"grammar_score": 7'},
+            {"role": "user", "content": FEEDBACK_CORRECTION_PROMPT.format(error="invalid_json: EOF")},
+        ]
+
+    @pytest.mark.parametrize("empty", ["", "   \n"])
+    def test_empty_previous_output_has_no_assistant_turn(self, empty):
+        turns = build_feedback_turns(HISTORY, FeedbackCorrection(previous_output=empty, error="invalid_json: x"))
+
+        assert [t["role"] for t in turns] == ["user", "user"]
+        assert "invalid_json: x" in turns[1]["content"]
 
 
 class TestBuildTranscript:
@@ -75,6 +103,20 @@ class TestMistralProvider:
             response_format={"type": "json_object"},
         )
         assert result.text == VALID_FEEDBACK_JSON
+
+    @pytest.mark.asyncio
+    async def test_feedback_correction_keeps_json_mode(self):
+        client = make_mistral_client(make_mistral_response(VALID_FEEDBACK_JSON))
+        provider = MistralProvider(api_key="test", client=client)
+        correction = FeedbackCorrection(previous_output="pas du JSON", error="invalid_json: expected value")
+
+        await provider.feedback(HISTORY, "mistral-large-latest", correction=correction)
+
+        kwargs = client.chat.complete_async.await_args.kwargs
+        assert kwargs["messages"] == [{"role": "system", "content": FEEDBACK_PROMPT}] + build_feedback_turns(
+            HISTORY, correction
+        )
+        assert kwargs["response_format"] == {"type": "json_object"}
 
     @pytest.mark.asyncio
     async def test_usage_normalises_cached_tokens_from_dict(self):
@@ -292,6 +334,19 @@ class TestAnthropicProvider:
             },
         )
         assert result.text == VALID_FEEDBACK_JSON
+
+    @pytest.mark.asyncio
+    async def test_feedback_correction_keeps_schema_and_system(self):
+        client = make_claude_client(make_claude_response(VALID_FEEDBACK_JSON))
+        provider = AnthropicProvider(api_key="t", client=client)
+        correction = FeedbackCorrection(previous_output='{"x": 1}', error="schema_mismatch: focus_area: Field required")
+
+        await provider.feedback(HISTORY, "claude-sonnet-5-5", correction=correction)
+
+        kwargs = client.messages.create.await_args.kwargs
+        assert kwargs["system"] == FEEDBACK_PROMPT
+        assert kwargs["messages"] == build_feedback_turns(HISTORY, correction)
+        assert kwargs["output_config"]["format"] == {"type": "json_schema", "schema": FEEDBACK_JSON_SCHEMA}
 
     @pytest.mark.asyncio
     async def test_feedback_effort_override(self):

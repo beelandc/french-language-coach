@@ -16,32 +16,39 @@ export default function FeedbackView({ sessionId }: FeedbackViewProps) {
   const [pdfError, setPdfError] = useState<string | null>(null)
   const navigate = useNavigate()
 
+  const loadFeedback = useCallback(async () => {
+    if (!sessionId) {
+      setError('No session ID provided')
+      setIsLoading(false)
+      return
+    }
+
+    try {
+      // Use cached feedback from hook if available (forceRefresh=false by default)
+      const fb = await getFeedback(sessionId)
+      if (fb) {
+        setFeedback(fb)
+      }
+      setIsLoading(false)
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load feedback'
+      setError(errorMessage)
+      setIsLoading(false)
+      console.error('Error loading feedback:', err)
+    }
+  }, [sessionId, getFeedback])
+
   // Load feedback when component mounts
   useEffect(() => {
-    const loadFeedback = async () => {
-      if (!sessionId) {
-        setError('No session ID provided')
-        setIsLoading(false)
-        return
-      }
-      
-      try {
-        // Use cached feedback from hook if available (forceRefresh=false by default)
-        const fb = await getFeedback(sessionId)
-        if (fb) {
-          setFeedback(fb)
-        }
-        setIsLoading(false)
-      } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Failed to load feedback'
-        setError(errorMessage)
-        setIsLoading(false)
-        console.error('Error loading feedback:', err)
-      }
-    }
-    
     loadFeedback()
-  }, [sessionId, getFeedback])
+  }, [loadFeedback])
+
+  // Retry after a failure, e.g. a 502 when the AI returned invalid feedback (Issue #229)
+  const handleRetry = () => {
+    setError(null)
+    setIsLoading(true)
+    loadFeedback()
+  }
 
   const handleBackToChat = () => {
     navigate(`/chat/${sessionId}`)
@@ -86,8 +93,13 @@ export default function FeedbackView({ sessionId }: FeedbackViewProps) {
   if (error) {
     return (
       <div className="page-container" data-testid="feedback-error-container">
-        <div className="error-message" data-testid="feedback-error">{error}</div>
-        <button className="btn-primary" onClick={handleNewSession} data-testid="back-to-home-button">
+        <div className="error-message" role="alert" data-testid="feedback-error">{error}</div>
+        {sessionId && (
+          <button className="btn-primary" onClick={handleRetry} data-testid="retry-feedback-button">
+            Try again
+          </button>
+        )}
+        <button className="btn-secondary" onClick={handleNewSession} data-testid="back-to-home-button">
           Back to Home
         </button>
       </div>
