@@ -1,0 +1,15 @@
+# coverage.py configuration (read automatically by coverage.py and pytest-cov
+# when run from the repo root).
+
+[run]
+# Issue #249: SQLAlchemy's async session runs ORM work inside greenlets, which
+# coverage.py doesn't trace by default, so router lines after `await db.…`
+# showed as missed. TestClient runs the app on a separate thread, so thread
+# tracing is needed as well. coverage.py allows `thread` plus one other library.
+concurrency = thread,greenlet
+source = .
+omit =
+    tests/*
+    frontend/*
+    .venv/*
+    scripts/*
