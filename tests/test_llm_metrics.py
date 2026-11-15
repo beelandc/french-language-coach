@@ -1,4 +1,5 @@
-"""Tests for issue #236: services/llm/metrics.py (filters, time series, report, rendering)."""
+"""Tests for issues #236 and #238: services/llm/metrics.py (filters, time series, report,
+summary, rendering)."""
 
 import csv
 import io
@@ -12,7 +13,9 @@ from services.llm.metrics import (
     CSV_COLUMNS,
     MIN_SAMPLE_SIZE,
     REPORT_NOTES,
+    SINGLE_MODEL_SUMMARY,
     MetricsFilters,
+    build_feature_summary,
     build_filters,
     build_report,
     build_timeseries,
@@ -29,6 +32,7 @@ T0 = datetime(2026, 11, 13, 10, 0)
 GENERATED = datetime(2026, 11, 14, 7, 18, 5)
 MISTRAL = ("mistral", "mistral-large-latest")
 HAIKU = ("anthropic", "claude-haiku-5-5")
+SONNET = ("anthropic", "claude-sonnet-5-5")
 
 
 def row(feature="chat", provider="mistral", model="mistral-large-latest", *,
@@ -58,6 +62,14 @@ def price(provider, model, checked_on=date(2026, 11, 13)):
 def report(rows, *, baseline="mistral:mistral-large-latest", filters=None, prices=None, **kw):
     return build_report(rows, filters or MetricsFilters(), baseline, prices or {},
                         generated_at=GENERATED, **kw)
+
+
+def csv_parts(text):
+    """Split a CSV export into its '#' comment lines and the parsed data records."""
+    lines = text.splitlines(keepends=True)
+    comments = [line.rstrip("\n") for line in lines if line.startswith("#")]
+    data = "".join(line for line in lines if not line.startswith("#"))
+    return comments, list(csv.DictReader(io.StringIO(data)))
 
 
 class TestParseDateBound:
@@ -377,7 +389,7 @@ class TestRendering:
 
     def test_csv(self):
         text = render_report_csv(self.sample())
-        records = list(csv.DictReader(io.StringIO(text)))
+        _, records = csv_parts(text)
 
         assert list(records[0].keys())[: len(CSV_COLUMNS)] == CSV_COLUMNS
         assert list(records[0].keys())[-1] == "warnings"
@@ -392,9 +404,165 @@ class TestRendering:
         assert base["first_call_at"] == "2026-11-13T10:00:00"
         assert feedback["delta_error_rate_pp"] == ""
 
-    def test_csv_empty_has_header_only(self):
+    def test_csv_empty_has_preamble_and_header_only(self):
         text = render_report_csv(report([]))
-        assert text.count("\n") == 1 and text.startswith("feature,provider,model,")
+        comments, records = csv_parts(text)
+        assert records == []
+        data_lines = [line for line in text.splitlines() if not line.startswith("#")]
+        assert len(data_lines) == 1 and data_lines[0].startswith("feature,provider,model,")
+        assert "# Warnings: none" in comments
+        assert not any(line.startswith("# Summary") for line in comments)
+
+    def test_csv_preamble_carries_caveats(self):
+        text = render_report_csv(self.sample())
+        comments, _ = csv_parts(text)
+
+        assert text.startswith("# LLM model comparison report\n")
+        assert "# Generated: 2026-11-14 07:18:05 UTC" in comments
+        assert "# Baseline: mistral:mistral-large-latest" in comments
+        assert "# Filters: date_from=2026-11-01" in comments
+        assert "# Minimum sample size: 20" in comments
+        assert "# Latency and token basis: successful calls" in comments
+        for note in REPORT_NOTES:
+            assert f"# Note: {note}" in comments
+        assert ("# Warning: anthropic:claude-haiku-5-5 (chat): sample size 5 is below 20"
+                in comments)
+        assert ("# Price: mistral:mistral-large-latest checked 2026-11-13 "
+                "(https://example.com/pricing)") in comments
+        assert any(line.startswith("# Summary (chat): Not enough data") for line in comments)
+        assert f"# Summary (feedback): {SINGLE_MODEL_SUMMARY}" in comments
+        # Comment lines come before the header row
+        header_index = text.splitlines().index(next(
+            line for line in text.splitlines() if line.startswith("feature,")))
+        assert all(line.startswith("#") for line in text.splitlines()[:header_index])
+
+    def test_csv_comment_flattens_line_breaks(self):
+        result = report(rows_for(MISTRAL, 20), extra_warnings=["line one\nline two"])
+        comments, _ = csv_parts(render_report_csv(result))
+        assert "# Warning: line one line two" in comments
+
+    def test_markdown_summary_lines(self):
+        md = render_report_markdown(self.sample())
+        assert "## Feature: chat\n\n**Summary**: Not enough data to name a winner for chat" in md
+        assert f"## Feature: feedback\n\n**Summary**: {SINGLE_MODEL_SUMMARY}" in md
+
+
+def summary_of(rows):
+    return build_feature_summary("feedback", report(rows).features[0].rows)
+
+
+class TestFeatureSummary:
+    def test_example_from_issue(self):
+        rows = (
+            rows_for(MISTRAL, 39, feature="feedback", latency_ms=2100, estimated_cost_usd=0.0029)
+            + [row("feedback", *MISTRAL, status="error", error_message="boom",
+                   estimated_cost_usd=0.0029)]
+            + rows_for(HAIKU, 30, feature="feedback", latency_ms=1300, estimated_cost_usd=0.0011)
+            + rows_for(SONNET, 24, feature="feedback", latency_ms=1600, estimated_cost_usd=0.0041)
+            + [row("feedback", *SONNET, latency_ms=900, status="error", error_message="x",
+                   estimated_cost_usd=0.0041)]
+        )
+
+        summary = report(rows).features[0].summary
+
+        assert summary.text == (
+            "For feedback, anthropic:claude-haiku-5-5 had the lowest cost per 1,000 calls "
+            "($1.10); anthropic:claude-haiku-5-5 had the lowest p50 latency (1,300 ms); "
+            "anthropic:claude-haiku-5-5 had the lowest p95 latency (1,300 ms); "
+            "anthropic:claude-haiku-5-5 had the lowest error rate (0.0%)."
+        )
+        assert summary.compared_models == [
+            "mistral:mistral-large-latest", "anthropic:claude-haiku-5-5",
+            "anthropic:claude-sonnet-5-5",
+        ]
+        assert summary.excluded_models == []
+        assert summary.cheapest == ["anthropic:claude-haiku-5-5"]
+        assert summary.most_reliable == ["anthropic:claude-haiku-5-5"]
+
+    def test_different_leaders_per_metric(self):
+        rows = (rows_for(MISTRAL, 20, feature="feedback", latency_ms=800, estimated_cost_usd=0.003)
+                + rows_for(HAIKU, 20, feature="feedback", latency_ms=1200, estimated_cost_usd=0.001))
+        summary = summary_of(rows)
+        assert summary.cheapest == ["anthropic:claude-haiku-5-5"]
+        assert summary.fastest_p50 == ["mistral:mistral-large-latest"]
+        assert summary.fastest_p95 == ["mistral:mistral-large-latest"]
+        assert "mistral:mistral-large-latest had the lowest p50 latency (800 ms)" in summary.text
+
+    def test_ties_name_every_model(self):
+        rows = (rows_for(MISTRAL, 20, feature="feedback", estimated_cost_usd=0.001)
+                + rows_for(HAIKU, 20, feature="feedback", estimated_cost_usd=0.001)
+                + rows_for(SONNET, 20, feature="feedback", estimated_cost_usd=0.001))
+        summary = summary_of(rows)
+        assert summary.most_reliable == [
+            "mistral:mistral-large-latest", "anthropic:claude-haiku-5-5",
+            "anthropic:claude-sonnet-5-5",
+        ]
+        assert ("mistral:mistral-large-latest, anthropic:claude-haiku-5-5 and "
+                "anthropic:claude-sonnet-5-5 had the lowest error rate (0.0%)") in summary.text
+
+    def test_model_below_minimum_is_not_ranked(self):
+        rows = (rows_for(MISTRAL, 20, feature="feedback", estimated_cost_usd=0.003)
+                + rows_for(HAIKU, 20, feature="feedback", estimated_cost_usd=0.002)
+                + rows_for(SONNET, 12, feature="feedback", latency_ms=10, estimated_cost_usd=0.0001))
+        summary = summary_of(rows)
+        assert summary.excluded_models == ["anthropic:claude-sonnet-5-5"]
+        assert "anthropic:claude-sonnet-5-5" not in summary.cheapest + summary.fastest_p50
+        assert summary.text.endswith(
+            " Not ranked (fewer than 20 calls): anthropic:claude-sonnet-5-5 (12 calls).")
+
+    def test_not_enough_data(self):
+        summary = build_feature_summary(
+            "chat", report(rows_for(MISTRAL, 30) + rows_for(HAIKU, 8)).features[0].rows)
+        assert summary.text == (
+            "Not enough data to name a winner for chat: anthropic:claude-haiku-5-5 has 8 calls "
+            "(minimum 20 per model)."
+        )
+        assert summary.cheapest == summary.fastest_p50 == summary.most_reliable == []
+        assert summary.compared_models == ["mistral:mistral-large-latest"]
+
+    def test_single_model_has_no_summary(self):
+        assert report(rows_for(MISTRAL, 30)).features[0].summary is None
+        assert build_feature_summary("chat", []) is None
+
+    def test_partly_unpriced(self):
+        rows = (rows_for(MISTRAL, 20, feature="feedback", estimated_cost_usd=0.003)
+                + rows_for(HAIKU, 20, feature="feedback", estimated_cost_usd=None))
+        summary = summary_of(rows)
+        assert summary.cheapest == ["mistral:mistral-large-latest"]
+        assert ("had the lowest cost per 1,000 calls ($3.00) "
+                "(not priced: anthropic:claude-haiku-5-5)") in summary.text
+
+    def test_fully_unpriced(self):
+        rows = (rows_for(MISTRAL, 20, feature="feedback", estimated_cost_usd=None)
+                + rows_for(HAIKU, 20, feature="feedback", estimated_cost_usd=None))
+        summary = summary_of(rows)
+        assert summary.cheapest == []
+        assert "no model had priced calls, so cost is not ranked" in summary.text
+
+    def test_tiny_costs_keep_precision(self):
+        rows = (rows_for(MISTRAL, 20, feature="feedback", estimated_cost_usd=0.000004)
+                + rows_for(HAIKU, 20, feature="feedback", estimated_cost_usd=0.000009))
+        assert "($0.004)" in summary_of(rows).text
+
+    def test_all_failed_model_skipped_for_latency(self):
+        rows = (rows_for(MISTRAL, 20, feature="feedback", latency_ms=900)
+                + rows_for(HAIKU, 20, feature="feedback", status="error", error_message="x"))
+        summary = summary_of(rows)
+        assert summary.fastest_p50 == ["mistral:mistral-large-latest"]
+        assert summary.most_reliable == ["mistral:mistral-large-latest"]
+
+    def test_no_latency_at_all_omits_latency_clauses(self):
+        rows = (rows_for(MISTRAL, 20, feature="feedback", status="error", error_message="x")
+                + rows_for(HAIKU, 20, feature="feedback", status="error", error_message="x"))
+        summary = summary_of(rows)
+        assert summary.fastest_p50 == summary.fastest_p95 == []
+        assert "latency" not in summary.text
+
+    def test_wording_never_declares_a_best_model(self):
+        rows = (rows_for(MISTRAL, 20, feature="feedback")
+                + rows_for(HAIKU, 20, feature="feedback", latency_ms=500))
+        text = summary_of(rows).text.lower()
+        assert "best" not in text and "winner" not in text
 
 
 class TestLoadPriceDocument:

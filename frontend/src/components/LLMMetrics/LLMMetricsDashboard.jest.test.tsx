@@ -1,6 +1,7 @@
 /**
- * Tests for LLMMetricsDashboard (Issue #237): data loading per panel, shared
- * URL filters, pagination, and loading/empty/error states.
+ * Tests for LLMMetricsDashboard (Issues #237, #238): data loading per panel,
+ * shared URL filters, pagination, loading/empty/error states, and the
+ * comparison report tab (view and baseline in the URL).
  */
 
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
@@ -12,6 +13,7 @@ import {
   emptySummary,
   sampleCallLog,
   samplePricing,
+  sampleReport,
   sampleSummary,
   sampleTimeseries,
 } from './fixtures'
@@ -22,6 +24,8 @@ jest.mock('../../utils/api', () => ({
     listCalls: jest.fn(),
     getTimeseries: jest.fn(),
     getPricing: jest.fn(),
+    getReport: jest.fn(),
+    downloadReport: jest.fn(),
   },
 }))
 
@@ -31,6 +35,8 @@ const { metricsApi } = apiModule as unknown as {
     listCalls: jest.Mock
     getTimeseries: jest.Mock
     getPricing: jest.Mock
+    getReport: jest.Mock
+    downloadReport: jest.Mock
   }
 }
 
@@ -64,6 +70,7 @@ function mockAllSuccess() {
   metricsApi.listCalls.mockResolvedValue(sampleCallLog)
   metricsApi.getTimeseries.mockResolvedValue(sampleTimeseries)
   metricsApi.getPricing.mockResolvedValue(samplePricing)
+  metricsApi.getReport.mockResolvedValue(sampleReport)
 }
 
 async function waitForPanels() {
@@ -246,5 +253,68 @@ describe('LLMMetricsDashboard', () => {
       resolveFirst({ ...sampleCallLog, pagination: { total: 999, page: 1, per_page: 20, total_pages: 50 } })
     })
     expect(screen.getByTestId('llm-metrics-page-info')).toHaveTextContent('45 calls')
+  })
+
+  describe('comparison report tab (Issue #238)', () => {
+    it('switches to the report via the URL and back', async () => {
+      renderAt()
+      await waitForPanels()
+
+      fireEvent.click(screen.getByRole('tab', { name: 'Comparison report' }))
+
+      await waitFor(() => expect(currentSearch()).toBe('?view=report'))
+      expect(await screen.findByTestId('report-feature-feedback')).toBeInTheDocument()
+      expect(screen.queryByTestId('llm-metrics-summary-panel')).not.toBeInTheDocument()
+      expect(metricsApi.getReport).toHaveBeenCalledWith({}, 'mistral:mistral-large-latest')
+
+      fireEvent.click(screen.getByRole('tab', { name: 'Dashboard' }))
+      await waitFor(() => expect(currentSearch()).toBe(''))
+      await waitForPanels()
+    })
+
+    it('loads only the report (plus filter options) in the report view', async () => {
+      renderAt('/admin/metrics?view=report')
+      await screen.findByTestId('report-feature-chat')
+      expect(metricsApi.getSummary).toHaveBeenCalledTimes(1)
+      expect(metricsApi.getSummary).toHaveBeenCalledWith({})
+      expect(metricsApi.listCalls).not.toHaveBeenCalled()
+      expect(metricsApi.getTimeseries).not.toHaveBeenCalled()
+      expect(metricsApi.getPricing).not.toHaveBeenCalled()
+    })
+
+    it('keeps the baseline in the URL and drops it when it is the default', async () => {
+      renderAt('/admin/metrics?view=report')
+      await screen.findByTestId('report-feature-chat')
+
+      fireEvent.change(screen.getByLabelText('Baseline model'), { target: { value: 'anthropic:claude-haiku-5-5' } })
+      await waitFor(() => expect(currentSearch()).toBe('?view=report&baseline=anthropic%3Aclaude-haiku-5-5'))
+      await waitFor(() =>
+        expect(metricsApi.getReport).toHaveBeenLastCalledWith({}, 'anthropic:claude-haiku-5-5')
+      )
+
+      fireEvent.change(screen.getByLabelText('Baseline model'), { target: { value: 'mistral:mistral-large-latest' } })
+      await waitFor(() => expect(currentSearch()).toBe('?view=report'))
+    })
+
+    it('keeps the view and baseline when a filter changes', async () => {
+      renderAt('/admin/metrics?view=report&baseline=anthropic%3Aclaude-haiku-5-5')
+      await screen.findByTestId('report-feature-chat')
+
+      fireEvent.change(screen.getByLabelText('Feature'), { target: { value: 'chat' } })
+
+      await waitFor(() =>
+        expect(currentSearch()).toBe('?feature=chat&view=report&baseline=anthropic%3Aclaude-haiku-5-5')
+      )
+      await waitFor(() =>
+        expect(metricsApi.getReport).toHaveBeenLastCalledWith({ feature: 'chat' }, 'anthropic:claude-haiku-5-5')
+      )
+    })
+
+    it('drops the page when switching views', async () => {
+      renderAt('/admin/metrics?page=2')
+      await waitForPanels()
+      fireEvent.click(screen.getByRole('tab', { name: 'Comparison report' }))
+      await waitFor(() => expect(currentSearch()).toBe('?view=report'))
+    })
   })
 })

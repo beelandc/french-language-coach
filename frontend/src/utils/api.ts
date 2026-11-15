@@ -29,6 +29,11 @@ import type {
   LLMTimeseriesResponse,
   LLMTimeBucket,
   LLMPriceTable,
+  // Model comparison report types (Issue #238)
+  LLMReportApiParams,
+  LLMReportFormat,
+  ModelReport,
+  ReportDownload,
 } from '../types/index'
 
 // Use relative paths for development (Vite proxy handles routing)
@@ -311,6 +316,44 @@ export const metricsApi = {
 
   // Price table used for cost estimates (no filters)
   getPricing: () => api<LLMPriceTable>('/metrics/llm/pricing', { method: 'GET' }),
+
+  // Model comparison report as JSON (Issue #238)
+  getReport: (params: LLMReportApiParams, baseline: string) =>
+    api<ModelReport>(`/metrics/llm/report${metricsQuery(params, { baseline })}`, { method: 'GET' }),
+
+  // Model comparison report as a Markdown or CSV file (Issue #238)
+  downloadReport: async (
+    params: LLMReportApiParams,
+    baseline: string,
+    format: LLMReportFormat
+  ): Promise<ReportDownload> => {
+    const response = await fetch(
+      `${API_BASE}/metrics/llm/report${metricsQuery(params, { baseline, format })}`,
+      { method: 'GET' }
+    )
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}))
+      throw new Error(errorData.detail || `HTTP error! status: ${response.status}`)
+    }
+    const extension = format === 'markdown' ? 'md' : 'csv'
+    return {
+      blob: await response.blob(),
+      filename: filenameFromDisposition(
+        response.headers.get('Content-Disposition'),
+        `llm-model-report.${extension}`
+      ),
+    }
+  },
+}
+
+/**
+ * Read the filename from a Content-Disposition header
+ * (`attachment; filename="x.csv"` or `filename=x.csv`), else return `fallback`.
+ */
+export function filenameFromDisposition(header: string | null, fallback: string): string {
+  const match = header?.match(/filename="?([^";]+)"?/i)
+  const name = match?.[1]?.trim()
+  return name || fallback
 }
 
 // Re-export types for convenience
@@ -407,4 +450,17 @@ export type {
   LLMCallStatus,
   LLMMetricsFilters,
   LLMMetricsApiParams,
+  // Model comparison report types (Issue #238)
+  LLMMetricsView,
+  LLMReportFormat,
+  LLMReportExportFormat,
+  LLMReportApiParams,
+  ModelReportDeltas,
+  ModelReportRow,
+  FeatureSummary,
+  FeatureReport,
+  ReportPriceInfo,
+  ReportMetadata,
+  ModelReport,
+  ReportDownload,
 } from '../types/index'

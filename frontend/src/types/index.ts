@@ -1057,3 +1057,112 @@ export interface LLMMetricsApiParams {
   model?: string
   status?: LLMCallStatus
 }
+
+// ============================================================================
+// LLM model comparison report types (Issue #238, backend API from issues #236/#238)
+// Mirrors schemas/llm_metrics.py. Datetimes are naive UTC ISO strings.
+// ============================================================================
+
+/** Admin metrics page view, stored in the URL as `view=report`. */
+export type LLMMetricsView = 'dashboard' | 'report'
+
+/** Download formats served by GET /metrics/llm/report. */
+export type LLMReportFormat = 'markdown' | 'csv'
+
+/** Export formats offered by the report view (PDF is built in the browser). */
+export type LLMReportExportFormat = LLMReportFormat | 'pdf'
+
+/** Filters the comparison report sends (provider/model/status are not applied). */
+export type LLMReportApiParams = Pick<LLMMetricsApiParams, 'date_from' | 'date_to' | 'feature'>
+
+/** Differences from the feature's baseline: percent, except error_rate_pp (points). */
+export interface ModelReportDeltas {
+  latency_mean_pct: number | null
+  latency_p50_pct: number | null
+  latency_p95_pct: number | null
+  mean_input_tokens_pct: number | null
+  mean_output_tokens_pct: number | null
+  mean_cost_per_call_pct: number | null
+  error_rate_pp: number | null
+}
+
+/** Comparison metrics for one provider/model within a feature. */
+export interface ModelReportRow {
+  provider: string
+  model: string
+  is_baseline: boolean
+  calls: number
+  successful_calls: number
+  errors: number
+  error_rate: number
+  refusals: number
+  latency_mean_ms: number | null
+  latency_p50_ms: number | null
+  latency_p95_ms: number | null
+  mean_input_tokens: number | null
+  mean_output_tokens: number | null
+  priced_calls: number
+  unpriced_calls: number
+  mean_cost_per_call_usd: number | null
+  cost_per_1000_calls_usd: number | null
+  total_cost_usd: number
+  first_call_at: string | null
+  last_call_at: string | null
+  deltas: ModelReportDeltas | null
+  warnings: string[]
+}
+
+/** Plain-language comparison for one feature; model keys are "provider:model". */
+export interface FeatureSummary {
+  text: string
+  compared_models: string[]
+  excluded_models: string[]
+  cheapest: string[]
+  fastest_p50: string[]
+  fastest_p95: string[]
+  most_reliable: string[]
+}
+
+/** Report section for one feature. `summary` is null with fewer than two models. */
+export interface FeatureReport {
+  feature: string
+  baseline_present: boolean
+  first_call_at: string | null
+  last_call_at: string | null
+  rows: ModelReportRow[]
+  summary: FeatureSummary | null
+}
+
+/** When and where a model's price was checked. */
+export interface ReportPriceInfo {
+  provider: string
+  model: string
+  checked_on: string
+  source: string
+}
+
+/** Context and caveats for reading the report. */
+export interface ReportMetadata {
+  generated_at: string
+  baseline: string
+  filters: Record<string, string | null>
+  covered_from: string | null
+  covered_to: string | null
+  min_sample_size: number
+  latency_basis: string
+  prices: ReportPriceInfo[]
+  notes: string[]
+  warnings: string[]
+}
+
+/** Response for GET /metrics/llm/report (JSON). */
+export interface ModelReport {
+  metadata: ReportMetadata
+  features: FeatureReport[]
+}
+
+/** A downloaded report file. */
+export interface ReportDownload {
+  blob: Blob
+  filename: string
+}

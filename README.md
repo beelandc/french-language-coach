@@ -255,7 +255,7 @@ french-language-coach/
 │   │   ├── base.py          # Provider interface (chat, feedback), LLMResult, shared feedback prompt + JSON schema
 │   │   ├── mistral_provider.py   # Mistral provider (async client)
 │   │   ├── anthropic_provider.py # Claude provider (async client, first-party Anthropic API)
-│   │   ├── metrics.py       # Metrics filters, summaries, time series, model comparison report + Markdown/CSV (Issue #236)
+│   │   ├── metrics.py       # Metrics filters, summaries, time series, model comparison report + summary, Markdown/CSV (Issues #236, #238)
 │   │   ├── pricing.py       # Loads the price table, estimates cost per call
 │   │   ├── recorder.py      # Writes one llm_calls row per call
 │   │   └── service.py       # LLMService: routes each feature to its configured provider/model, logs calls
@@ -328,7 +328,9 @@ french-language-coach/
 │   │   │   ├── Flashcard.tsx         # Vocabulary flashcard with flip animation (Phase 3, Issue #69)
 │   │   │   ├── ReviewSession.tsx     # Spaced repetition review session (Phase 3, Issue #69)
 │   │   │   ├── LLMMetrics/           # Admin LLM metrics dashboard (Issue #237): container, panels,
-│   │   │   │                         # SVG charts, metricsUtils.ts helpers, stories and Jest tests
+│   │   │   │                         # SVG charts, metricsUtils.ts helpers, stories and Jest tests;
+│   │   │   │                         # comparison report tab (Issue #238): ModelComparisonReport,
+│   │   │   │                         # Report* components, reportUtils.ts, reportPdf.ts (jsPDF export)
 │   │   │   └── index.ts
 │   │   ├── pages/           # Page-level components (React Router routes)
 │   │   │   ├── IndexPage.tsx         # Modern landing page with central navigation hub (Issue #177)
@@ -401,7 +403,7 @@ french-language-coach/
 | GET | `/metrics/llm/calls` | LLM call log, newest first (Issue #236). Query parameters: `page` (default 1), `per_page` (default 10, max 100) and the shared metrics filters. Returns `calls` (id, created_at, feature, provider, model, session_id, input/output/cache-read tokens, latency_ms, estimated_cost_usd, status, error_message) and `pagination` (same shape as `/sessions/`). A page past the end returns an empty `calls` list |
 | GET | `/metrics/llm/timeseries` | LLM call statistics over time (Issue #236). Query parameters: `bucket` (`hour` or `day`, default `day`) and the shared metrics filters. Returns `points`, one per bucket and feature/provider/model that has calls (empty buckets are omitted), each with `bucket_start` and the same statistics as `/metrics/llm` groups |
 | GET | `/metrics/llm/pricing` | The price table from `data/llm_pricing.json` used for cost estimates (Issue #236): currency, unit and per-model prices with `checked_on`, `source`, notes and any long-context tier |
-| GET | `/metrics/llm/report` | Model comparison report (Issue #236). Query parameters: `baseline` (`provider:model`, default `mistral:mistral-large-latest`; 400 if malformed), `format` (`json` default, `markdown` or `csv`, the last two as a file download) and the shared metrics filters. Per feature, one row per provider and model: calls, errors, error rate, refusals, mean/p50/p95 latency and mean input/output tokens (successful calls only), mean cost per call, cost per 1,000 calls, total cost, first/last call, and deltas against the baseline (percent; error rate in percentage points). Metadata: generation time, filters, date range covered, price check dates and sources, notes and warnings (fewer than 20 calls, unpriced calls, models seen in only part of the date range, missing baseline) |
+| GET | `/metrics/llm/report` | Model comparison report (Issues #236, #238). Query parameters: `baseline` (`provider:model`, default `mistral:mistral-large-latest`; 400 if malformed), `format` (`json` default, `markdown` or `csv`, the last two as a file download) and the shared metrics filters. Per feature, one row per provider and model: calls, errors, error rate, refusals, mean/p50/p95 latency and mean input/output tokens (successful calls only), mean cost per call, cost per 1,000 calls, total cost, first/last call, and deltas against the baseline (percent; error rate in percentage points). Metadata: generation time, filters, date range covered, price check dates and sources, notes and warnings (fewer than 20 calls, unpriced calls, models seen in only part of the date range, missing baseline). Each feature also has a `summary` (Issue #238; `null` with fewer than two models): a plain-language `text` naming the cheapest (cost per 1,000 calls), fastest at p50 and p95, and most reliable (lowest error rate) model, plus those leaders as `provider:model` lists. Only models with at least 20 calls are ranked. The Markdown download adds a **Summary** line per feature; the CSV download starts with `#` comment lines (metadata, notes, warnings, price check dates, summaries) before the header row, which `pandas.read_csv(..., comment="#")` skips |
 | GET | `/grammar/lessons/` | List all grammar lessons with pagination and filtering. Query parameters: `page` (default 1), `per_page` (default 10, max 100), `topic` (filter by grammatical topic), `difficulty` (filter by level: beginner, intermediate, advanced). Returns summary: id, title, topic, difficulty |
 | GET | `/grammar/lessons/{id}` | Get a specific grammar lesson by ID. Returns full lesson content including sections with titles, content, and examples. Returns 404 if lesson not found |
 | GET | `/grammar/reference/` | Search grammar reference entries with pagination and filtering. Query parameters: `page` (default 1), `per_page` (default 10, max 100), `q` (search query - case-insensitive partial match on term, definition, examples, common_pitfalls), `category` (filter by grammatical category), `difficulty` (filter by level: beginner, intermediate, advanced). Returns full reference entries |
@@ -437,7 +439,7 @@ french-language-coach/
 | `/vocabulary` | VocabularyPage | Browse all vocabulary decks (Phase 3, Issue #67) |
 | `/vocabulary/decks/:deckId` | DeckDetailPage | View deck details, progress, and card preview (Phase 3, Issue #201) |
 | `/vocabulary/decks/:deckId/cards` | DeckCardsPage | Browse all cards in a specific deck with pagination (Phase 3, Issue #201) |
-| `/admin/metrics` | AdminMetricsPage | Admin dashboard for LLM call metrics: summary, per-model breakdown, trends, call log, pricing (Issue #237). Linked from the page footer. No authentication until Phase 5 |
+| `/admin/metrics` | AdminMetricsPage | Admin dashboard for LLM call metrics: summary, per-model breakdown, trends, call log, pricing (Issue #237), and a **Comparison report** tab (`?view=report`, Issue #238) comparing models per feature against a baseline, with Markdown/CSV/PDF export. Linked from the page footer. No authentication until Phase 5 |
 
 ### Data Flow
 
@@ -526,6 +528,18 @@ Each provider call writes one row to the `llm_calls` table: feature, provider, m
 All metrics endpoints accept the same filters (date range, feature, provider, model, status). `GET /metrics/llm/calls` lists individual calls, `GET /metrics/llm/timeseries` gives hourly or daily statistics, and `GET /metrics/llm/pricing` shows the prices behind the estimates (Issue #236). `GET /metrics/llm/report` compares models within each feature against a baseline (Mistral by default) on reliability, latency, tokens and cost, as JSON, Markdown or CSV. It covers operational metrics only: feedback quality comes from the eval harness (#231). Live traffic is not a controlled experiment, so the report shows each model's sample size and date range and warns when they are too thin to compare.
 
 The **LLM metrics dashboard** at `/admin/metrics` (Issue #237) puts these endpoints in the browser. Shared filters (date range presets or a custom UTC date range, feature, provider, model, status) drive summary cards, a sortable per-model breakdown, charts of calls, cost and p50/p95 latency over time, a cost-per-call vs p95-latency comparison, a paginated call log (failed calls show their error, and calls link to their session), and the price table with check dates and sources. Filters live in the URL query string, so a view can be bookmarked. A small "Admin: LLM metrics" link in the page footer leads there. The page has **no authentication** until Phase 5, so anyone who can reach the app can see it; that's fine for the current single-user local setup.
+
+The **Comparison report** tab on the same page (Issue #238, `?view=report`) shows `GET /metrics/llm/report` for the dashboard's date range and feature filters (provider, model and status filters only apply to the dashboard). For each feature it shows a summary sentence and a side-by-side table with one column per model: sample size, date range, error rate, refusals, mean/p50/p95 latency, mean input/output tokens, cost per call, cost per 1,000 calls, total cost and unpriced calls. Each value has its change against the **baseline model** (a selector, default `mistral:mistral-large-latest`, kept in the URL as `baseline=`), green when lower latency, cost or error rate is better and red when worse. The summary only ranks models with at least 20 calls; with fewer, it says there is not enough data to name a winner. Caveats are always shown: the notes (live traffic isn't a controlled comparison, quality comes from the eval harness #231), warnings (sample size, unpriced calls, partial date ranges, missing baseline) and the price check dates. **Export** downloads Markdown or CSV from the endpoint with the same parameters as the report on screen, or a PDF built in the browser with jsPDF from the report on screen; every export includes the summaries and caveats. A feature with only one model shows an empty state explaining how to record comparison data.
+
+#### Generating comparison data
+
+The app sends each feature to one model at a time, so a live comparison needs traffic recorded under each configuration:
+
+1. Use the app for a while with the defaults (Mistral for chat and feedback).
+2. Switch one feature in `.env`, e.g. `FEEDBACK_PROVIDER=anthropic` and `FEEDBACK_MODEL=claude-haiku-5-5` (or `CHAT_PROVIDER` / `CHAT_MODEL` for chat), restart the backend and use the app again. Repeat for other models you want to compare.
+3. Open `/admin/metrics?view=report`. Each model needs at least 20 calls in the selected range to be ranked in the summary.
+
+Live traffic is not a controlled experiment: models may have handled different conversations at different times. For same-input comparisons, and for feedback quality, use the eval harness (#231).
 
 Costs are estimated from `data/llm_pricing.json`, the only place prices live. Each entry gives USD per million input, output and cache-read tokens, the date the price was checked (`checked_on`) and a `source` link (Claude Haiku 5.5 also has a higher tier for prompts over 100,000 tokens). Calls to a model missing from the table are logged with a `null` cost. When a vendor changes prices, update the values and `checked_on` in that file.
 
@@ -748,8 +762,9 @@ npm run test:jest:watch
 - `frontend/src/sample.jest.test.tsx` - Jest setup verification tests
 - `frontend/src/components/Flashcard.jest.test.tsx` - Tests for Flashcard component (Issue #69)
 - `frontend/src/components/ReviewSession.jest.test.tsx` - Tests for ReviewSession component (Issue #69)
-- `frontend/src/components/LLMMetrics/*.jest.test.ts(x)` - Tests for the admin LLM metrics dashboard components and helpers (Issue #237)
+- `frontend/src/components/LLMMetrics/*.jest.test.ts(x)` - Tests for the admin LLM metrics dashboard and comparison report components and helpers (Issues #237, #238)
 - `frontend/cypress/e2e/admin-metrics.cy.ts` - Cypress E2E test: load `/admin/metrics` and apply a filter (Issue #237)
+- `frontend/cypress/e2e/admin-metrics-report.cy.ts` - Cypress E2E test: view the comparison report, change the baseline and export CSV (Issue #238)
 
 > **Jest polyfills:** `frontend/jest.polyfills.cjs` (Jest `setupFiles`) adds `TextEncoder`/`TextDecoder`, which jsdom lacks and react-router v7 needs, so Jest tests can render routed components.
 

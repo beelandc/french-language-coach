@@ -1,4 +1,4 @@
-"""Aggregation, filtering and reporting over ``llm_calls`` (issues #228 and #236).
+"""Aggregation, filtering and reporting over ``llm_calls`` (issues #228, #236, #238).
 
 The metrics router calls into this module so that the eval work (#231, #232) can
 reuse the same filters, summaries and model comparison report.
@@ -10,7 +10,7 @@ import math
 from collections import defaultdict
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
-from typing import Any, Iterable, Optional
+from typing import Any, Callable, Iterable, Optional
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -18,6 +18,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from models.llm_call import STATUS_ERROR, LLMCall
 from schemas.llm_metrics import (
     FeatureReport,
+    FeatureSummary,
     LLMMetricsGroup,
     LLMMetricsResponse,
     LLMMetricsStats,
@@ -405,6 +406,115 @@ def _row_warnings(
     return warnings
 
 
+SINGLE_MODEL_SUMMARY = (
+    "Fewer than two models have calls for this feature, so there is nothing to compare."
+)
+
+
+def _model_key(row: ModelReportRow) -> str:
+    return f"{row.provider}:{row.model}"
+
+
+def _join_names(names: list[str]) -> str:
+    """Join names as "A", "A and B" or "A, B and C"."""
+    if len(names) <= 1:
+        return "".join(names)
+    return f"{', '.join(names[:-1])} and {names[-1]}"
+
+
+def _money(value: float) -> str:
+    """Format USD: two decimals from one cent up, else up to six decimals."""
+    if value >= 0.01:
+        return f"${value:,.2f}"
+    text = f"{value:.6f}".rstrip("0").rstrip(".")
+    return f"${text}"
+
+
+def _leaders(
+    rows: list[ModelReportRow], value: Callable[[ModelReportRow], Optional[float]]
+) -> tuple[list[ModelReportRow], Optional[float]]:
+    """Return the rows sharing the lowest non-None value, and that value."""
+    candidates = [(value(row), row) for row in rows if value(row) is not None]
+    if not candidates:
+        return [], None
+    best = min(v for v, _ in candidates)
+    return [row for v, row in candidates if v == best], best
+
+
+def build_feature_summary(
+    feature: str, rows: list[ModelReportRow]
+) -> Optional[FeatureSummary]:
+    """Summarise which model was cheapest, fastest and most reliable for a feature.
+
+    Only models with at least ``MIN_SAMPLE_SIZE`` calls are ranked, so the summary
+    never names a leader from a sample that triggers the sample-size warning.
+    Wording is factual ("had the lowest ..."); ties name every tied model.
+
+    Args:
+        feature: Feature name, e.g. ``chat``.
+        rows: The feature's report rows.
+
+    Returns:
+        The summary, or ``None`` when fewer than two models have calls.
+    """
+    if len(rows) < 2:
+        return None
+
+    eligible = [row for row in rows if row.calls >= MIN_SAMPLE_SIZE]
+    excluded = [row for row in rows if row.calls < MIN_SAMPLE_SIZE]
+    compared_models = [_model_key(row) for row in eligible]
+    excluded_models = [_model_key(row) for row in excluded]
+
+    if len(eligible) < 2:
+        details = "; ".join(f"{_model_key(row)} has {row.calls} calls" for row in excluded)
+        return FeatureSummary(
+            text=(
+                f"Not enough data to name a winner for {feature}: {details} "
+                f"(minimum {MIN_SAMPLE_SIZE} per model)."
+            ),
+            compared_models=compared_models,
+            excluded_models=excluded_models,
+        )
+
+    def names(leaders: list[ModelReportRow]) -> str:
+        return _join_names([_model_key(row) for row in leaders])
+
+    clauses = []
+    cheapest, cost = _leaders(eligible, lambda r: r.cost_per_1000_calls_usd)
+    if cost is None:
+        clauses.append("no model had priced calls, so cost is not ranked")
+    else:
+        clause = f"{names(cheapest)} had the lowest cost per 1,000 calls ({_money(cost)})"
+        unpriced = [row for row in eligible if row.cost_per_1000_calls_usd is None]
+        if unpriced:
+            clause += f" (not priced: {names(unpriced)})"
+        clauses.append(clause)
+
+    fastest_p50, p50 = _leaders(eligible, lambda r: r.latency_p50_ms)
+    if p50 is not None:
+        clauses.append(f"{names(fastest_p50)} had the lowest p50 latency ({p50:,.0f} ms)")
+    fastest_p95, p95 = _leaders(eligible, lambda r: r.latency_p95_ms)
+    if p95 is not None:
+        clauses.append(f"{names(fastest_p95)} had the lowest p95 latency ({p95:,.0f} ms)")
+    reliable, rate = _leaders(eligible, lambda r: r.error_rate)
+    clauses.append(f"{names(reliable)} had the lowest error rate ({rate * 100:.1f}%)")
+
+    text = f"For {feature}, " + "; ".join(clauses) + "."
+    if excluded:
+        listed = ", ".join(f"{_model_key(row)} ({row.calls} calls)" for row in excluded)
+        text += f" Not ranked (fewer than {MIN_SAMPLE_SIZE} calls): {listed}."
+
+    return FeatureSummary(
+        text=text,
+        compared_models=compared_models,
+        excluded_models=excluded_models,
+        cheapest=[_model_key(row) for row in cheapest],
+        fastest_p50=[_model_key(row) for row in fastest_p50],
+        fastest_p95=[_model_key(row) for row in fastest_p95],
+        most_reliable=[_model_key(row) for row in reliable],
+    )
+
+
 def build_report(
     rows: Iterable[Any],
     filters: MetricsFilters,
@@ -480,6 +590,7 @@ def build_report(
                 first_call_at=first,
                 last_call_at=last,
                 rows=report_rows,
+                summary=build_feature_summary(feature, report_rows),
             )
         )
 
@@ -541,17 +652,26 @@ def _usd(value: Optional[float]) -> Optional[str]:
     return None if value is None else f"{value:.8f}".rstrip("0").rstrip(".")
 
 
+def _filters_text(meta: ReportMetadata) -> str:
+    """Return the set filters as ``key=value, ...``, or ``none``."""
+    set_filters = [f"{key}={value}" for key, value in meta.filters.items() if value]
+    return ", ".join(set_filters) or "none"
+
+
+def _summary_text(feature: FeatureReport) -> str:
+    return feature.summary.text if feature.summary else SINGLE_MODEL_SUMMARY
+
+
 def render_report_markdown(report: ModelReport) -> str:
     """Render the report as Markdown: metadata, notes, warnings, prices, and per
-    feature a metrics table and a comparison-with-baseline table."""
+    feature a summary, a metrics table and a comparison-with-baseline table."""
     meta = report.metadata
-    set_filters = [f"{key}={value}" for key, value in meta.filters.items() if value]
     lines = [
         "# LLM model comparison report",
         "",
         f"- **Generated**: {_md_cell(meta.generated_at)} UTC",
         f"- **Baseline**: {_md_cell(meta.baseline)}",
-        f"- **Filters**: {_md_cell(', '.join(set_filters) or 'none')}",
+        f"- **Filters**: {_md_cell(_filters_text(meta))}",
         f"- **Date range covered**: {_md_cell(meta.covered_from)} to "
         f"{_md_cell(meta.covered_to)} UTC",
         f"- **Minimum sample size**: {meta.min_sample_size}",
@@ -584,6 +704,8 @@ def render_report_markdown(report: ModelReport) -> str:
         lines += [
             "",
             f"## Feature: {_md_cell(feature.feature)}",
+            "",
+            f"**Summary**: {_summary_text(feature)}",
             "",
             "| Model | Calls | Error rate | Refusals | Latency mean / p50 / p95 (ms) "
             "| Tokens in / out per call | Cost per call (USD) "
@@ -661,9 +783,44 @@ def _csv_value(value: Any) -> Any:
     return value
 
 
+def _comment(text: Any) -> str:
+    """One CSV comment line; line breaks inside the value become spaces."""
+    flat = " ".join(str(text).splitlines())
+    return f"# {flat}\n"
+
+
+def _csv_preamble(report: ModelReport) -> list[str]:
+    """Return the ``#`` comment lines that carry the report's context and caveats."""
+    meta = report.metadata
+    lines = [
+        "LLM model comparison report",
+        f"Generated: {_md_cell(meta.generated_at)} UTC",
+        f"Baseline: {meta.baseline}",
+        f"Filters: {_filters_text(meta)}",
+        f"Date range covered: {_md_cell(meta.covered_from)} to {_md_cell(meta.covered_to)} UTC",
+        f"Minimum sample size: {meta.min_sample_size}",
+        f"Latency and token basis: {meta.latency_basis}",
+        *[f"Note: {note}" for note in meta.notes],
+        *([f"Warning: {warning}" for warning in meta.warnings] or ["Warnings: none"]),
+        *[
+            f"Price: {p.provider}:{p.model} checked {p.checked_on} ({p.source})"
+            for p in meta.prices
+        ],
+        *[f"Summary ({f.feature}): {_summary_text(f)}" for f in report.features],
+    ]
+    return [_comment(line) for line in lines]
+
+
 def render_report_csv(report: ModelReport) -> str:
-    """Render the report as CSV: a header and one row per (feature, provider, model)."""
+    """Render the report as CSV.
+
+    ``#`` comment lines come first (metadata, notes, warnings, prices, summaries;
+    issue #238), then a header and one row per (feature, provider, model).
+    Spreadsheet tools show the comment lines as text; ``pandas.read_csv`` skips them
+    with ``comment="#"``.
+    """
     buffer = io.StringIO()
+    buffer.writelines(_csv_preamble(report))
     writer = csv.writer(buffer, lineterminator="\n")
     writer.writerow(CSV_COLUMNS + [f"delta_{c}" for c in CSV_DELTA_COLUMNS] + ["warnings"])
     for feature in report.features:

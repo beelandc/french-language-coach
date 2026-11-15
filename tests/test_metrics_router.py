@@ -372,6 +372,11 @@ class TestReportEndpoint:
             ("mistral", "mistral-large-latest"), ("anthropic", "claude-haiku-5-5"),
         }
         assert meta["warnings"] == []
+        summary = chat["summary"]
+        assert summary["cheapest"] == ["anthropic:claude-haiku-5-5"]
+        assert summary["fastest_p50"] == ["anthropic:claude-haiku-5-5"]
+        assert summary["most_reliable"] == ["mistral:mistral-large-latest"]
+        assert summary["text"].startswith("For chat, ")
 
     @pytest.mark.asyncio
     async def test_custom_baseline_and_sample_warning(self, client, test_db):
@@ -408,6 +413,7 @@ class TestReportEndpoint:
         assert disposition.endswith('.md"')
         assert response.text.startswith("# LLM model comparison report")
         assert "## Feature: chat" in response.text
+        assert "**Summary**: For chat, " in response.text
 
     @pytest.mark.asyncio
     async def test_csv_download(self, client, test_db):
@@ -418,7 +424,10 @@ class TestReportEndpoint:
         assert response.status_code == 200
         assert response.headers["content-type"].startswith("text/csv")
         assert response.headers["content-disposition"].endswith('.csv"')
-        lines = response.text.strip().splitlines()
+        assert response.text.startswith("# LLM model comparison report\n")
+        assert "# Summary (chat): For chat, " in response.text
+        assert "# Note: Live traffic is not a controlled comparison" in response.text
+        lines = [line for line in response.text.strip().splitlines() if not line.startswith("#")]
         assert lines[0].startswith("feature,provider,model,is_baseline,calls")
         assert len(lines) == 3
 

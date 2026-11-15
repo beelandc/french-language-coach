@@ -1,5 +1,5 @@
 /**
- * Storybook stories for LLMMetricsDashboard (Issue #237).
+ * Storybook stories for LLMMetricsDashboard (Issues #237, #238).
  *
  * Under `npm run test` (Vitest), src/testSetup.ts replaces utils/api with mocks;
  * each story sets the metricsApi responses it needs. In the Storybook UI the
@@ -8,7 +8,7 @@
 
 import type { Meta, StoryObj } from '@storybook/react'
 import { vi } from 'vitest'
-import { expect, within } from 'storybook/test'
+import { expect, userEvent, within } from 'storybook/test'
 import LLMMetricsDashboard from './LLMMetricsDashboard'
 import { metricsApi } from '../../utils/api'
 import {
@@ -16,6 +16,7 @@ import {
   emptySummary,
   sampleCallLog,
   samplePricing,
+  sampleReport,
   sampleSummary,
   sampleTimeseries,
 } from './fixtures'
@@ -28,6 +29,7 @@ function mockMetrics(overrides: Partial<Record<keyof typeof metricsApi, () => Pr
     listCalls: async () => sampleCallLog,
     getTimeseries: async () => sampleTimeseries,
     getPricing: async () => samplePricing,
+    getReport: async () => sampleReport,
   }
   for (const [name, impl] of Object.entries({ ...defaults, ...overrides })) {
     vi.mocked(metricsApi[name as keyof typeof metricsApi]).mockImplementation(impl as never)
@@ -96,4 +98,16 @@ export const ApiErrors: Story = {
 export const Mobile: Story = {
   beforeEach: () => mockMetrics(),
   globals: { viewport: { value: 'mobile1' } },
+}
+
+/** Switching to the comparison report tab (Issue #238). */
+export const ComparisonReportTab: Story = {
+  beforeEach: () => mockMetrics(),
+  play: async ({ canvasElement }) => {
+    if (!vi.isMockFunction(metricsApi.getReport)) return
+    const canvas = within(canvasElement)
+    await userEvent.click(canvas.getByRole('tab', { name: 'Comparison report' }))
+    await expect(await canvas.findByTestId('report-feature-feedback')).toBeInTheDocument()
+    await expect(canvas.queryByTestId('llm-metrics-summary-panel')).not.toBeInTheDocument()
+  },
 }
