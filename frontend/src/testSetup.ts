@@ -46,7 +46,7 @@ const mockSessionApi = {
     messages: [],
     feedback: null,
   })),
-  listSessions: vi.fn(async (page: number = 1, perPage: number = 10) => ({
+  listSessions: vi.fn(async () => ({
     sessions: [
       {
         id: '1',
@@ -81,7 +81,7 @@ const mockSessionApi = {
     total: 3,
     total_pages: 1,
   })),
-  deleteSession: vi.fn(async (sessionId: string) => undefined),
+  deleteSession: vi.fn(async () => undefined),
 }
 
 // Mock metrics API for the admin LLM metrics dashboard (Issue #237).

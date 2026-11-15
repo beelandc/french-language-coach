@@ -101,7 +101,7 @@ The Vite dev server runs on **port 5173** with:
 npm run build
 ```
 
-Builds the React app to the `../static/` directory (configured in `vite.config.ts`).
+Type-checks the project with `tsc -b`, then builds the React app to the `../static/` directory (configured in `vite.config.ts`). The build stops if the type-check fails. To type-check without building (as CI does), run `npm run typecheck`.
 
 ### Serve with FastAPI
 The FastAPI backend already serves static files from the `static/` directory. After building:
@@ -116,7 +116,8 @@ The FastAPI backend already serves static files from the `static/` directory. Af
 | Script | Description |
 |--------|-------------|
 | `npm run dev` | Start Vite development server |
-| `npm run build` | Build for production |
+| `npm run build` | Type-check (`tsc -b`), then build for production |
+| `npm run typecheck` | Type-check only (`tsc -b`); enforced in CI by the `Frontend Type Check` workflow |
 | `npm run lint` | Run ESLint |
 | `npm run preview` | Preview production build locally |
 | `npm run storybook` | Start Storybook dev server at http://localhost:6006 |

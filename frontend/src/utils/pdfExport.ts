@@ -126,7 +126,7 @@ export async function generateFeedbackPDF(
   doc.setFontSize(12);
 
   if (feedback.strengths && feedback.strengths.length > 0) {
-    feedback.strengths.forEach((strength, index) => {
+    feedback.strengths.forEach((strength) => {
       // Bullet point
       const bulletX = margin + 2;
       const textX = margin + 5;
@@ -232,7 +232,7 @@ export async function generateFeedbackPDF(
   }
 
   // Footer with page number
-  const pageCount = doc.internal.getNumberOfPages();
+  const pageCount = doc.getNumberOfPages();
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
     doc.setFont('helvetica', 'normal');

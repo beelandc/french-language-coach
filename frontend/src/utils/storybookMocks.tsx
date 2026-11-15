@@ -6,9 +6,9 @@
  * so that components using useSessions() can work with mock data.
  */
 
-import React, { useContext, useState, useCallback } from 'react'
+import React, { useState, useCallback } from 'react'
 import { SessionsContext } from '../hooks/useSessions'
-import type { Session, Message, Feedback, SessionsContextType } from '@/types'
+import type { Session, Message, Feedback, Difficulty, SessionsContextType } from '@/types'
 
 // Mock data
 const mockMessages: Message[] = [
@@ -36,7 +36,6 @@ const mockMessages: Message[] = [
 ]
 
 const mockFeedback: Feedback = {
-  session_id: 'mock-session-1',
   grammar_score: 85,
   vocabulary_score: 92,
   fluency_score: 78,
@@ -65,6 +64,9 @@ const mockSession: Session = {
   ended_at: null,
   messages: mockMessages,
   feedback: null,
+  is_locked: false,
+  locked_at: null,
+  locked_by: null,
 }
 
 const mockEndedSession: Session = {
@@ -75,6 +77,9 @@ const mockEndedSession: Session = {
   ended_at: '2024-01-15T10:35:00Z',
   messages: mockMessages,
   feedback: mockFeedback,
+  is_locked: false,
+  locked_at: null,
+  locked_by: null,
 }
 
 const mockEmptySession: Session = {
@@ -85,6 +90,9 @@ const mockEmptySession: Session = {
   ended_at: null,
   messages: [],
   feedback: null,
+  is_locked: false,
+  locked_at: null,
+  locked_by: null,
 }
 
 interface MockSessionsProviderProps {
@@ -115,7 +123,7 @@ export function MockSessionsProvider({
   feedbackError,
 }: MockSessionsProviderProps) {
   const [sessions, setSessions] = useState<Session[]>(initialSessions)
-  const [currentSessionIdState, setCurrentSessionId] = useState<string | null>(currentSessionId)
+  const [currentSessionIdState, setCurrentSessionIdState] = useState<string | null>(currentSessionId)
   const [currentScenarioIdState, setCurrentScenarioId] = useState<string | null>(currentScenarioId)
   const [sessionEndedState, setSessionEnded] = useState<boolean>(sessionEnded)
   const [isLoadingState, setIsLoading] = useState<boolean>(isLoading)
@@ -123,7 +131,7 @@ export function MockSessionsProvider({
 
   const clearError = useCallback(() => setError(null), [])
 
-  const createSession = useCallback(async (scenarioId: string, difficulty?: string): Promise<string> => {
+  const createSession = useCallback(async (scenarioId: string, difficulty?: Difficulty): Promise<string> => {
     setIsLoading(true)
     setError(null)
 
@@ -131,7 +139,7 @@ export function MockSessionsProvider({
     await new Promise(resolve => setTimeout(resolve, 300))
 
     const newSessionId = `new-mock-session-${Date.now()}`
-    setCurrentSessionId(newSessionId)
+    setCurrentSessionIdState(newSessionId)
     setCurrentScenarioId(scenarioId)
     setSessionEnded(false)
 
@@ -140,11 +148,14 @@ export function MockSessionsProvider({
       {
         id: newSessionId,
         scenario_id: scenarioId,
-        difficulty: (difficulty || 'intermediate') as const,
+        difficulty: difficulty ?? 'intermediate',
         created_at: new Date().toISOString(),
         ended_at: null,
         messages: [],
         feedback: null,
+        is_locked: false,
+        locked_at: null,
+        locked_by: null,
       },
     ])
 
@@ -249,6 +260,10 @@ export function MockSessionsProvider({
     setCurrentSessionIdState(id)
   }, [])
 
+  // Session locking is a no-op in stories
+  const lockSession = useCallback(async (): Promise<void> => {}, [])
+  const unlockSession = useCallback(async (): Promise<void> => {}, [])
+
   const value: SessionsContextType = {
     sessions,
     currentSessionId: currentSessionIdState,
@@ -262,6 +277,8 @@ export function MockSessionsProvider({
     endSession,
     setCurrentSessionId: handleSetCurrentSessionId,
     clearError,
+    lockSession,
+    unlockSession,
   }
 
   // Use the REAL SessionsContext so useSessions() hook works

@@ -15,16 +15,12 @@ import type { TranslationExerciseProps } from '../../types/index'
  * @param props.onAnswerChange - Callback when answer changes
  * @param props.onSubmit - Callback when answer is submitted
  * @param props.userAnswer - Current user answer
- * @param props.feedback - Feedback message to display
- * @param props.isCorrect - Whether the answer was correct
  * @returns JSX Element
  */
 export default function TranslationExercise({
   exercise,
   onAnswerChange,
   userAnswer,
-  feedback,
-  isCorrect,
 }: TranslationExerciseProps) {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onAnswerChange(e.target.value)

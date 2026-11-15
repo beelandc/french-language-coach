@@ -44,7 +44,8 @@ jobs:
               'Pytest Backend Unit Tests',
               'Jest Unit Tests',
               'Vitest Unit Tests',
-              'Cypress E2E Tests'
+              'Cypress E2E Tests',
+              'Frontend Type Check'
             ];
             
             // Get all workflows to build a map of name -> id

@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import ConfirmationModal from './ConfirmationModal'
-import type { SessionHistoryItemProps, SessionSummary } from '../types'
+import type { SessionHistoryItemProps } from '../types'
 
 /**
  * SessionHistoryItem component displays a single session in the history list.

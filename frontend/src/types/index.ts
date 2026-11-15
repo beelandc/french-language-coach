@@ -69,6 +69,26 @@ export interface CreateSessionResponse {
   created_at: string
 }
 
+/**
+ * Raw session payload returned by `POST /sessions/` and `GET /sessions/{id}`.
+ * Mirrors `SessionResponse` in schemas/session.py: the id is an integer and
+ * messages are `{ role, content }` pairs that need mapping to `Message`.
+ * Fields beyond `id`, `scenario_id` and `created_at` are optional so partial
+ * mocks (e.g. src/testSetup.ts) still type-check.
+ */
+export interface BackendSessionResponse {
+  id: number
+  scenario_id: string
+  difficulty?: string
+  created_at: string
+  ended_at?: string | null
+  messages?: BackendMessage[]
+  feedback?: Feedback | null
+  is_locked?: boolean
+  locked_at?: string | null
+  locked_by?: string | null
+}
+
 // Session lock response types
 export interface SessionLockResponse {
   id: string
@@ -149,6 +169,8 @@ export interface SessionsContextType {
   endSession: () => void
   setCurrentSessionId: (id: string | null) => void
   clearError: () => void
+  lockSession: (sessionId: string, clientId?: string) => Promise<void>
+  unlockSession: (sessionId: string, clientId?: string) => Promise<void>
 }
 
 // Session History types
@@ -490,8 +512,6 @@ export interface FillInTheBlankExerciseProps {
   onAnswerChange: (answer: string) => void
   onSubmit: () => void
   userAnswer: string
-  feedback?: string
-  isCorrect?: boolean
 }
 
 export interface MultipleChoiceExerciseProps {
@@ -499,8 +519,8 @@ export interface MultipleChoiceExerciseProps {
   onAnswerChange: (answer: string) => void
   onSubmit: () => void
   selectedAnswer: string | null
-  feedback?: string
-  isCorrect?: boolean
+  /** Result of the last submission; null until an answer is submitted */
+  isCorrect: boolean | null
 }
 
 export interface TranslationExerciseProps {
@@ -508,8 +528,6 @@ export interface TranslationExerciseProps {
   onAnswerChange: (answer: string) => void
   onSubmit: () => void
   userAnswer: string
-  feedback?: string
-  isCorrect?: boolean
 }
 
 export interface ConjugationExerciseProps {
@@ -517,8 +535,6 @@ export interface ConjugationExerciseProps {
   onAnswerChange: (answer: string) => void
   onSubmit: () => void
   userAnswer: string
-  feedback?: string
-  isCorrect?: boolean
 }
 
 export interface SentenceTransformationExerciseProps {
@@ -526,8 +542,6 @@ export interface SentenceTransformationExerciseProps {
   onAnswerChange: (answer: string) => void
   onSubmit: () => void
   userAnswer: string
-  feedback?: string
-  isCorrect?: boolean
 }
 
 /**

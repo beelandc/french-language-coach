@@ -40,5 +40,10 @@
     "noFallthroughCasesInSwitch": true
   },
   "include": ["src"],
-  "exclude": ["src/**/*.test.*", "src/**/*.spec.*", "src/**/*.stories.*"]
+  "exclude": [
+    "src/**/*.test.*",
+    "src/**/*.spec.*",
+    "src/**/*.stories.*",
+    "src/setupTests.ts"
+  ]
 }

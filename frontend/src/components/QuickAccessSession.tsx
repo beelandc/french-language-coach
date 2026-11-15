@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom'
 import type { QuickAccessSessionProps } from '../types'
 
 /**
@@ -9,8 +8,6 @@ export default function QuickAccessSession({
   session, 
   onClick 
 }: QuickAccessSessionProps) {
-  const navigate = useNavigate()
-  
   const handleResumeClick = (e: React.MouseEvent) => {
     e.stopPropagation()
     onClick(session.id)

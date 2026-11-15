@@ -8,9 +8,9 @@ const mockJsPDF = vi.fn().mockImplementation(() => ({
     pageSize: {
       getWidth: () => 210, // A4 width in mm
       getHeight: () => 297 // A4 height in mm
-    },
-    getNumberOfPages: () => 1
+    }
   },
+  getNumberOfPages: () => 1,
   setFont: vi.fn(),
   setFontSize: vi.fn(),
   setDrawColor: vi.fn(),
@@ -191,10 +191,7 @@ describe('pdfExport utility', () => {
       // Mock a scenario where multiple pages are added
       const mockMultiPageDoc = {
         ...getMockDoc(),
-        internal: {
-          ...getMockDoc().internal,
-          getNumberOfPages: () => 2
-        },
+        getNumberOfPages: () => 2,
         setPage: vi.fn()
       };
 

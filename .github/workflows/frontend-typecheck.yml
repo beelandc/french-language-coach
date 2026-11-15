@@ -1,0 +1,42 @@
+name: Frontend Type Check
+
+# Type-check the frontend with `tsc -b` (Issue #250).
+# This only type-checks: it never runs `vite build`, which would rewrite the tracked static/ directory.
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/frontend-typecheck.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/frontend-typecheck.yml'
+
+jobs:
+  typecheck:
+    name: Frontend Type Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      - name: Install Frontend Dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Type-check (tsc -b)
+        working-directory: frontend
+        run: npm run typecheck

@@ -7,6 +7,12 @@
     "module": "commonjs",
     "types": ["jest", "@testing-library/jest-dom", "node"]
   },
-  "include": ["src/**/*.test.ts", "src/**/*.test.tsx", "src/**/*.spec.ts", "src/**/*.spec.tsx"],
+  "include": [
+    "src/setupTests.ts",
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx",
+    "src/**/*.spec.ts",
+    "src/**/*.spec.tsx"
+  ],
   "exclude": ["node_modules"]
 }

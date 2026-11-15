@@ -164,7 +164,7 @@ Each scenario supports three difficulty levels that affect the AI's system promp
 
 **Alternative (Production Mode):**
 
-1. Build the frontend:
+1. Build the frontend (`npm run build` type-checks with `tsc -b` first, then runs `vite build`, which overwrites the tracked `static/` directory):
    ```bash
    cd frontend
    npm run build
@@ -709,6 +709,15 @@ The frontend uses **Vitest** for most unit and component testing, and **Jest** f
 **Prerequisites:**
 - Frontend dependencies installed (`cd frontend && npm install`)
 
+#### Type-check
+
+`tsc -b` must pass with no errors. CI enforces this through the `Frontend Type Check` workflow ([Issue #250](https://github.com/beelandc/french-language-coach/issues/250)). It only type-checks and doesn't build.
+
+```bash
+cd frontend
+npm run typecheck
+```
+
 #### Vitest (Primary Test Framework)
 
 **To run all frontend tests:**
@@ -766,6 +775,10 @@ npm run test:jest:watch
 - `frontend/src/components/Flashcard.jest.test.tsx` - Tests for Flashcard component (Issue #69)
 - `frontend/src/components/ReviewSession.jest.test.tsx` - Tests for ReviewSession component (Issue #69)
 - `frontend/src/components/LLMMetrics/*.jest.test.ts(x)` - Tests for the admin LLM metrics dashboard and comparison report components and helpers (Issues #237, #238)
+- `frontend/src/components/Exercise.jest.test.tsx` - Tests for the Exercise wrapper: answer checking, Next button, unknown-type fallback (Issue #250)
+- `frontend/src/hooks/useSessions.jest.test.tsx` - Tests for `createSession` mapping backend greeting messages and lock fields (Issue #250)
+- `frontend/src/utils/api.jest.test.ts` - Tests for `searchReferences` query building and `sessionApi.create` (Issue #250)
+- `frontend/src/utils/storybookMocks.jest.test.tsx` - Tests for the Storybook mock sessions provider (Issue #250)
 - `frontend/cypress/e2e/admin-metrics.cy.ts` - Cypress E2E test: load `/admin/metrics` and apply a filter (Issue #237)
 - `frontend/cypress/e2e/admin-metrics-report.cy.ts` - Cypress E2E test: view the comparison report, change the baseline and export CSV (Issue #238)
 
@@ -781,6 +794,7 @@ This project uses GitHub Actions for Continuous Integration with the following w
 - **jest-tests.yml** - Runs frontend Jest tests when frontend files change
 - **vitest-tests.yml** - Runs frontend Vitest tests when frontend files change
 - **cypress-tests.yml** - Runs end-to-end Cypress tests when frontend files change
+- **frontend-typecheck.yml** (`Frontend Type Check`) - Runs `npm run typecheck` (`tsc -b`) when frontend files change. Type-check only: it never runs `vite build`
 
 All test workflows use path-based filtering to run only when relevant files are modified, improving CI efficiency.
 
@@ -797,7 +811,7 @@ This workflow always runs on PRs to main and checks the status of all test workf
 **How it works:**
 1. Runs on every PR to main (no path filtering)
 2. Uses the GitHub API to query all workflow runs for the current PR's head commit
-3. Filters to only the test workflows (pytest, jest, vitest, cypress)
+3. Filters to only the test workflows (pytest, jest, vitest, cypress, frontend type check)
 4. If no test workflows ran (e.g., docs-only PR), succeeds with message
 5. If workflows are still in progress, reports pending status
 6. If any triggered workflow failed, fails with details

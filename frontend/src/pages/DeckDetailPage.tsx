@@ -13,7 +13,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import Breadcrumb from '../components/Breadcrumb'
 import Flashcard from '../components/Flashcard'
 import { vocabularyApi } from '../utils/api'
-import type { DeckSummary, CardSummary, DeckWithProgress, SessionStats } from '../types/index'
+import type { DeckSummary, CardSummary, DeckWithProgress } from '../types/index'
 
 /**
  * Number of cards to show in preview on deck detail page
@@ -70,8 +70,6 @@ export default function DeckDetailPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // State for review session completion
-  const [reviewStats, setReviewStats] = useState<SessionStats | null>(null)
 
   // Derived deck ID (convert from string to number)
   const deckIdNum = useMemo(() => {
@@ -121,13 +119,6 @@ export default function DeckDetailPage() {
   const handleBackToVocabulary = useCallback(() => {
     navigate('/vocabulary')
   }, [navigate])
-
-  // Handle review session completion
-  const handleReviewComplete = useCallback((stats: SessionStats) => {
-    setReviewStats(stats)
-    // Refresh deck data to update progress
-    fetchDeckData()
-  }, [fetchDeckData])
 
   // Calculate deck progress
   const deckWithProgress = useMemo<DeckWithProgress | null>(() => {
@@ -403,20 +394,6 @@ export default function DeckDetailPage() {
         <section className="deck-empty-state" data-testid="deck-empty-state">
           <h2>No Cards Yet</h2>
           <p>This deck doesn't have any cards. Add cards to start studying!</p>
-        </section>
-      )}
-
-      {/* Review Session Completion Summary */}
-      {reviewStats && (
-        <section className="deck-review-summary" data-testid="deck-review-summary">
-          <h2>Review Session Complete!</h2>
-          <p>You reviewed {reviewStats.totalCards} cards</p>
-          <div className="review-summary-stats">
-            <span>Again: {reviewStats.ratings.Again || 0}</span>
-            <span>Hard: {reviewStats.ratings.Hard || 0}</span>
-            <span>Good: {reviewStats.ratings.Good || 0}</span>
-            <span>Easy: {reviewStats.ratings.Easy || 0}</span>
-          </div>
         </section>
       )}
     </div>

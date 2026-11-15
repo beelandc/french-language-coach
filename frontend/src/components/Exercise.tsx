@@ -78,9 +78,7 @@ export default function Exercise({
     }
     
     // Call the parent callback
-    if (onAnswerSubmit) {
-      onAnswerSubmit(exercise.id, answer)
-    }
+    onAnswerSubmit(exercise.id, answer)
   }, [checkAnswer, exercise, onAnswerSubmit])
 
   // Handle text answer change
@@ -116,6 +114,9 @@ export default function Exercise({
 
   // Render the appropriate exercise component based on type
   const renderExercise = () => {
+    // Exercises come from JSON/API data, so an unknown type can still arrive at
+    // runtime even though the switch below is exhaustive for ExerciseType.
+    const exerciseType: string = exercise.type
     switch (exercise.type) {
       case 'fill-in-the-blank':
         return (
@@ -124,8 +125,6 @@ export default function Exercise({
             onAnswerChange={handleTextAnswerChange}
             onSubmit={() => handleSubmit(userAnswer)}
             userAnswer={userAnswer}
-            feedback={feedback}
-            isCorrect={isCorrect}
           />
         )
       case 'multiple-choice':
@@ -135,7 +134,6 @@ export default function Exercise({
             onAnswerChange={handleOptionSelect}
             onSubmit={() => selectedOption && handleSubmit(selectedOption)}
             selectedAnswer={selectedOption}
-            feedback={feedback}
             isCorrect={isCorrect}
           />
         )
@@ -146,8 +144,6 @@ export default function Exercise({
             onAnswerChange={handleTextAnswerChange}
             onSubmit={() => handleSubmit(userAnswer)}
             userAnswer={userAnswer}
-            feedback={feedback}
-            isCorrect={isCorrect}
           />
         )
       case 'conjugation':
@@ -157,8 +153,6 @@ export default function Exercise({
             onAnswerChange={handleTextAnswerChange}
             onSubmit={() => handleSubmit(userAnswer)}
             userAnswer={userAnswer}
-            feedback={feedback}
-            isCorrect={isCorrect}
           />
         )
       case 'sentence-transformation':
@@ -168,14 +162,12 @@ export default function Exercise({
             onAnswerChange={handleTextAnswerChange}
             onSubmit={() => handleSubmit(userAnswer)}
             userAnswer={userAnswer}
-            feedback={feedback}
-            isCorrect={isCorrect}
           />
         )
       default:
         return (
           <div className="exercise-error" data-testid="exercise-error">
-            <p>Unknown exercise type: {exercise.type}</p>
+            <p>Unknown exercise type: {exerciseType}</p>
           </div>
         )
     }
@@ -254,7 +246,7 @@ export default function Exercise({
       )}
 
       {/* Next Button */}
-      {isSubmitted && onAnswerSubmit && (
+      {isSubmitted && (
         <button
           onClick={handleNext}
           className="btn-secondary exercise-next"

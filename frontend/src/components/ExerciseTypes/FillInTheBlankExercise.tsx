@@ -15,16 +15,12 @@ import type { FillInTheBlankExerciseProps } from '../../types/index'
  * @param props.onAnswerChange - Callback when answer changes
  * @param props.onSubmit - Callback when answer is submitted
  * @param props.userAnswer - Current user answer
- * @param props.feedback - Feedback message to display
- * @param props.isCorrect - Whether the answer was correct
  * @returns JSX Element
  */
 export default function FillInTheBlankExercise({
   exercise,
   onAnswerChange,
   userAnswer,
-  feedback,
-  isCorrect,
 }: FillInTheBlankExerciseProps) {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onAnswerChange(e.target.value)
