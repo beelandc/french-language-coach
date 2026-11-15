@@ -95,11 +95,6 @@ export default function ReferencePage() {
     setPage(1)
   }, [])
 
-  // Handle page change
-  const handlePageChange = useCallback((newPage: number) => {
-    setPage(newPage)
-  }, [])
-
   // Handle previous page
   const handlePreviousPage = useCallback(() => {
     if (page > 1) {

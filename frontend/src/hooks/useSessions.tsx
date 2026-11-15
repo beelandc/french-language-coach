@@ -1,23 +1,6 @@
 import { useState, useCallback, createContext, useContext } from 'react'
 import { sessionApi } from '../utils/api'
-import type { Session, Message, Feedback, Difficulty } from '../types'
-
-interface SessionsContextType {
-  sessions: Session[]
-  currentSessionId: string | null
-  currentScenarioId: string | null
-  sessionEnded: boolean
-  isLoading: boolean
-  error: string | null
-  createSession: (scenarioId: string, difficulty?: Difficulty) => Promise<string>
-  sendMessage: (sessionId: string, content: string) => Promise<Message>
-  getFeedback: (sessionId: string, forceRefresh?: boolean) => Promise<Feedback | null>
-  endSession: () => void
-  setCurrentSessionId: (id: string | null) => void
-  clearError: () => void
-  lockSession: (sessionId: string, clientId?: string) => Promise<void>
-  unlockSession: (sessionId: string, clientId?: string) => Promise<void>
-}
+import type { Session, Message, MessageRole, Feedback, Difficulty, SessionsContextType } from '../types'
 
 const SessionsContext = createContext<SessionsContextType | undefined>(undefined)
 
@@ -48,8 +31,16 @@ export function SessionsProvider({ children }: SessionsProviderProps) {
       setCurrentScenarioId(scenarioId)
       setSessionEnded(false)
 
-      // Use messages from the API response (which may include initial AI greeting)
-      const messagesFromApi = response.messages || []
+      // Use messages from the API response (which may include the initial AI greeting).
+      // The backend sends { role, content } pairs; map them to frontend Messages so each
+      // one has a stable id (used as the React key in ChatInterface).
+      const messagesFromApi: Message[] = (response.messages ?? []).map((msg, index) => ({
+        id: `${newSessionId}-${index}`,
+        session_id: newSessionId,
+        role: msg.role as MessageRole,
+        content: msg.content,
+        created_at: response.created_at,
+      }))
 
       setSessions(prev => [
         ...prev,
@@ -61,6 +52,9 @@ export function SessionsProvider({ children }: SessionsProviderProps) {
           ended_at: null,
           messages: messagesFromApi,
           feedback: null,
+          is_locked: response.is_locked ?? false,
+          locked_at: response.locked_at ?? null,
+          locked_by: response.locked_by ?? null,
         },
       ])
 

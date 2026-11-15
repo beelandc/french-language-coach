@@ -1,6 +1,6 @@
 // MSW Browser Setup for browser-based tests
 
-import { setupWorker } from 'msw';
+import { setupWorker } from 'msw/browser';
 import { handlers } from './handlers';
 
 // Create a worker instance for browser environment

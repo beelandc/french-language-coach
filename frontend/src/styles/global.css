@@ -3775,32 +3775,6 @@ header h1 {
     color: #999;
 }
 
-/* Review Summary */
-.deck-review-summary {
-    margin-top: 30px;
-    padding: 20px;
-    background: #f8f9fa;
-    border-radius: 12px;
-    text-align: center;
-}
-
-.deck-review-summary h2 {
-    color: #4caf50;
-    margin-bottom: 10px;
-}
-
-.review-summary-stats {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-top: 15px;
-    font-size: 1rem;
-}
-
-.review-summary-stats span {
-    color: #555;
-}
-
 /* Loading and Error States */
 .deck-detail-loading,
 .deck-detail-error,
@@ -3847,11 +3821,6 @@ header h1 {
     
     .deck-preview-grid {
         grid-template-columns: 1fr;
-    }
-    
-    .review-summary-stats {
-        flex-direction: column;
-        gap: 10px;
     }
 }
 

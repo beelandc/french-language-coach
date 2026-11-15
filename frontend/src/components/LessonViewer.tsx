@@ -102,7 +102,7 @@ function getDifficultyDisplay(difficulty: string): string {
  */
 export default function LessonViewer({ lesson, allLessons = [], onBack }: LessonViewerProps) {
   const [activeSection, setActiveSection] = useState<string>('')
-  const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({})
+  const sectionRefs = useRef<Record<string, HTMLElement | null>>({})
   const tocRef = useRef<HTMLDivElement | null>(null)
   const contentRef = useRef<HTMLDivElement | null>(null)
 

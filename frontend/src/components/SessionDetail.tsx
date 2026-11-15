@@ -233,7 +233,7 @@ export default function SessionDetail({ sessionId }: SessionDetailProps) {
   }
 
   const hasMessages = session.messages && session.messages.length > 0
-  const hasFeedback = session.feedback !== null
+  const feedback = session.feedback
 
   return (
     <div className="session-detail">
@@ -281,7 +281,7 @@ export default function SessionDetail({ sessionId }: SessionDetailProps) {
       </div>
 
       {/* Feedback Section */}
-      {hasFeedback ? (
+      {feedback ? (
         <div className="session-feedback">
           <div className="session-feedback-header">
             <h3>Feedback Report</h3>
@@ -305,19 +305,19 @@ export default function SessionDetail({ sessionId }: SessionDetailProps) {
           <div className="feedback-section">
             <h4>Scores</h4>
             <div className="scores-grid">
-              <ScoreCard label="Grammar" value={session.feedback.grammar_score} />
-              <ScoreCard label="Vocabulary" value={session.feedback.vocabulary_score} />
-              <ScoreCard label="Fluency" value={session.feedback.fluency_score} />
-              <ScoreCard label="Overall" value={session.feedback.overall_score} />
+              <ScoreCard label="Grammar" value={feedback.grammar_score} />
+              <ScoreCard label="Vocabulary" value={feedback.vocabulary_score} />
+              <ScoreCard label="Fluency" value={feedback.fluency_score} />
+              <ScoreCard label="Overall" value={feedback.overall_score} />
             </div>
           </div>
 
           {/* Strengths */}
           <div className="feedback-section">
             <h4>Strengths</h4>
-            {session.feedback.strengths && session.feedback.strengths.length > 0 ? (
+            {feedback.strengths && feedback.strengths.length > 0 ? (
               <ul className="strengths-list">
-                {session.feedback.strengths.map((strength, index) => (
+                {feedback.strengths.map((strength, index) => (
                   <li key={index}>{strength}</li>
                 ))}
               </ul>
@@ -329,9 +329,9 @@ export default function SessionDetail({ sessionId }: SessionDetailProps) {
           {/* Focus Area */}
           <div className="feedback-section">
             <h4>Focus Area</h4>
-            {session.feedback.focus_area ? (
+            {feedback.focus_area ? (
               <div className="focus-area">
-                <h5>Priority: Improve your {session.feedback.focus_area}</h5>
+                <h5>Priority: Improve your {feedback.focus_area}</h5>
               </div>
             ) : (
               <p>No focus area specified.</p>
@@ -339,12 +339,12 @@ export default function SessionDetail({ sessionId }: SessionDetailProps) {
           </div>
 
           {/* Corrections */}
-          {session.feedback.example_corrections && 
-           session.feedback.example_corrections.length > 0 && (
+          {feedback.example_corrections && 
+           feedback.example_corrections.length > 0 && (
             <div className="feedback-section">
               <h4>Example Corrections</h4>
               <div className="corrections-list">
-                {session.feedback.example_corrections.map((correction, index) => (
+                {feedback.example_corrections.map((correction, index) => (
                   <CorrectionItem key={index} correction={correction} />
                 ))}
               </div>

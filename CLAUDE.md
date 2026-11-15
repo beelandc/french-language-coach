@@ -66,7 +66,7 @@ npm run test:coverage
 npm run test:jest           # Jest: *.jest.test.tsx and __tests__/
 npm run test:jest:coverage
 npm run lint
-npx tsc -b                  # type-check only (tsconfigs set noEmit)
+npm run typecheck           # tsc -b, type-check only (tsconfigs set noEmit); CI gate
 npm run e2e:run             # Cypress (needs backend + dev server running)
 npm run storybook           # :6006
 ```
@@ -76,14 +76,14 @@ npm run storybook           # :6006
 - **Backend (FastAPI, async SQLAlchemy, SQLite)**: `main.py` (app, router registration, SPA fallback; auto-seeds vocabulary decks on startup) → `routers/` (HTTP layer) → `services/llm/` (`llm_service`: per-feature Mistral/Claude providers for chat + JSON feedback, logs each call to `llm_calls`; `services/mistral.py` is a compatibility alias) → `models/` (ORM) with `schemas/` (Pydantic). Scenario system prompts live in `scenarios.py`. Static content is JSON under `data/` (grammar lessons, reference, exercises, vocabulary decks, LLM price table `llm_pricing.json`).
 - **Frontend (React 19 + TS + Vite, react-router)**: `frontend/src/pages/` (routes, wired in `App.tsx`), `components/` (each with `.stories.tsx` and tests), `hooks/`, `utils/api.ts` (typed API client), `types/index.ts`.
 - **Tests**: `tests/` (pytest; `conftest.py` uses in-memory SQLite, factory-boy factories in `tests/factories.py`), `frontend/src/**` (Vitest / Jest), `frontend/cypress/` (E2E).
-- **CI**: `.github/workflows/`. Path-filtered pytest/vitest/jest/cypress jobs plus `status-gateway.yml`, the one required check.
+- **CI**: `.github/workflows/`. Path-filtered pytest/vitest/jest/cypress jobs and the `Frontend Type Check` job (`tsc -b`, no build), plus `status-gateway.yml`, the one required check.
 
 ## Gotchas
 
 - **`npm run build` overwrites `static/`**: Vite builds to `../static` with `emptyOutDir: true`, and `static/` is tracked. Only build when the issue calls for it, and review the `static/` diff.
 - **New API route prefixes need a Vite proxy entry** in `frontend/vite.config.ts` (`server.proxy`), or dev-mode calls hit the SPA. Frontend routes that share a prefix with API routes (e.g. `/vocabulary`) need the narrower per-path proxies used there.
 - **Frontend test discovery gap (pre-existing)**: `npm run test` only runs the Storybook project in `vite.config.ts`, and Jest only matches `*.jest.test.*` / `__tests__/`. Plain `src/**/*.test.tsx` files are **not run by either** today. When you add frontend tests, confirm they're discovered (`npx vitest list --filesOnly`, or `npx jest --listTests`) and say in the PR how they ran.
-- **Jest coverage excludes** several directories and files (see `frontend/jest.config.cjs`) because of TS compile issues. Don't assume pages, hooks or utils are covered.
+- **Jest coverage excludes** several directories and files (see `frontend/jest.config.cjs`), originally because of TS compile issues (fixed in #250; shrinking the list is tracked in #233). Don't assume pages, hooks or utils are covered.
 - **Scenario data is duplicated**: IDs and names in `scenarios.py` are also hardcoded in `ScenarioSelector.tsx`, `ChatInterface.tsx` and `SessionDetail.tsx` (issue #126). Change them together.
 - **`.venv` is optional**: the README suggests one, but CI uses system Python 3.12. Use `python3` either way.
 

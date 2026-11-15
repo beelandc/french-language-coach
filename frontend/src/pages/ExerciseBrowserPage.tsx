@@ -52,7 +52,6 @@ export default function ExerciseBrowserPage() {
         const type = typeFilter === '' ? undefined : typeFilter
         const topic = topicFilter === '' ? undefined : topicFilter
         const difficulty = difficultyFilter === '' ? undefined : difficultyFilter
-        const query = searchQuery === '' ? undefined : searchQuery
         
         // Try to fetch from backend endpoint
         const response = await grammarApi.listExercises(
@@ -63,8 +62,7 @@ export default function ExerciseBrowserPage() {
           difficulty
         )
         
-        // Handle both response formats (with exercises array or references array)
-        const exerciseList = response.exercises || response.references || []
+        const exerciseList = response.exercises || []
         setExercises(exerciseList)
         setPagination(response.pagination)
       } catch (err) {
@@ -122,11 +120,6 @@ export default function ExerciseBrowserPage() {
   const handleExerciseClick = useCallback((exerciseId: string) => {
     navigate(`/exercises/${exerciseId}`)
   }, [navigate])
-
-  // Handle page change
-  const handlePageChange = useCallback((newPage: number) => {
-    setPage(newPage)
-  }, [])
 
   // Handle previous page
   const handlePreviousPage = useCallback(() => {

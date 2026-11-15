@@ -25,8 +25,8 @@ export default function ExercisePage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   
-  // State for score tracking (if doing multiple exercises)
-  const [score, setScore] = useState(0)
+  // Score tracking isn't implemented yet: answers aren't checked for correctness here (see #257)
+  const score = 0
   const [total, setTotal] = useState(1)
 
   // Fetch exercise when component mounts or exerciseId changes

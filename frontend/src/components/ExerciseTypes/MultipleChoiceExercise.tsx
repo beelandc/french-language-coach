@@ -4,7 +4,6 @@
  * Displays a multiple-choice exercise with radio buttons for the user to select their answer.
  */
 
-import React from 'react'
 import type { MultipleChoiceExerciseProps } from '../../types/index'
 
 /**
@@ -15,15 +14,13 @@ import type { MultipleChoiceExerciseProps } from '../../types/index'
  * @param props.onAnswerChange - Callback when answer changes
  * @param props.onSubmit - Callback when answer is submitted
  * @param props.selectedAnswer - Currently selected answer
- * @param props.feedback - Feedback message to display
- * @param props.isCorrect - Whether the answer was correct
+ * @param props.isCorrect - Whether the submitted answer was correct (null before submission)
  * @returns JSX Element
  */
 export default function MultipleChoiceExercise({
   exercise,
   onAnswerChange,
   selectedAnswer,
-  feedback,
   isCorrect,
 }: MultipleChoiceExerciseProps) {
   const handleOptionChange = (option: string) => {

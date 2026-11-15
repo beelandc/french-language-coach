@@ -2,11 +2,12 @@
 import type { 
   Feedback, 
   Session, 
+  SessionListResponse,
+  BackendSessionResponse,
   SessionLockResponse,
   LessonListResponse,
   LessonResponse,
   RecommendationResponse,
-  LessonSummary,
   Difficulty,
   ReferenceCategory,
   GrammarReference,
@@ -21,7 +22,6 @@ import type {
   ReviewSubmitRequest,
   ReviewResponse,
   DeckCreateRequest,
-  DeckSummary,
   // LLM metrics types (Issue #237)
   LLMMetricsApiParams,
   LLMMetricsResponse,
@@ -87,7 +87,7 @@ export async function api<T>(endpoint: string, options: ApiOptions = {}): Promis
 // Note: Backend returns session_id as integer, but we coerce to string for frontend consistency
 export const sessionApi = {
   create: (scenarioId: string, difficulty?: string) => 
-    api<{ id: number; scenario_id: string; difficulty: string; created_at: string }>('/sessions/', {
+    api<BackendSessionResponse>('/sessions/', {
       method: 'POST',
       data: { scenario_id: scenarioId, ...(difficulty && { difficulty }) },
     }),
@@ -177,10 +177,10 @@ export const grammarApi = {
     if (query) {
       params.push(`q=${encodeURIComponent(query)}`)
     }
-    if (category && category !== '') {
+    if (category) {
       params.push(`category=${encodeURIComponent(category)}`)
     }
-    if (difficulty && difficulty !== '') {
+    if (difficulty) {
       params.push(`difficulty=${encodeURIComponent(difficulty)}`)
     }
     
