@@ -117,3 +117,22 @@ export const NoFeedback: Story = {
     ),
   ],
 }
+
+// Issue #229: feedback generation failed (502); the page offers "Try again"
+export const FeedbackError: Story = {
+  args: {
+    sessionId: 'no-feedback-session-1',
+  },
+  decorators: [
+    (Story) => (
+      <MockSessionsProvider
+        initialSessions={[mockNoFeedbackSession]}
+        currentSessionId="no-feedback-session-1"
+        currentScenarioId="cafe_order"
+        feedbackError="Feedback could not be generated: the AI returned invalid feedback twice. Your session is still open — please try again."
+      >
+        <Story />
+      </MockSessionsProvider>
+    ),
+  ],
+}

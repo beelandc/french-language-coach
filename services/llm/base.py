@@ -3,7 +3,9 @@
 Every LLM provider implements two operations:
 
 * ``chat()``: scenario role-play, given the conversation and the scenario system prompt
-* ``feedback()``: structured end-of-session feedback, returned as raw JSON text
+* ``feedback()``: structured end-of-session feedback, returned as raw JSON text. The
+  service validates it against ``FeedbackResponse`` and, on failure, calls ``feedback()``
+  once more with a :class:`FeedbackCorrection` (issue #229).
 
 Providers report token usage in a provider-neutral :class:`LLMResult` so the service
 layer can log each call and estimate its cost.
@@ -49,6 +51,38 @@ class LLMProviderError(Exception):
         self.result = result
 
 
+class FeedbackValidationError(LLMProviderError):
+    """Raised when feedback output fails validation on the first attempt and the retry.
+
+    Attributes:
+        errors: The validation error recorded for each attempt, in order.
+        result: Usage reported for the last attempt.
+    """
+
+    def __init__(
+        self,
+        message: str,
+        errors: Optional[list[str]] = None,
+        result: Optional[LLMResult] = None,
+    ):
+        super().__init__(message, result)
+        self.errors = list(errors or [])
+
+
+@dataclass
+class FeedbackCorrection:
+    """Context for the single corrective feedback retry (issue #229).
+
+    Attributes:
+        previous_output: The model's text from the failed attempt.
+        error: The validation error for that text (``invalid_json: ...`` or
+            ``schema_mismatch: ...``).
+    """
+
+    previous_output: str
+    error: str
+
+
 # Feedback prompt moved verbatim from the original services/mistral.py.
 FEEDBACK_PROMPT = """Analyse cette conversation en français entre un apprenant et un natif.
         Évalue uniquement en français. Retourne UNIQUEMENT un JSON valide avec cette structure exacte :
@@ -67,19 +101,19 @@ FEEDBACK_PROMPT = """Analyse cette conversation en français entre un apprenant 
         Ne retourne RIEN d'autre que le JSON. Sois strict sur la grammaire, le vocabulaire et la fluidité.
         focus_area doit être la SEULE chose la plus impactante à améliorer."""
 
-# Default feedback returned when the model's output cannot be parsed (kept until #229).
-FEEDBACK_FALLBACK: dict[str, Any] = {
-    "grammar_score": 50,
-    "vocabulary_score": 50,
-    "fluency_score": 50,
-    "overall_score": 50,
-    "strengths": ["Bonne tentative"],
-    "focus_area": "Pratiquer davantage",
-    "example_corrections": [],
-}
+# Follow-up instruction sent with the corrective retry (issue #229).
+FEEDBACK_CORRECTION_PROMPT = (
+    "Ta réponse précédente n'est pas valide : {error}\n"
+    "Corrige-la et retourne UNIQUEMENT le JSON complet, avec exactement la structure "
+    "demandée (scores entiers de 0 à 100). Ne retourne RIEN d'autre que le JSON."
+)
+
+#: Longest validation error quoted back to the model in the correction turn.
+MAX_CORRECTION_ERROR_CHARS = 1500
 
 # JSON schema mirroring schemas.session.FeedbackResponse, for providers that support
-# schema-constrained output.
+# schema-constrained output. It carries no numeric bounds (schema-constrained output may
+# not support them); the 0-100 score range is enforced by Pydantic validation.
 FEEDBACK_JSON_SCHEMA: dict[str, Any] = {
     "type": "object",
     "properties": {
@@ -121,6 +155,30 @@ def build_transcript(messages: list[dict[str, str]]) -> str:
     return "\n".join([f"{m['role']}: {m['content']}" for m in messages])
 
 
+def build_feedback_turns(
+    messages: list[dict[str, str]], correction: Optional[FeedbackCorrection] = None
+) -> list[dict[str, str]]:
+    """Build the non-system turns of a feedback request.
+
+    The first turn is the transcript. For the corrective retry, the failed output is
+    replayed as an assistant turn (skipped when empty, since Claude rejects empty
+    assistant content), followed by a user turn quoting the validation error.
+    """
+    turns = [{"role": "user", "content": build_transcript(messages)}]
+    if correction is not None:
+        if correction.previous_output.strip():
+            turns.append({"role": "assistant", "content": correction.previous_output})
+        turns.append(
+            {
+                "role": "user",
+                "content": FEEDBACK_CORRECTION_PROMPT.format(
+                    error=correction.error[:MAX_CORRECTION_ERROR_CHARS]
+                ),
+            }
+        )
+    return turns
+
+
 class LLMProvider(ABC):
     """Interface implemented by each LLM provider."""
 
@@ -134,5 +192,16 @@ class LLMProvider(ABC):
         """Return the next assistant reply for a scenario conversation."""
 
     @abstractmethod
-    async def feedback(self, messages: list[dict[str, str]], model: str) -> LLMResult:
-        """Return end-of-session feedback for a conversation as raw JSON text."""
+    async def feedback(
+        self,
+        messages: list[dict[str, str]],
+        model: str,
+        correction: Optional[FeedbackCorrection] = None,
+    ) -> LLMResult:
+        """Return end-of-session feedback for a conversation as raw JSON text.
+
+        Args:
+            messages: Conversation history (``role``/``content`` dicts).
+            model: Model to request.
+            correction: Set on the corrective retry: the failed output and its error.
+        """

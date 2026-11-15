@@ -5378,3 +5378,11 @@ text.llm-metrics-axis,
         padding: 8px;
     }
 }
+
+/* Feedback generation error with a retry action (Issue #229) */
+.feedback-error {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+}

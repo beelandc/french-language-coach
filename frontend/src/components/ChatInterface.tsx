@@ -13,6 +13,7 @@ export default function ChatInterface({ sessionId }: ChatInterfaceProps) {
     error: sessionsError,
     sendMessage,
     getFeedback,
+    clearError,
     sessions,
     lockSession,
     unlockSession,
@@ -24,6 +25,9 @@ export default function ChatInterface({ sessionId }: ChatInterfaceProps) {
   const [inputValue, setInputValue] = useState('')
   const [isSending, setIsSending] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  // Feedback generation failure (e.g. 502 after the backend's retry), shown with a retry button (Issue #229)
+  const [feedbackError, setFeedbackError] = useState<string | null>(null)
+  const [isRequestingFeedback, setIsRequestingFeedback] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const navigate = useNavigate()
 
@@ -121,17 +125,22 @@ export default function ChatInterface({ sessionId }: ChatInterfaceProps) {
   }
 
   const handleEndSession = async () => {
-    if (!sessionId) return
-    
+    if (!sessionId || isRequestingFeedback) return
+
+    setFeedbackError(null)
+    setIsRequestingFeedback(true)
     try {
       // getFeedback handles setting sessionEnded and caching feedback
-      const feedback = await getFeedback(sessionId)
-      console.log('Feedback received:', feedback)
+      await getFeedback(sessionId)
       navigate(`/feedback/${sessionId}`)
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to end session'
-      setError(errorMessage)
+      const errorMessage = err instanceof Error ? err.message : 'Failed to generate feedback'
+      setFeedbackError(errorMessage)
+      // The hook stores the same message; clear it so it isn't shown twice
+      clearError()
       console.error('Error ending session:', err)
+    } finally {
+      setIsRequestingFeedback(false)
     }
   }
 
@@ -141,7 +150,7 @@ export default function ChatInterface({ sessionId }: ChatInterfaceProps) {
   }
 
   const scenarioName = getScenarioName()
-  const isLoading = isSessionsLoading || isSending
+  const isLoading = isSessionsLoading || isSending || isRequestingFeedback
 
   return (
     <div className="chat-container" data-testid="chat-interface">
@@ -184,6 +193,20 @@ export default function ChatInterface({ sessionId }: ChatInterfaceProps) {
         </button>
       </form>
 
+      {feedbackError && (
+        <div className="error-message feedback-error" role="alert" data-testid="feedback-error">
+          <span>{feedbackError}</span>
+          <button
+            type="button"
+            className="btn-primary"
+            onClick={handleEndSession}
+            disabled={isLoading}
+            data-testid="retry-feedback-button"
+          >
+            Retry feedback
+          </button>
+        </div>
+      )}
       {error && <div className="error-message" data-testid="chat-error">{error}</div>}
       {sessionsError && <div className="error-message" data-testid="sessions-error">{sessionsError}</div>}
     </div>

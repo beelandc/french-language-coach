@@ -258,13 +258,13 @@ french-language-coach/
 │   │   ├── metrics.py       # Metrics filters, summaries, time series, model comparison report + summary, Markdown/CSV (Issues #236, #238)
 │   │   ├── pricing.py       # Loads the price table, estimates cost per call
 │   │   ├── recorder.py      # Writes one llm_calls row per call
-│   │   └── service.py       # LLMService: routes each feature to its configured provider/model, logs calls
+│   │   └── service.py       # LLMService: routes each feature to its configured provider/model, logs calls, validates feedback (one retry)
 │   └── mistral.py           # Backward-compatibility alias for services.llm.llm_service
 ├── routers/
 │   ├── __init__.py
 │   ├── sessions.py          # POST /sessions (start), GET /sessions/{id}, DELETE /sessions/{id}
 │   ├── messages.py          # POST /sessions/{id}/messages (send a message, get AI reply)
-│   ├── feedback.py          # POST /sessions/{id}/feedback (generate end-of-session report)
+│   ├── feedback.py          # POST /sessions/{id}/feedback (generate end-of-session report; 502 if it can't)
 │   ├── grammar.py           # GET /grammar/lessons/, /grammar/reference/, /grammar/exercises/ endpoints (Phase 2)
 │   ├── grammar_progress.py  # GET /grammar/progress/, POST /grammar/progress/ endpoints (Phase 2)
 │   ├── vocabulary.py        # GET /vocabulary/decks/, POST /vocabulary/decks/, GET /vocabulary/decks/{id}/cards/, POST /vocabulary/review/, GET /vocabulary/due/ (Phase 3)
@@ -382,6 +382,7 @@ french-language-coach/
 ├── tests/                  # pytest tests for backend
 │   ├── __init__.py
 │   ├── conftest.py         # Pytest fixtures and configuration
+│   ├── test_feedback_validation.py # Strict FeedbackResponse validation; JSON schema kept in sync (Issue #229)
 │   ├── test_scenarios.py   # Tests for difficulty levels in scenarios
 │   └── test_schemas.py     # Tests for Pydantic schemas
 └── README.md
@@ -398,7 +399,7 @@ french-language-coach/
 | POST | `/sessions/{id}/lock` | Lock a session to prevent deletion while in use. Accepts optional `X-Client-ID` header for lock ownership. Auto-unlocks after 10 minutes (TTL). Returns lock status. |
 | POST | `/sessions/{id}/unlock` | Unlock a session to allow deletion. Requires matching `X-Client-ID` header unless lock has expired. Returns lock status. |
 | POST | `/sessions/{id}/messages` | Send a message, get AI reply. Uses session's difficulty level for system prompt |
-| POST | `/sessions/{id}/feedback` | Generate end-of-session feedback |
+| POST | `/sessions/{id}/feedback` | Generate end-of-session feedback and end the session. The model's output is validated and retried once if invalid. Returns **502** with a `detail` message if feedback can't be generated (invalid output twice, refusal, or empty response). The session stays open, so the request can be retried |
 | GET | `/metrics/llm` | LLM call metrics (Issue #228). Returns `totals` and `groups` (one per feature, provider and model), each with `calls`, `errors`, `input_tokens`, `output_tokens`, `cache_read_tokens`, `estimated_cost_usd` (sum over priced calls), `unpriced_calls`, `latency_p50_ms` and `latency_p95_ms` (nearest rank; `null` when there are no calls). Accepts the shared metrics filters (Issue #236): `date_from`, `date_to` (inclusive, UTC; `YYYY-MM-DD` covers the whole day, or an ISO 8601 datetime; URL-encode a `+` offset as `%2B` or use `Z`), `feature`, `provider`, `model` (exact match) and `status` (`success` or `error`). Invalid dates or `date_from` after `date_to` return 400; an unknown `status` returns 422 |
 | GET | `/metrics/llm/calls` | LLM call log, newest first (Issue #236). Query parameters: `page` (default 1), `per_page` (default 10, max 100) and the shared metrics filters. Returns `calls` (id, created_at, feature, provider, model, session_id, input/output/cache-read tokens, latency_ms, estimated_cost_usd, status, error_message) and `pagination` (same shape as `/sessions/`). A page past the end returns an empty `calls` list |
 | GET | `/metrics/llm/timeseries` | LLM call statistics over time (Issue #236). Query parameters: `bucket` (`hour` or `day`, default `day`) and the shared metrics filters. Returns `points`, one per bucket and feature/provider/model that has calls (empty buckets are omitted), each with `bucket_start` and the same statistics as `/metrics/llm` groups |
@@ -445,7 +446,7 @@ french-language-coach/
 
 1. **User selects scenario** → POST /sessions/ creates session record → chat provider generates the opening greeting
 2. **User sends message** → POST /sessions/{id}/messages/ → chat provider (Mistral by default) → AI response stored in session
-3. **User requests feedback** → POST /sessions/{id}/feedback/ → feedback provider (Mistral by default) with feedback prompt → structured JSON feedback stored in session
+3. **User requests feedback** → POST /sessions/{id}/feedback/ → feedback provider (Mistral by default) with feedback prompt → JSON validated against `FeedbackResponse` (one corrective retry) → feedback stored in session, or 502 with the session left open
 4. **Frontend displays** conversation history and feedback report
 
 Each LLM call writes one row to `llm_calls` (tokens, latency, estimated cost, success or error), summarised by `GET /metrics/llm`.
@@ -510,7 +511,9 @@ When a user ends a session, the full conversation history is sent with a separat
 }
 ```
 
-Mistral uses JSON mode (`response_format={"type": "json_object"}`). Claude uses structured outputs (`output_config.format` with a JSON schema matching `FeedbackResponse`). If the output still can't be parsed, default scores are returned (until [#229](https://github.com/beelandc/french-language-coach/issues/229)) and the call is logged as an error.
+Mistral uses JSON mode (`response_format={"type": "json_object"}`). Claude uses structured outputs (`output_config.format` with a JSON schema matching `FeedbackResponse`).
+
+**Validation and retry (Issue #229).** For both providers, the output is validated against the Pydantic `FeedbackResponse` schema in strict mode: scores must be integers from 0 to 100 (`"72"` or `72.0` is rejected), all fields are required, and each correction needs `original`, `corrected` and `explanation`. Extra keys are dropped. If validation fails, the provider is called **once more**. The retry repeats the request, adds the model's previous output and a correction message quoting the validation error, and keeps JSON mode or the schema. If the retry also fails, `POST /sessions/{id}/feedback/` returns **502** and the session stays open (not ended, no feedback stored), so the user can try again. Refusals and empty responses aren't retried and also return 502. Default or invented scores are never returned. In the UI, the chat page shows the error with a **Retry feedback** button, and the feedback page offers **Try again**. A retry roughly doubles the wait for that request.
 
 Mistral can return a reply as a list of content chunks, with a reasoning (`thinking`) chunk before the text. For both chat and feedback, only the text chunks are used and reasoning is never stored or shown (Issue #243). A Mistral response with no text at all raises an `empty_response` error and is logged as a failed call. It doesn't fall back to default scores.
 
@@ -523,7 +526,7 @@ Mistral can return a reply as a list of content chunks, with a reasoning (`think
 
 ### Cost and latency logging
 
-Each provider call writes one row to the `llm_calls` table: feature, provider, model, session id, input tokens (uncached), output tokens, cache-read tokens, latency in ms, estimated cost in USD, status (`success` or `error`) and an error message. Logging is best-effort: a failure to write a row never breaks the user's request. `GET /metrics/llm` returns totals and p50/p95 latency per feature, provider and model.
+Each provider call writes one row to the `llm_calls` table: feature, provider, model, session id, input tokens (uncached), output tokens, cache-read tokens, latency in ms, estimated cost in USD, status (`success` or `error`) and an error message. Each feedback attempt is its own row, so a request that needed a retry writes two rows. Failed validation is logged as `invalid_json: …` (unparseable) or `schema_mismatch: …` (wrong shape), so a model's schema-validity rate is its feedback rows with status `success` divided by those plus its `invalid_json` and `schema_mismatch` rows. Logging is best-effort: a failure to write a row never breaks the user's request. `GET /metrics/llm` returns totals and p50/p95 latency per feature, provider and model.
 
 All metrics endpoints accept the same filters (date range, feature, provider, model, status). `GET /metrics/llm/calls` lists individual calls, `GET /metrics/llm/timeseries` gives hourly or daily statistics, and `GET /metrics/llm/pricing` shows the prices behind the estimates (Issue #236). `GET /metrics/llm/report` compares models within each feature against a baseline (Mistral by default) on reliability, latency, tokens and cost, as JSON, Markdown or CSV. It covers operational metrics only: feedback quality comes from the eval harness (#231). Live traffic is not a controlled experiment, so the report shows each model's sample size and date range and warns when they are too thin to compare.
 

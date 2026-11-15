@@ -95,6 +95,8 @@ interface MockSessionsProviderProps {
   sessionEnded?: boolean
   isLoading?: boolean
   error?: string | null
+  /** When set, getFeedback rejects with this message (e.g. a 502 detail, Issue #229) */
+  feedbackError?: string
 }
 
 /**
@@ -110,6 +112,7 @@ export function MockSessionsProvider({
   sessionEnded = false,
   isLoading = false,
   error = null,
+  feedbackError,
 }: MockSessionsProviderProps) {
   const [sessions, setSessions] = useState<Session[]>(initialSessions)
   const [currentSessionIdState, setCurrentSessionId] = useState<string | null>(currentSessionId)
@@ -208,6 +211,12 @@ export function MockSessionsProvider({
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 500))
 
+    if (feedbackError) {
+      setError(feedbackError)
+      setIsLoading(false)
+      throw new Error(feedbackError)
+    }
+
     // Check if we already have feedback for this session
     const existingSession = sessions.find(s => s.id === sessionId)
     if (existingSession?.feedback && !forceRefresh) {
@@ -232,7 +241,7 @@ export function MockSessionsProvider({
     setSessionEnded(true)
     setIsLoading(false)
     return mockFeedback
-  }, [sessions])
+  }, [sessions, feedbackError])
 
   const endSession = useCallback(() => setSessionEnded(true), [])
 

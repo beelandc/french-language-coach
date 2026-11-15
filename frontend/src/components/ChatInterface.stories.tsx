@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
+import { expect, userEvent, within } from 'storybook/test'
 import ChatInterface from './ChatInterface'
 import { MockSessionsProvider } from '../utils/storybookMocks'
 
@@ -92,4 +93,33 @@ export const EmptySession: Story = {
       </MockSessionsProvider>
     ),
   ],
+}
+
+const FEEDBACK_502_DETAIL =
+  'Feedback could not be generated: the AI returned invalid feedback twice. Your session is still open — please try again.'
+
+// Issue #229: feedback generation fails (502); the error is shown once with a retry button
+export const FeedbackError: Story = {
+  args: {
+    sessionId: 'mock-session-1',
+  },
+  decorators: [
+    (Story) => (
+      <MockSessionsProvider
+        initialSessions={[mockSession]}
+        currentSessionId="mock-session-1"
+        currentScenarioId="cafe_order"
+        feedbackError={FEEDBACK_502_DETAIL}
+      >
+        <Story />
+      </MockSessionsProvider>
+    ),
+  ],
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await userEvent.click(canvas.getByTestId('end-session-button'))
+    await expect(await canvas.findByTestId('feedback-error')).toHaveTextContent(FEEDBACK_502_DETAIL)
+    await expect(canvas.getByTestId('retry-feedback-button')).toBeEnabled()
+    await expect(canvas.queryByTestId('sessions-error')).not.toBeInTheDocument()
+  },
 }

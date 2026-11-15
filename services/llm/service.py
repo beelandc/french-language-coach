@@ -1,23 +1,26 @@
 """Provider-agnostic LLM service used by the routers (issue #228).
 
-Routes each feature to the provider and model chosen in config, times the call, records
-an ``llm_calls`` row and keeps the original feedback JSON fallback.
+Routes each feature to the provider and model chosen in config, times the call and
+records an ``llm_calls`` row per provider call. Feedback output is validated against
+``FeedbackResponse`` and retried once on failure; there is no fallback feedback
+(issue #229).
 """
 
-import copy
-import json
 import logging
 import time
 from typing import Any, Awaitable, Callable, Optional
 
+from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from config import Settings, settings as default_settings
 from models.llm_call import STATUS_ERROR, STATUS_SUCCESS
+from schemas.session import FeedbackResponse
 from services.llm.base import (
     FEATURE_CHAT,
     FEATURE_FEEDBACK,
-    FEEDBACK_FALLBACK,
+    FeedbackCorrection,
+    FeedbackValidationError,
     LLMProvider,
     LLMProviderError,
     LLMResult,
@@ -25,6 +28,51 @@ from services.llm.base import (
 from services.llm.recorder import record_call
 
 logger = logging.getLogger(__name__)
+
+#: Feedback provider calls per request: the initial attempt plus one corrective retry.
+FEEDBACK_MAX_ATTEMPTS = 2
+
+ERROR_INVALID_JSON = "invalid_json"
+ERROR_SCHEMA_MISMATCH = "schema_mismatch"
+
+
+class FeedbackOutputError(ValueError):
+    """Feedback text that failed validation.
+
+    Attributes:
+        kind: ``invalid_json`` (unparseable) or ``schema_mismatch`` (wrong shape).
+        detail: Compact, model-readable description of the problems.
+    """
+
+    def __init__(self, kind: str, detail: str):
+        super().__init__(f"{kind}: {detail}")
+        self.kind = kind
+        self.detail = detail
+
+
+def validate_feedback(text: str) -> FeedbackResponse:
+    """Parse and validate feedback text against ``FeedbackResponse`` in strict mode.
+
+    Strict mode rejects coercible values such as ``"72"`` or ``72.0`` for a score, so the
+    schema-validity rate reflects the model's real output. Extra keys are ignored.
+
+    Raises:
+        FeedbackOutputError: ``invalid_json`` (with the parser's message) when the text
+            isn't JSON, otherwise ``schema_mismatch`` with each problem as
+            ``<field path>: <message>``.
+    """
+    try:
+        return FeedbackResponse.model_validate_json(text, strict=True)
+    except ValidationError as exc:
+        errors = exc.errors()
+        json_errors = [e for e in errors if e["type"] == "json_invalid"]
+        if json_errors:
+            raise FeedbackOutputError(ERROR_INVALID_JSON, json_errors[0]["msg"]) from exc
+        detail = "; ".join(
+            f"{'.'.join(str(part) for part in e['loc']) or '<root>'}: {e['msg']}"
+            for e in errors
+        )
+        raise FeedbackOutputError(ERROR_SCHEMA_MISMATCH, detail) from exc
 
 
 def build_provider(provider_id: str, config: Settings) -> LLMProvider:
@@ -125,50 +173,89 @@ class LLMService:
         db: Optional[AsyncSession] = None,
         session_id: Optional[int] = None,
     ) -> dict[str, Any]:
-        """Return structured feedback for a conversation.
+        """Return validated structured feedback for a conversation.
 
-        Unparseable output returns the default fallback feedback (until #229) and is
-        recorded with status ``error``.
+        Each attempt's output is validated with :func:`validate_feedback`. On an
+        ``invalid_json`` or ``schema_mismatch`` failure the provider is called exactly once
+        more with a :class:`FeedbackCorrection` (the failed output and its error). Every
+        attempt is recorded as its own ``llm_calls`` row; failed attempts carry an
+        ``invalid_json: ...`` or ``schema_mismatch: ...`` error message.
+
+        Returns:
+            The validated feedback as a dict (extra keys dropped).
 
         Raises:
-            Exception: Any provider error, after it has been recorded.
+            FeedbackValidationError: Both attempts failed validation.
+            Exception: Any provider error (not retried), after it has been recorded.
         """
         provider_id, model = self.route(FEATURE_FEEDBACK)
         provider = self.get_provider(provider_id)
-        result, latency_ms = await self._timed_call(
-            lambda: provider.feedback(messages, model),
-            db=db,
-            feature=FEATURE_FEEDBACK,
-            provider_id=provider_id,
-            model=model,
-            session_id=session_id,
+        correction: Optional[FeedbackCorrection] = None
+        errors: list[str] = []
+        result: Optional[LLMResult] = None
+
+        for attempt in range(1, FEEDBACK_MAX_ATTEMPTS + 1):
+            result, latency_ms = await self._timed_call(
+                lambda c=correction: provider.feedback(messages, model, correction=c),
+                db=db,
+                feature=FEATURE_FEEDBACK,
+                provider_id=provider_id,
+                model=model,
+                session_id=session_id,
+            )
+            try:
+                feedback = validate_feedback(result.text)
+            except FeedbackOutputError as exc:
+                logger.warning(
+                    "Invalid feedback from %s/%s (attempt %d of %d): %s",
+                    provider_id, model, attempt, FEEDBACK_MAX_ATTEMPTS, exc,
+                )
+                errors.append(str(exc))
+                await self._record(
+                    db, FEATURE_FEEDBACK, provider_id, model, latency_ms,
+                    STATUS_ERROR, result, session_id, str(exc),
+                )
+                correction = FeedbackCorrection(previous_output=result.text, error=str(exc))
+                continue
+
+            await self._record(
+                db, FEATURE_FEEDBACK, provider_id, model, latency_ms,
+                STATUS_SUCCESS, result, session_id,
+            )
+            return feedback.model_dump()
+
+        raise FeedbackValidationError(
+            "invalid_feedback: model output failed validation after retry",
+            errors=errors,
+            result=result,
         )
 
-        status = STATUS_SUCCESS
-        error_message = None
-        try:
-            feedback = json.loads(result.text)
-            if not isinstance(feedback, dict):
-                raise ValueError(f"expected a JSON object, got {type(feedback).__name__}")
-        except (json.JSONDecodeError, TypeError, ValueError) as exc:
-            logger.warning("Unparseable feedback from %s/%s: %s", provider_id, model, exc)
-            feedback = copy.deepcopy(FEEDBACK_FALLBACK)
-            status = STATUS_ERROR
-            error_message = f"invalid_json: {exc}"
-
-        if db is not None:
-            await record_call(
-                db,
-                feature=FEATURE_FEEDBACK,
-                provider=provider_id,
-                model=model,
-                latency_ms=latency_ms,
-                status=status,
-                result=result,
-                session_id=session_id,
-                error_message=error_message,
-            )
-        return feedback
+    @staticmethod
+    async def _record(
+        db: Optional[AsyncSession],
+        feature: str,
+        provider_id: str,
+        model: str,
+        latency_ms: int,
+        status: str,
+        result: Optional[LLMResult],
+        session_id: Optional[int],
+        error_message: Optional[str] = None,
+    ) -> None:
+        """Record one call when a DB session is available (best-effort)."""
+        if db is None:
+            return
+        await record_call(
+            db,
+            feature=feature,
+            provider=provider_id,
+            model=model,
+            latency_ms=latency_ms,
+            status=status,
+            result=result,
+            session_id=session_id,
+            error_message=error_message,
+        )
 
     async def _timed_call(
         self,

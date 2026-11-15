@@ -15,6 +15,7 @@ from models.session import Session as SessionModel
 from schemas.session import FeedbackResponse
 from services.llm.anthropic_provider import AnthropicProvider
 from services.llm.mistral_provider import EMPTY_RESPONSE_ERROR, MistralProvider
+from routers.feedback import FEEDBACK_INVALID_DETAIL, FEEDBACK_UNUSABLE_DETAIL
 from services.llm.service import LLMService
 from tests.llm_fakes import (
     VALID_FEEDBACK_JSON,
@@ -192,7 +193,7 @@ class TestMistralContentChunks:
         with patch("routers.feedback.llm_service", service):
             response = client.post(f"/sessions/{session_id}/feedback/")
 
-        # Then the real feedback is parsed (not the fallback) and the call is a success
+        # Then the real feedback is validated and the call is a success
         assert response.status_code == 200
         feedback = FeedbackResponse(**response.json())
         assert feedback.overall_score == 69
@@ -222,3 +223,80 @@ class TestMistralContentChunks:
         [row] = (await test_db.execute(select(LLMCall))).scalars().all()
         assert (row.feature, row.status, row.error_message) == ("chat", "error", EMPTY_RESPONSE_ERROR)
         assert (row.input_tokens, row.output_tokens) == (200, 40)
+
+
+TWO_MESSAGES = '[{"role": "assistant", "content": "Bonjour !"}, {"role": "user", "content": "Un café"}]'
+
+
+class TestFeedbackFailures:
+    """Issue #229: 502 instead of fabricated feedback; the session stays open."""
+
+    @pytest.mark.asyncio
+    async def test_failed_retry_returns_502_and_session_stays_open(self, client, test_db):
+        # Given Mistral returns invalid output twice, then valid feedback
+        session_id = await create_session(test_db, TWO_MESSAGES)
+        mistral = make_mistral_client(side_effect=[
+            make_mistral_response("pas du JSON"),
+            make_mistral_response('{"grammar_score": "bien"}'),
+            make_mistral_response(VALID_FEEDBACK_JSON),
+        ])
+        service = LLMService(settings=make_settings(), providers={"mistral": MistralProvider("m", client=mistral)})
+
+        with patch("routers.feedback.llm_service", service):
+            # When the first request fails validation twice
+            failed = client.post(f"/sessions/{session_id}/feedback/")
+
+            # Then 502 with a clear message, and the session is untouched
+            assert failed.status_code == 502
+            assert failed.json() == {"detail": FEEDBACK_INVALID_DETAIL}
+            session = client.get(f"/sessions/{session_id}").json()
+            assert session["ended_at"] is None
+            assert session["feedback"] is None
+
+            # And a second attempt is accepted and succeeds
+            retried = client.post(f"/sessions/{session_id}/feedback/")
+
+        assert retried.status_code == 200
+        assert retried.json()["overall_score"] == 69
+        assert client.get(f"/sessions/{session_id}").json()["ended_at"] is not None
+
+        # Each attempt is its own llm_calls row
+        calls = client.get("/metrics/llm/calls").json()["calls"]
+        assert sorted((c["status"], (c["error_message"] or "").split(":")[0]) for c in calls) == [
+            ("error", "invalid_json"), ("error", "schema_mismatch"), ("success", ""),
+        ]
+        assert {c["session_id"] for c in calls} == {session_id}
+
+    @pytest.mark.asyncio
+    async def test_claude_refusal_returns_502_without_retry(self, client, test_db):
+        session_id = await create_session(test_db, TWO_MESSAGES)
+        claude = make_claude_client(make_claude_response("", stop_reason="refusal"))
+        service = LLMService(
+            settings=make_settings(FEEDBACK_PROVIDER="anthropic", FEEDBACK_MODEL="claude-sonnet-5-5"),
+            providers={"anthropic": AnthropicProvider("a", client=claude)},
+        )
+
+        with patch("routers.feedback.llm_service", service):
+            response = client.post(f"/sessions/{session_id}/feedback/")
+
+        assert response.status_code == 502
+        assert response.json() == {"detail": FEEDBACK_UNUSABLE_DETAIL}
+        assert claude.messages.create.await_count == 1
+        assert client.get(f"/sessions/{session_id}").json()["ended_at"] is None
+
+    @pytest.mark.asyncio
+    async def test_rescued_feedback_is_stored_once(self, client, test_db):
+        session_id = await create_session(test_db, TWO_MESSAGES)
+        mistral = make_mistral_client(side_effect=[
+            make_mistral_response('{"grammar_score": 72'),
+            make_mistral_response(VALID_FEEDBACK_JSON[:-1] + ', "note": "x"}'),
+        ])
+        service = LLMService(settings=make_settings(), providers={"mistral": MistralProvider("m", client=mistral)})
+
+        with patch("routers.feedback.llm_service", service):
+            response = client.post(f"/sessions/{session_id}/feedback/")
+
+        assert response.status_code == 200
+        stored = client.get(f"/sessions/{session_id}").json()["feedback"]
+        assert stored == FeedbackResponse.model_validate_json(VALID_FEEDBACK_JSON).model_dump()
+        assert "note" not in stored
