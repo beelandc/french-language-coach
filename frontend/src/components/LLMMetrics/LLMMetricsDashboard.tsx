@@ -1,15 +1,17 @@
 /**
- * LLMMetricsDashboard: container for the admin LLM metrics page (Issue #237).
+ * LLMMetricsDashboard: container for the admin LLM metrics page (Issues #237, #238).
  *
- * The URL query string is the source of truth for filters and the call-log
- * page. Each panel loads its own data so one failing endpoint doesn't blank the
- * page, and responses for outdated filters are dropped.
+ * The URL query string is the source of truth for filters, the call-log page,
+ * the active view (`view=report` for the comparison report) and the report
+ * baseline. Each panel loads its own data so one failing endpoint doesn't blank
+ * the page, and responses for outdated filters are dropped. The dashboard
+ * panels live in DashboardView so they only load in the dashboard view.
  */
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { metricsApi } from '../../utils/api'
-import type { LLMMetricsFilters } from '../../types/index'
+import type { LLMMetricsFilters, LLMMetricsView } from '../../types/index'
 import LLMCallLog from './LLMCallLog'
 import LLMPricingPanel from './LLMPricingPanel'
 import MetricsBreakdownTable from './MetricsBreakdownTable'
@@ -18,6 +20,8 @@ import MetricsFilterBar from './MetricsFilterBar'
 import MetricsLineChart from './MetricsLineChart'
 import MetricsPanel from './MetricsPanel'
 import MetricsSummaryCards from './MetricsSummaryCards'
+import MetricsViewTabs from './MetricsViewTabs'
+import ModelComparisonReport from './ModelComparisonReport'
 import {
   CALL_LOG_PAGE_SIZE,
   NO_CALLS_MESSAGE,
@@ -25,7 +29,6 @@ import {
   bucketForRange,
   buildLatencySeries,
   buildSeries,
-  errorMessage,
   filterOptions,
   filtersFromSearchParams,
   filtersToApiParams,
@@ -35,62 +38,23 @@ import {
   formatNumber,
   pageFromSearchParams,
 } from './metricsUtils'
+import { DEFAULT_BASELINE, baselineFromSearchParams, viewFromSearchParams } from './reportUtils'
+import { useMetricsRequest } from './useMetricsRequest'
 
-/** State of one panel's request. */
-interface RequestState<T> {
-  data: T | null
-  loading: boolean
-  error: string | null
-  retry: () => void
+/** Props for DashboardView. */
+interface DashboardViewProps {
+  filters: LLMMetricsFilters
+  page: number
+  emptyMessage: string
+  onPageChange: (page: number) => void
 }
 
-/**
- * Run `load` whenever `requestKey` changes (or on retry) and track its state.
- *
- * `requestKey` must capture everything `load` depends on. State is only set
- * from promise callbacks; `loading` is derived by comparing the key of the last
- * completed request with the current one, so stale responses never show.
- */
-function useMetricsRequest<T>(requestKey: string, load: () => Promise<T>): RequestState<T> {
-  const [attempt, setAttempt] = useState(0)
-  const token = `${requestKey}#${attempt}`
-  const [result, setResult] = useState<{ token: string; data: T | null; error: string | null } | null>(null)
-
-  useEffect(() => {
-    let cancelled = false
-    load().then(
-      (data) => {
-        if (!cancelled) setResult({ token, data, error: null })
-      },
-      (error: unknown) => {
-        if (!cancelled) setResult({ token, data: null, error: errorMessage(error) })
-      }
-    )
-    return () => {
-      cancelled = true
-    }
-    // `load` is a new closure every render; `token` captures everything it depends on.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token])
-
-  const current = result !== null && result.token === token ? result : null
-  return {
-    data: current ? current.data : null,
-    error: current ? current.error : null,
-    loading: current === null,
-    retry: () => setAttempt((value) => value + 1),
-  }
-}
-
-function LLMMetricsDashboard() {
-  const [searchParams, setSearchParams] = useSearchParams()
-  const filters = useMemo(() => filtersFromSearchParams(searchParams), [searchParams])
-  const page = pageFromSearchParams(searchParams)
+/** The dashboard panels (summary, breakdown, trends, cost/latency, call log, pricing). */
+function DashboardView({ filters, page, emptyMessage, onPageChange }: DashboardViewProps) {
   const filtersKey = filtersToSearchParams(filters).toString()
   const bucket = bucketForRange(filters.range)
 
   // Presets are resolved against "now" when each request starts (inside load)
-  const options = useMetricsRequest('options', () => metricsApi.getSummary({}))
   const summary = useMetricsRequest(`summary|${filtersKey}`, () =>
     metricsApi.getSummary(filtersToApiParams(filters, new Date()))
   )
@@ -102,14 +66,6 @@ function LLMMetricsDashboard() {
   )
   const pricing = useMetricsRequest('pricing', () => metricsApi.getPricing())
 
-  const dropdownOptions = useMemo(
-    () => filterOptions(options.data?.groups ?? []),
-    [options.data]
-  )
-  // Unknown (still loading or failed) counts as "has calls", so we never claim the log is empty wrongly
-  const hasAnyCalls = options.data ? options.data.totals.calls > 0 : true
-  const emptyMessage = hasAnyCalls ? NO_MATCH_MESSAGE : NO_CALLS_MESSAGE
-
   const series = useMemo(() => {
     const points = timeseries.data?.points ?? []
     return {
@@ -119,26 +75,13 @@ function LLMMetricsDashboard() {
     }
   }, [timeseries.data])
 
-  const handleFiltersChange = (next: LLMMetricsFilters) => {
-    // A new filter always starts the call log at page 1 (page is dropped)
-    setSearchParams(filtersToSearchParams(next))
-  }
-
-  const handlePageChange = (nextPage: number) => {
-    const next = new URLSearchParams(searchParams)
-    if (nextPage > 1) next.set('page', String(nextPage))
-    else next.delete('page')
-    setSearchParams(next)
-  }
-
+  const handlePageChange = onPageChange
   const summaryEmpty = summary.data?.totals.calls === 0
   const timeseriesEmpty = timeseries.data?.points.length === 0
   const callsEmpty = calls.data?.pagination.total === 0
 
   return (
-    <div className="llm-metrics-dashboard" data-testid="llm-metrics-dashboard">
-      <MetricsFilterBar filters={filters} options={dropdownOptions} onChange={handleFiltersChange} />
-
+    <>
       <MetricsPanel
         title="Summary"
         testId="llm-metrics-summary-panel"
@@ -239,6 +182,73 @@ function LLMMetricsDashboard() {
       >
         {pricing.data && <LLMPricingPanel pricing={pricing.data} />}
       </MetricsPanel>
+    </>
+  )
+}
+
+function LLMMetricsDashboard() {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const filters = useMemo(() => filtersFromSearchParams(searchParams), [searchParams])
+  const page = pageFromSearchParams(searchParams)
+  const view = viewFromSearchParams(searchParams)
+  const baseline = baselineFromSearchParams(searchParams)
+
+  // Unfiltered summary, for the filter dropdown options
+  const options = useMetricsRequest('options', () => metricsApi.getSummary({}))
+  const dropdownOptions = useMemo(
+    () => filterOptions(options.data?.groups ?? []),
+    [options.data]
+  )
+  // Unknown (still loading or failed) counts as "has calls", so we never claim the log is empty wrongly
+  const hasAnyCalls = options.data ? options.data.totals.calls > 0 : true
+  const emptyMessage = hasAnyCalls ? NO_MATCH_MESSAGE : NO_CALLS_MESSAGE
+
+  const handleFiltersChange = (next: LLMMetricsFilters) => {
+    // A new filter always starts the call log at page 1 (page is dropped);
+    // the view and report baseline are kept
+    const params = filtersToSearchParams(next)
+    if (view === 'report') params.set('view', 'report')
+    if (searchParams.get('baseline')) params.set('baseline', baseline)
+    setSearchParams(params)
+  }
+
+  const handlePageChange = (nextPage: number) => {
+    const next = new URLSearchParams(searchParams)
+    if (nextPage > 1) next.set('page', String(nextPage))
+    else next.delete('page')
+    setSearchParams(next)
+  }
+
+  const handleViewChange = (nextView: LLMMetricsView) => {
+    const next = new URLSearchParams(searchParams)
+    if (nextView === 'report') next.set('view', 'report')
+    else next.delete('view')
+    next.delete('page')
+    setSearchParams(next)
+  }
+
+  const handleBaselineChange = (nextBaseline: string) => {
+    const next = new URLSearchParams(searchParams)
+    if (nextBaseline === DEFAULT_BASELINE) next.delete('baseline')
+    else next.set('baseline', nextBaseline)
+    setSearchParams(next)
+  }
+
+  return (
+    <div className="llm-metrics-dashboard" data-testid="llm-metrics-dashboard">
+      <MetricsFilterBar filters={filters} options={dropdownOptions} onChange={handleFiltersChange} />
+      <MetricsViewTabs view={view} onChange={handleViewChange} />
+
+      {view === 'report' ? (
+        <ModelComparisonReport filters={filters} baseline={baseline} onBaselineChange={handleBaselineChange} />
+      ) : (
+        <DashboardView
+          filters={filters}
+          page={page}
+          emptyMessage={emptyMessage}
+          onPageChange={handlePageChange}
+        />
+      )}
     </div>
   )
 }

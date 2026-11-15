@@ -9,6 +9,7 @@ import { vi, beforeAll, afterEach, afterAll } from 'vitest'
 import {
   sampleCallLog,
   samplePricing,
+  sampleReport,
   sampleSummary,
   sampleTimeseries,
 } from './components/LLMMetrics/fixtures'
@@ -90,6 +91,11 @@ const mockMetricsApi = {
   listCalls: vi.fn(async () => sampleCallLog),
   getTimeseries: vi.fn(async () => sampleTimeseries),
   getPricing: vi.fn(async () => samplePricing),
+  getReport: vi.fn(async () => sampleReport),
+  downloadReport: vi.fn(async () => ({
+    blob: new Blob(['# LLM model comparison report\n'], { type: 'text/csv' }),
+    filename: 'llm-model-report-20261114-1808.csv',
+  })),
 }
 
 // Mock the utils/api module

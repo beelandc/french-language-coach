@@ -161,14 +161,44 @@ class ModelReportRow(BaseModel):
     warnings: list[str] = []
 
 
+class FeatureSummary(BaseModel):
+    """Plain-language comparison of the models within one feature (issue #238).
+
+    Model keys are ``provider:model``. Leader lists hold several keys on ties and
+    are empty when there is not enough data to rank.
+
+    Attributes:
+        text: One factual sentence (or "not enough data" sentence) for people.
+        compared_models: Models with at least ``MIN_SAMPLE_SIZE`` calls (ranked).
+        excluded_models: Models below ``MIN_SAMPLE_SIZE`` calls (not ranked).
+        cheapest: Lowest cost per 1,000 calls among ranked, priced models.
+        fastest_p50: Lowest p50 latency among ranked models.
+        fastest_p95: Lowest p95 latency among ranked models.
+        most_reliable: Lowest error rate among ranked models.
+    """
+
+    text: str
+    compared_models: list[str] = []
+    excluded_models: list[str] = []
+    cheapest: list[str] = []
+    fastest_p50: list[str] = []
+    fastest_p95: list[str] = []
+    most_reliable: list[str] = []
+
+
 class FeatureReport(BaseModel):
-    """Report section for one feature (``chat`` or ``feedback``)."""
+    """Report section for one feature (``chat`` or ``feedback``).
+
+    Attributes:
+        summary: Comparison summary; ``None`` when fewer than two models have calls.
+    """
 
     feature: str
     baseline_present: bool
     first_call_at: Optional[datetime] = None
     last_call_at: Optional[datetime] = None
     rows: list[ModelReportRow]
+    summary: Optional[FeatureSummary] = None
 
 
 class ReportPriceInfo(BaseModel):
