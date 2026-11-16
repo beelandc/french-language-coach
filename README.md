@@ -291,6 +291,7 @@ french-language-coach/
 │   ├── datasets/judge_validation_v1.jsonl # 22 hand verdicts used to check the judge (Issue #231)
 │   ├── results/             # Eval reports, feedback_eval_<YYYYMMDD-HHMMSS>.json/.md (Issue #231)
 │   ├── LABELING.md          # Error categories, span rules, grammar-score rubric
+│   ├── METHODOLOGY.md       # How the eval scores a model: deterministic matching, LLM judge, metrics (Issue #231)
 │   └── README.md            # How the dataset was produced, its limits, and how to run the harness
 ├── frontend/                # React SPA frontend (Vite + TypeScript)
 │   ├── src/

@@ -20,6 +20,7 @@ evals/
 │   └── judge_validation_v1.jsonl # 22 hand verdicts used to check the judge (#231)
 ├── results/                  # Dated eval reports (feedback_eval_<YYYYMMDD-HHMMSS>.json/.md)
 ├── LABELING.md               # Error categories, span rules, grammar-score rubric
+├── METHODOLOGY.md            # How the harness scores a model: matching, judge, metrics (#231)
 └── README.md                 # This file
 ```
 
@@ -151,7 +152,7 @@ Exit codes: `0` completed, `1` setup error or a model stopped after repeated pro
 
 ### Matching corrections to labeled errors
 
-The models return `example_corrections` as `{original, corrected, explanation}` with no message index, so each correction is first located and then compared with the labeled errors:
+The models return `example_corrections` as `{original, corrected, explanation}` with no message index, so each correction is first located and then compared with the labeled errors. [`METHODOLOGY.md`](METHODOLOGY.md) walks through these steps with worked examples (model spans, wider and narrower spans, the fallback, the judge's inputs and outputs):
 
 1. **Normalize** both sides for matching only: Unicode NFC, curly apostrophes and quotes to ASCII, lowercase, collapsed whitespace, no space before `? ! ; :`, and surrounding punctuation stripped. Duplicate corrections are dropped, and corrections that change nothing are counted as no-ops.
 2. **Locate.** The candidates are the labeled errors in the learner messages that contain the correction's `original`, or every labeled error in the conversation if it isn't found verbatim.
