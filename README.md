@@ -684,10 +684,31 @@ pytest -v
 pytest tests/test_sessions_listing.py
 ```
 
-**To run with test coverage:**
+**To run with test coverage (the CI coverage gate, Issue #252):**
 ```bash
-pytest --cov=. --cov-report=term-missing
+python3 -m pytest tests/ --cov --cov-report=term-missing --cov-report=json
+python3 scripts/check_module_coverage.py coverage.json
 ```
+
+These two commands are what CI runs, and CI fails if either one fails:
+- **Total**: pytest-cov fails the run when total backend coverage is below `fail_under` in [`.coveragerc`](.coveragerc) (80). The threshold is set only there; CI and the per-module script both read it.
+- **Per module**: `scripts/check_module_coverage.py` fails if any measured module is below the same threshold, unless it's on the script's `ALLOWLIST`. It warns when an allowlisted module reaches the threshold (remove the entry) or no longer exists.
+
+`.coveragerc` also sets what's measured: `source = .`, omitting `tests/`, `frontend/`, `scripts/`, `.venv/` and `seed_all_decks.py` (a standalone generator of `data/vocabulary_cards/*.json`). It traces SQLAlchemy greenlets so async routers report real coverage (Issue #249).
+
+Allowlisted modules (known exceptions, tracked in [Issue #259](https://github.com/beelandc/french-language-coach/issues/259)):
+
+| Module | Coverage (CI) | Reason |
+|---|---|---|
+| `main.py` | 77% | `static/index.html` routes are untested; the auto-seed branch runs only when `./french_coach.db` has no decks |
+| `database.py` | 78% | `get_db()` is overridden by the test database in `tests/conftest.py` |
+| `seed_database.py` | 92% | No tests of its own: it's covered only because the test app's startup seeds an empty `./french_coach.db`, so CI warns that it could leave the allowlist, but it's 0% locally once that database has decks |
+
+Local numbers for `main.py`, `seed_database.py` and the total depend on your `./french_coach.db`. The test client runs the app's startup hook against the real database (a known test-isolation gap, tracked in #259), and the seed code only runs when that database has no decks. To reproduce CI's numbers exactly, point the run at an empty database file, e.g. `DATABASE_URL="sqlite+aiosqlite:////tmp/flc-ci.db" python3 -m pytest tests/ --cov ...` (delete the file first).
+
+`fail_under` applies to every `--cov` run, so a partial run (one test file) reports a coverage failure. Add `--cov-fail-under=0` to see a partial report without the gate, e.g. `python3 -m pytest tests/test_scenarios.py --cov --cov-fail-under=0`.
+
+In CI, the job summary of the **Pytest Backend Unit Tests** run shows the coverage table and the per-module result, and the `coverage-report` artifact holds `coverage.xml` and `coverage.json`.
 
 **Available backend test files:**
 - `tests/test_scenarios.py` - Tests for scenario difficulty levels
@@ -790,7 +811,7 @@ This project uses GitHub Actions for Continuous Integration with the following w
 
 ### Test Workflows (Conditional)
 
-- **pytest-tests.yml** - Runs backend pytest tests when backend files change
+- **pytest-tests.yml** (`Pytest Backend Unit Tests`) - Runs backend pytest tests with the coverage gate (80% total and per module, see [Backend Tests](#backend-tests)) when backend files change: any repo-root `*.py`, `models/`, `routers/`, `schemas/`, `services/`, `data/`, `scripts/`, `tests/`, `requirements.txt` or `.coveragerc`
 - **jest-tests.yml** - Runs frontend Jest tests when frontend files change
 - **vitest-tests.yml** - Runs frontend Vitest tests when frontend files change
 - **cypress-tests.yml** - Runs end-to-end Cypress tests when frontend files change

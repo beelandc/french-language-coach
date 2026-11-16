@@ -2,64 +2,104 @@ name: Pytest Backend Unit Tests
 
 # Run pytest unit tests for the backend
 # This workflow tests the FastAPI backend with pytest + factory-boy
+#
+# Coverage gate (Issue #252): the job fails when total backend coverage is below
+# `[report] fail_under` in .coveragerc (pytest-cov), or when any measured module
+# that isn't allowlisted is below it (scripts/check_module_coverage.py). The
+# threshold is set only in .coveragerc. status-gateway.yml tracks this workflow by
+# name, so a coverage failure blocks the merge. Keep the paths below in sync for
+# push and pull_request: a PR that touches none of them skips the gate.
 
 on:
   push:
     branches:
       - main
     paths:
+      # '*.py' matches repo-root modules only (main.py, config.py, database.py,
+      # scenarios.py, seed_*.py, ...): '*' doesn't match '/' in path filters.
+      - '*.py'
       - 'models/**'
       - 'routers/**'
+      - 'schemas/**'
       - 'services/**'
+      - 'data/**'
+      - 'scripts/**'
       - 'tests/**'
       - 'requirements.txt'
-      - 'database.py'
-      - 'config.py'
-      - 'main.py'
+      - '.coveragerc'
       - '.github/workflows/pytest-tests.yml'
   pull_request:
     branches:
       - main
     paths:
+      - '*.py'
       - 'models/**'
       - 'routers/**'
+      - 'schemas/**'
       - 'services/**'
+      - 'data/**'
+      - 'scripts/**'
       - 'tests/**'
       - 'requirements.txt'
-      - 'database.py'
-      - 'config.py'
-      - 'main.py'
+      - '.coveragerc'
       - '.github/workflows/pytest-tests.yml'
 
 jobs:
   pytest:
     name: Run Backend Tests
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           # Fetch all history for accurate git info
           fetch-depth: 0
-      
+
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.12'
           cache: 'pip'
           cache-dependency-path: '**/requirements.txt'
-      
+
       - name: Install Dependencies
         run: |
           pip install -r requirements.txt
-      
-      - name: Run Pytest
+
+      - name: Run Pytest with Coverage
         env:
           MISTRAL_API_KEY: dummy_test_key
+        # --cov reads source/omit/fail_under from .coveragerc; fails if the total is below fail_under
         run: |
-          python3 -m pytest tests/ -v --tb=short
-      
+          python3 -m pytest tests/ -v --tb=short --cov --cov-report=term-missing --cov-report=xml --cov-report=json
+
+      - name: Check Per-Module Coverage
+        if: always() && hashFiles('coverage.json') != ''
+        run: |
+          python3 scripts/check_module_coverage.py coverage.json --summary "$GITHUB_STEP_SUMMARY"
+
+      - name: Coverage Summary
+        if: always() && hashFiles('.coverage') != ''
+        # Display only: the threshold is enforced by the pytest step above
+        run: |
+          {
+            echo "### Backend coverage"
+            echo ""
+            python3 -m coverage report --format=markdown --fail-under=0
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload Coverage Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: |
+            coverage.xml
+            coverage.json
+          if-no-files-found: ignore
+          retention-days: 7
+
       - name: Upload Test Results
         if: always()
         uses: actions/upload-artifact@v4
