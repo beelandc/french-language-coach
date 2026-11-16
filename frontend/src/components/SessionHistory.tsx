@@ -86,7 +86,7 @@ export default function SessionHistory({ onSessionClick }: SessionHistoryProps) 
       }, 3000)
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to delete session'
-      throw new Error(errorMessage)
+      throw new Error(errorMessage, { cause: err })
     }
   }, [])
 

@@ -12,7 +12,7 @@ export default defineConfig({
     supportFile: 'cypress/support/index.ts',
     
     // Setup node events
-    setupNodeEvents(on, config) {
+    setupNodeEvents() {
       // implement node event listeners here
     },
     

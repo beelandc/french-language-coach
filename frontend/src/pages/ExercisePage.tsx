@@ -47,11 +47,11 @@ export default function ExercisePage() {
         try {
           const response = await fetch(`/data/grammar/exercises/${exerciseId}.json`)
           if (!response.ok) {
-            throw new Error('Exercise not found')
+            throw new Error('Exercise not found', { cause: err })
           }
           const data = await response.json()
           setExercise(data)
-        } catch (fallbackErr) {
+        } catch {
           setError(err instanceof Error ? err.message : 'Failed to load exercise')
           setExercise(null)
         }

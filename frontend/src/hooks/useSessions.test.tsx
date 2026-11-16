@@ -2,7 +2,6 @@ import { renderHook, act } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { SessionsProvider, useSessions } from './useSessions'
 import * as api from '../utils/api'
-import type { Session, Message } from '../types'
 
 /**
  * Tests for useSessions hook with initial greeting feature (Issue #155)

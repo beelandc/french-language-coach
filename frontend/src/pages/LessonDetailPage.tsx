@@ -46,7 +46,7 @@ export default function LessonDetailPage() {
       try {
         const allLessonsResponse = await grammarApi.listLessons(1, 100)
         setAllLessons(allLessonsResponse.lessons)
-      } catch (err) {
+      } catch {
         // If fetching all lessons fails, continue with empty array
         // Related lessons section will just not display
         setAllLessons([])

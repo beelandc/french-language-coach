@@ -7,11 +7,10 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react'
-import { MemoryRouter } from 'react-router-dom'
 import { vi } from 'vitest'
 import DeckBrowser from './DeckBrowser'
 import { vocabularyApi } from '../utils/api'
-import type { DeckListResponse, DeckSummary, CardListResponse, CardSummary } from '../types/index'
+import type { DeckSummary, CardListResponse, CardSummary } from '../types/index'
 
 // Note: vocabularyApi is mocked in testSetup.ts
 // All stories can configure the mock responses on vocabularyApi directly
@@ -28,15 +27,6 @@ const meta = {
 export default meta
 
 type Story = StoryObj<typeof meta>
-
-// Helper function to create mock deck data
-function createMockDeckResponse(decks: DeckSummary[], cardsByDeck: Record<number, CardSummary[]>) {
-  return {
-    decks,
-    pagination: { total: decks.length, page: 1, per_page: 12, total_pages: 1 },
-    cardsByDeck,
-  }
-}
 
 // Reset mocks before each story - vocabularyApi is already mocked in testSetup.ts
 

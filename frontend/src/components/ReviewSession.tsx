@@ -10,7 +10,8 @@
  */
 
 import { useState, useEffect, useCallback } from 'react'
-import Flashcard, { RATING_BUTTONS } from './Flashcard'
+import Flashcard from './Flashcard'
+import { RATING_BUTTONS } from './ratingButtons'
 import { vocabularyApi } from '../utils/api'
 import type { 
   ReviewSessionProps, 

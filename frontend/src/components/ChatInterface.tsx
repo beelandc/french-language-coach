@@ -1,9 +1,47 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSessions } from '../hooks/useSessions'
 import type { ChatInterfaceProps } from '../types'
 import ChatHeader from './ChatHeader'
 import MessageBubble from './MessageBubble'
+
+// Map scenario IDs to display names
+const SCENARIO_NAMES: Record<string, string> = {
+  'cafe_order': 'Ordering at a Café',
+  'ask_directions': 'Asking for Directions',
+  'job_interview': 'Job Interview',
+  'hotel_checkin': 'Hotel Check-in',
+  'shopping': 'Shopping for Clothes',
+  'doctor_visit': 'Doctor\'s Visit',
+  'train_travel': 'Train Travel',
+  'restaurant_dining': 'Dining at a Restaurant',
+  'apartment_rental': 'Apartment Rental',
+  'museum_visit': 'Museum Visit',
+}
+
+/**
+ * Display name for the chat header. Uses the session's scenario_id when known,
+ * then the hook's current scenario, then a generic title.
+ */
+function getScenarioName(
+  sessionId: string | undefined,
+  sessionScenarioId: string | undefined,
+  currentScenarioId: string | null | undefined,
+): string {
+  if (!sessionId) return 'Chat Session'
+
+  // Use session's scenario_id if available
+  if (sessionScenarioId) {
+    return SCENARIO_NAMES[sessionScenarioId] || sessionScenarioId
+  }
+
+  // Fallback to currentScenarioId from hook
+  if (currentScenarioId && SCENARIO_NAMES[currentScenarioId]) {
+    return SCENARIO_NAMES[currentScenarioId]
+  }
+
+  return 'Chat Session'
+}
 
 export default function ChatInterface({ sessionId }: ChatInterfaceProps) {
   const {
@@ -19,8 +57,9 @@ export default function ChatInterface({ sessionId }: ChatInterfaceProps) {
     unlockSession,
   } = useSessions()
   
-  // Generate a unique client ID for this session/tab
-  const clientId = useRef<string>(`chat_${sessionId}_${Date.now()}`).current
+  // Generate a unique client ID for this session/tab. The lazy initializer runs once per
+  // mount, so the ID is stable across renders without reading a ref during render (Issue #251).
+  const [clientId] = useState<string>(() => `chat_${sessionId}_${Date.now()}`)
   
   const [inputValue, setInputValue] = useState('')
   const [isSending, setIsSending] = useState(false)
@@ -33,38 +72,7 @@ export default function ChatInterface({ sessionId }: ChatInterfaceProps) {
 
   // Get the current session's messages
   const session = sessions.find(s => s.id === sessionId)
-  const messages = session?.messages || []
-
-  // Get scenario name from session ID
-  const getScenarioName = useCallback((): string => {
-    if (!sessionId) return 'Chat Session'
-    
-    // Map scenario IDs to names
-    const scenarioNames: Record<string, string> = {
-      'cafe_order': 'Ordering at a Café',
-      'ask_directions': 'Asking for Directions',
-      'job_interview': 'Job Interview',
-      'hotel_checkin': 'Hotel Check-in',
-      'shopping': 'Shopping for Clothes',
-      'doctor_visit': 'Doctor\'s Visit',
-      'train_travel': 'Train Travel',
-      'restaurant_dining': 'Dining at a Restaurant',
-      'apartment_rental': 'Apartment Rental',
-      'museum_visit': 'Museum Visit',
-    }
-    
-    // Use session's scenario_id if available
-    if (session?.scenario_id) {
-      return scenarioNames[session.scenario_id] || session.scenario_id
-    }
-    
-    // Fallback to currentScenarioId from hook
-    if (currentScenarioId && scenarioNames[currentScenarioId]) {
-      return scenarioNames[currentScenarioId]
-    }
-    
-    return 'Chat Session'
-  }, [sessionId, session, currentScenarioId])
+  const messages = useMemo(() => session?.messages || [], [session?.messages])
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -149,7 +157,7 @@ export default function ChatInterface({ sessionId }: ChatInterfaceProps) {
     navigate('/scenarios')
   }
 
-  const scenarioName = getScenarioName()
+  const scenarioName = getScenarioName(sessionId, session?.scenario_id, currentScenarioId)
   const isLoading = isSessionsLoading || isSending || isRequestingFeedback
 
   return (

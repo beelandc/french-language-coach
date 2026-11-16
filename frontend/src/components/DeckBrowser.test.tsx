@@ -135,7 +135,7 @@ describe('DeckBrowser', () => {
     })
 
     it('renders loading state when fetching decks', async () => {
-      let resolveDecks: (value: any) => void
+      let resolveDecks: (value: DeckListResponse) => void
       const pendingPromise = new Promise((resolve) => {
         resolveDecks = resolve
       })

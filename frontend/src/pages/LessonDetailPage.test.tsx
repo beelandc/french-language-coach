@@ -13,6 +13,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
+import * as ReactRouterDom from 'react-router-dom'
 import LessonDetailPage from './LessonDetailPage'
 import { grammarApi } from '../utils/api'
 import type { Lesson } from '../types/index'
@@ -169,7 +170,7 @@ describe('LessonDetailPage', () => {
   describe('Navigation', () => {
     it('navigates back when back button is clicked', async () => {
       const mockNavigate = vi.fn()
-      vi.spyOn(require('react-router-dom'), 'useNavigate').mockReturnValue(mockNavigate)
+      vi.spyOn(ReactRouterDom, 'useNavigate').mockReturnValue(mockNavigate)
 
       renderWithRoute('verb-conjugation')
 

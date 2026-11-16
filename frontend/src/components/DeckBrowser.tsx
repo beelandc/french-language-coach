@@ -75,6 +75,25 @@ export default function DeckBrowser({
   // Current page state
   const [currentPage, setCurrentPage] = useState(1)
 
+  // Fetch cards for a list of decks
+  const fetchCardsForDecks = useCallback(async (deckList: DeckSummary[]) => {
+    const cardsMap = new Map<number, CardSummary[]>()
+
+    // Fetch cards for each deck
+    for (const deck of deckList) {
+      try {
+        // Fetch all cards for this deck (use a high per_page to get all in one request)
+        const cardsResponse = await vocabularyApi.listDeckCards(deck.id, 1, 1000)
+        cardsMap.set(deck.id, cardsResponse.cards)
+      } catch {
+        // If we can't fetch cards for a deck, use empty array
+        cardsMap.set(deck.id, [])
+      }
+    }
+
+    setAllCardsByDeck(cardsMap)
+  }, [])
+
   // Fetch decks from API with current page
   const fetchDecks = useCallback(async () => {
     setIsLoading(true)
@@ -102,36 +121,12 @@ export default function DeckBrowser({
     } finally {
       setIsLoading(false)
     }
-  }, [currentPage])
-
-  // Fetch cards for a list of decks
-  const fetchCardsForDecks = useCallback(async (deckList: DeckSummary[]) => {
-    const cardsMap = new Map<number, CardSummary[]>()
-
-    // Fetch cards for each deck
-    for (const deck of deckList) {
-      try {
-        // Fetch all cards for this deck (use a high per_page to get all in one request)
-        const cardsResponse = await vocabularyApi.listDeckCards(deck.id, 1, 1000)
-        cardsMap.set(deck.id, cardsResponse.cards)
-      } catch (err) {
-        // If we can't fetch cards for a deck, use empty array
-        cardsMap.set(deck.id, [])
-      }
-    }
-
-    setAllCardsByDeck(cardsMap)
-  }, [])
+  }, [currentPage, fetchCardsForDecks])
 
   // Fetch decks when page changes
   useEffect(() => {
     fetchDecks()
   }, [fetchDecks])
-
-  // Reset to first page when filters change
-  useEffect(() => {
-    setCurrentPage(1)
-  }, [tagFilter])
 
   // Enrich deck data with progress information and tags
   const decksWithProgress = useMemo<DeckWithProgress[]>(() => {
@@ -246,10 +241,12 @@ export default function DeckBrowser({
     setSearchQuery(query)
   }, [])
 
-  // Handle tag filter change
+  // Handle tag filter change. A new tag resets to the first page (done here rather than
+  // in an effect, Issue #251); re-selecting the current tag keeps the page.
   const handleTagFilter = useCallback((tag: string) => {
     setTagFilter(tag)
-  }, [])
+    if (tag !== tagFilter) setCurrentPage(1)
+  }, [tagFilter])
 
   // Handle sort change
   const handleSort = useCallback((sortOption: DeckSortOption) => {

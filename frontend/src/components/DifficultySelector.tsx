@@ -16,15 +16,19 @@ export default function DifficultySelector({
 }: DifficultySelectorProps) {
   const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>(defaultDifficulty)
 
+  // Re-sync the selection when the parent changes defaultDifficulty. React's "adjust state
+  // when a prop changes" pattern: compare with the previous value during render instead of
+  // setting state in an effect (Issue #251).
+  const [prevDefaultDifficulty, setPrevDefaultDifficulty] = useState<Difficulty>(defaultDifficulty)
+  if (defaultDifficulty !== prevDefaultDifficulty) {
+    setPrevDefaultDifficulty(defaultDifficulty)
+    setSelectedDifficulty(defaultDifficulty)
+  }
+
   // Notify parent when difficulty changes
   useEffect(() => {
     onDifficultyChange(selectedDifficulty)
   }, [selectedDifficulty, onDifficultyChange])
-
-  // Initialize with default value
-  useEffect(() => {
-    setSelectedDifficulty(defaultDifficulty)
-  }, [defaultDifficulty])
 
   const handleDifficultyClick = (difficulty: Difficulty) => {
     setSelectedDifficulty(difficulty)

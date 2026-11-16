@@ -1,12 +1,8 @@
 // Jest setup file for frontend tests
 // This file is automatically loaded before each test file
 
-// Import runtime - this extends expect with jest-dom matchers
-// Note: Using require to avoid ESM issues
-const jestDom = require('@testing-library/jest-dom');
-
-// Extend expect with jest-dom matchers
-expect.extend(jestDom);
+// Importing jest-dom's main entry registers its matchers on Jest's expect
+import '@testing-library/jest-dom';
 
 // Note: MSW setup is commented out due to ESM/CommonJS compatibility issues
 // MSW can still be used with dynamic imports in test files

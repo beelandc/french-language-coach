@@ -13,6 +13,8 @@
 import { describe, it, expect } from '@jest/globals';
 import { render } from '@testing-library/react';
 import React from 'react';
+import * as fs from 'fs';
+import * as path from 'path';
 
 // Simple test component
 const TestComponent = () => (
@@ -80,17 +82,14 @@ describe('Jest + @testing-library/react Setup Verification', () => {
       expect(mod.render).toBeDefined();
     });
 
-    it('should have React DOM available', () => {
-      const ReactDOM = require('react-dom/client');
+    it('should have React DOM available', async () => {
+      const ReactDOM = await import('react-dom/client');
       expect(ReactDOM.createRoot).toBeDefined();
     });
 
     it('should have MSW mock files available', () => {
       // MSW is installed and mock files are created
       // These files provide handlers for API mocking
-      const fs = require('fs');
-      const path = require('path');
-      
       const handlersPath = path.join(__dirname, 'mocks', 'handlers.ts');
       const serverPath = path.join(__dirname, 'mocks', 'server.ts');
       const browserPath = path.join(__dirname, 'mocks', 'browser.ts');

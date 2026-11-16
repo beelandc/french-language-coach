@@ -35,17 +35,6 @@ type Story = StoryObj<typeof meta>
 // Available tags for stories
 const availableTags = ['travel', 'beginner', 'food', 'essential', 'advanced', 'business', 'common']
 
-const sortOptions: DeckSortOption[] = [
-  'name-asc',
-  'name-desc',
-  'created-asc',
-  'created-desc',
-  'cards-asc',
-  'cards-desc',
-  'progress-asc',
-  'progress-desc',
-]
-
 const defaultOnSearch = (query: string) => console.log(`Search: ${query}`)
 const defaultOnTagFilter = (tag: string) => console.log(`Tag filter: ${tag}`)
 const defaultOnSort = (sortBy: DeckSortOption) => console.log(`Sort by: ${sortBy}`)
@@ -148,32 +137,38 @@ export const EmptyTags: Story = {
 }
 
 /**
+ * Wrapper component that owns the search/filter/sort state for the Interactive story.
+ * Hooks must run inside a component, not directly in a story's render function (Issue #251).
+ */
+function InteractiveDeckSearch(args: DeckSearchProps) {
+  const [searchQuery, setSearchQuery] = useState(args.searchQuery)
+  const [tagFilter, setTagFilter] = useState(args.tagFilter)
+  const [sortBy, setSortBy] = useState<DeckSortOption>(args.sortBy)
+
+  return (
+    <DeckSearch
+      {...args}
+      searchQuery={searchQuery}
+      tagFilter={tagFilter}
+      sortBy={sortBy}
+      onSearch={setSearchQuery}
+      onTagFilter={setTagFilter}
+      onSort={setSortBy}
+      onClearFilters={() => {
+        setSearchQuery('')
+        setTagFilter('')
+        setSortBy('name-asc')
+      }}
+    />
+  )
+}
+
+/**
  * Interactive DeckSearch with state management
  * This story demonstrates the component with interactive state
  */
 export const Interactive: Story = {
-  render: (args) => {
-    const [searchQuery, setSearchQuery] = useState(args.searchQuery)
-    const [tagFilter, setTagFilter] = useState(args.tagFilter)
-    const [sortBy, setSortBy] = useState<DeckSortOption>(args.sortBy)
-
-    return (
-      <DeckSearch
-        {...args}
-        searchQuery={searchQuery}
-        tagFilter={tagFilter}
-        sortBy={sortBy}
-        onSearch={setSearchQuery}
-        onTagFilter={setTagFilter}
-        onSort={setSortBy}
-        onClearFilters={() => {
-          setSearchQuery('')
-          setTagFilter('')
-          setSortBy('name-asc')
-        }}
-      />
-    )
-  },
+  render: (args) => <InteractiveDeckSearch {...args} />,
   args: {
     searchQuery: '',
     tagFilter: '',

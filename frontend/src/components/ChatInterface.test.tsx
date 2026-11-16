@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import { SessionsContext, SessionsProvider } from '../hooks/useSessions'
+import { SessionsContext } from '../hooks/useSessions'
 import ChatInterface from './ChatInterface'
-import type { Session, Message, SessionsContextType } from '../types'
+import type { SessionsContextType } from '../types'
 
 /**
  * Tests for ChatInterface component - Issue #19: Loading States and Disabled Buttons

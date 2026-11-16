@@ -5,7 +5,7 @@
 import { useState } from 'react'
 import type { Meta, StoryObj } from '@storybook/react'
 import LessonSearch from './LessonSearch'
-import type { LessonSearchProps, Difficulty } from '../types/index'
+import type { Difficulty } from '../types/index'
 
 const meta = {
   title: 'Components/LessonSearch',

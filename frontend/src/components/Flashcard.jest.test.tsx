@@ -9,7 +9,8 @@
  */
 
 import { render, screen, fireEvent } from '@testing-library/react'
-import Flashcard, { RATING_BUTTONS } from './Flashcard'
+import Flashcard from './Flashcard'
+import { RATING_BUTTONS } from './ratingButtons'
 import type { CardData } from '../types/index'
 
 // Mock card data for testing

@@ -12,7 +12,6 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import LessonSearch from './LessonSearch'
-import type { Difficulty } from '../types/index'
 
 // Mock handlers
 const mockOnSearch = vi.fn()

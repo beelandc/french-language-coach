@@ -103,11 +103,6 @@ export default function DeckCardsPage() {
     }
   }, [fetchData, deckIdNum])
 
-  // Reset to first page when filters change
-  useEffect(() => {
-    setCurrentPage(1)
-  }, [searchQuery, tagFilter, sortBy])
-
   // Handle retry after error
   const handleRetry = useCallback(() => {
     fetchData()
@@ -129,20 +124,26 @@ export default function DeckCardsPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [])
 
+  // Search, tag and sort changes reset to the first page when the value actually changes.
+  // This is done in the handlers rather than in an effect (Issue #251).
+
   // Handle search change
   const handleSearch = useCallback((query: string) => {
     setSearchQuery(query)
-  }, [])
+    if (query !== searchQuery) setCurrentPage(1)
+  }, [searchQuery])
 
   // Handle tag filter change
   const handleTagFilter = useCallback((tag: string) => {
     setTagFilter(tag)
-  }, [])
+    if (tag !== tagFilter) setCurrentPage(1)
+  }, [tagFilter])
 
   // Handle sort change
   const handleSort = useCallback((sortOption: string) => {
     setSortBy(sortOption as typeof CARD_SORT_OPTIONS[number]['value'])
-  }, [])
+    if (sortOption !== sortBy) setCurrentPage(1)
+  }, [sortBy])
 
   // Handle clear filters
   const handleClearFilters = useCallback(() => {

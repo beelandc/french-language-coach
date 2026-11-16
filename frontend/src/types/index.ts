@@ -265,7 +265,7 @@ export interface LessonListResponse {
 }
 
 // Response for GET /grammar/lessons/{id} (single lesson)
-export interface LessonResponse extends Lesson {}
+export type LessonResponse = Lesson
 
 // Response for GET /grammar/recommendations/?focus_area= (recommended lessons)
 // Matches RecommendationResponse in schemas/grammar.py
@@ -376,7 +376,7 @@ export interface ReferenceListResponse {
  * Response for a single grammar reference entry.
  * Matches ReferenceResponse in schemas/grammar.py
  */
-export interface ReferenceResponse extends GrammarReference {}
+export type ReferenceResponse = GrammarReference
 
 // Props for ReferenceCard component
 export interface ReferenceCardProps {
@@ -554,9 +554,8 @@ export interface ExercisePageProps {
 /**
  * Props for ReferencePage component
  */
-export interface ReferencePageProps {
-  // Page-level props if needed
-}
+// Page-level props if needed (none today)
+export type ReferencePageProps = Record<string, never>
 
 /**
  * State for managing exercise sessions
@@ -736,7 +735,7 @@ export interface DeckBrowserProps {
  * Response for GET /vocabulary/decks/{id} (single deck)
  * Matches DeckResponse in schemas/vocabulary.py
  */
-export interface DeckResponse extends DeckSummary {}
+export type DeckResponse = DeckSummary
 
 /**
  * Request body for POST /vocabulary/decks/
@@ -899,9 +898,8 @@ export interface CardForDisplay extends CardSummary {
 /**
  * Props for DeckDetailPage component
  */
-export interface DeckDetailPageProps {
-  // No props needed - deck ID comes from URL params
-}
+// No props needed - deck ID comes from URL params
+export type DeckDetailPageProps = Record<string, never>
 
 /**
  * Deck detail with cards for the detail page
@@ -913,9 +911,8 @@ export interface DeckDetail extends DeckSummary {
 /**
  * Props for DeckCardsPage component
  */
-export interface DeckCardsPageProps {
-  // No props needed - deck ID comes from URL params
-}
+// No props needed - deck ID comes from URL params
+export type DeckCardsPageProps = Record<string, never>
 
 /**
  * Card list state for filtering and sorting

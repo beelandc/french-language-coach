@@ -3,7 +3,7 @@
 import { http, HttpResponse } from 'msw';
 
 // Mock data for sessions
-const mockSession: any = {
+const mockSession = {
   id: '1',
   scenario_id: 'ordering-at-cafe',
   difficulty: 'intermediate',
@@ -31,7 +31,7 @@ const mockSession: any = {
   locked_by: null,
 };
 
-const mockFeedback: any = {
+const mockFeedback = {
   grammar_score: 85,
   vocabulary_score: 78,
   fluency_score: 82,
@@ -47,7 +47,7 @@ const mockFeedback: any = {
   ],
 };
 
-const mockSessionList: any[] = [
+const mockSessionList = [
   mockSession,
   {
     id: '2',
@@ -64,7 +64,7 @@ const mockSessionList: any[] = [
 ];
 
 // Mock data for grammar lessons
-const mockLessons: any = {
+const mockLessons = {
   items: [
     {
       id: '1',
@@ -91,7 +91,7 @@ const mockLessons: any = {
   },
 };
 
-const mockLesson: any = {
+const mockLesson = {
   id: '1',
   title: 'Present Tense Verbs',
   topic: 'Verb Conjugation',
@@ -108,12 +108,12 @@ const mockLesson: any = {
 };
 
 // Mock data for grammar reference
-const mockReferences: any = {
+const mockReferences = {
   items: [
     {
       id: '1',
       title: 'The Present Tense',
-      category: 'verb_conjugation' as any,
+      category: 'verb_conjugation',
       difficulty: 'beginner',
       summary: 'How to conjugate verbs in the present tense.',
     },
@@ -198,14 +198,14 @@ export const handlers = [
     const page = parseInt(url.searchParams.get('page') || '1', 10);
     const perPage = parseInt(url.searchParams.get('per_page') || '10', 10);
     const topic = url.searchParams.get('topic') || undefined;
-    const difficulty = url.searchParams.get('difficulty') as any || undefined;
+    const difficulty = url.searchParams.get('difficulty') || undefined;
 
     let filteredLessons = mockLessons.items;
     if (topic) {
-      filteredLessons = filteredLessons.filter((l: any) => l.topic === topic);
+      filteredLessons = filteredLessons.filter((l) => l.topic === topic);
     }
     if (difficulty) {
-      filteredLessons = filteredLessons.filter((l: any) => l.difficulty === difficulty);
+      filteredLessons = filteredLessons.filter((l) => l.difficulty === difficulty);
     }
 
     return HttpResponse.json({
@@ -229,20 +229,20 @@ export const handlers = [
     const page = parseInt(url.searchParams.get('page') || '1', 10);
     const perPage = parseInt(url.searchParams.get('per_page') || '10', 10);
     const query = url.searchParams.get('q') || undefined;
-    const category = url.searchParams.get('category') as any || undefined;
-    const difficulty = url.searchParams.get('difficulty') as any || undefined;
+    const category = url.searchParams.get('category') || undefined;
+    const difficulty = url.searchParams.get('difficulty') || undefined;
 
     let filteredReferences = mockReferences.items;
     if (query) {
-      filteredReferences = filteredReferences.filter((r: any) =>
+      filteredReferences = filteredReferences.filter((r) =>
         r.title.toLowerCase().includes(query.toLowerCase())
       );
     }
     if (category) {
-      filteredReferences = filteredReferences.filter((r: any) => r.category === category);
+      filteredReferences = filteredReferences.filter((r) => r.category === category);
     }
     if (difficulty) {
-      filteredReferences = filteredReferences.filter((r: any) => r.difficulty === difficulty);
+      filteredReferences = filteredReferences.filter((r) => r.difficulty === difficulty);
     }
 
     return HttpResponse.json({

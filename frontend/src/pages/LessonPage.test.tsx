@@ -10,7 +10,6 @@ import { render, screen } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 import LessonPage from './LessonPage'
-import LessonBrowser from '../components/LessonBrowser'
 
 // Mock LessonBrowser
 vi.mock('../components/LessonBrowser', () => ({

@@ -175,7 +175,6 @@ describe('LessonCard', () => {
     it('handles click with undefined onClick gracefully', () => {
       // This shouldn't happen in practice, but test for robustness
       const consoleWarn = vi.spyOn(console, 'warn').mockImplementation(() => {})
-      const onClick = undefined as unknown as (id: string) => void
       
       // Re-render with proper onClick to avoid type errors in test
       render(<LessonCard lesson={mockLesson} onClick={mockOnClick} />)

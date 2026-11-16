@@ -9,7 +9,7 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import DeckCardsPage from './DeckCardsPage'
 import { vocabularyApi } from '../utils/api'
-import type { DeckSummary, CardSummary, DeckResponse, CardListResponse } from '../types/index'
+import type { CardSummary, DeckResponse, CardListResponse, BreadcrumbItem } from '../types/index'
 
 // Mock the vocabulary API
 vi.mock('../utils/api', () => ({
@@ -21,7 +21,7 @@ vi.mock('../utils/api', () => ({
 
 // Mock Flashcard component
 vi.mock('../components/Flashcard', () => ({
-  default: ({ card }: { card: any }) => (
+  default: ({ card }: { card: CardSummary }) => (
     <div data-testid="flashcard" data-card-id={card.card_id}>
       <div data-testid="flashcard-front">{card.front}</div>
       <div data-testid="flashcard-back">{card.back}</div>
@@ -31,7 +31,7 @@ vi.mock('../components/Flashcard', () => ({
 
 // Mock Breadcrumb component
 vi.mock('../components/Breadcrumb', () => ({
-  default: ({ items }: { items: any[] }) => (
+  default: ({ items }: { items: BreadcrumbItem[] }) => (
     <nav data-testid="breadcrumb">
       {items.map((item, index) => (
         <span key={index} data-testid={`breadcrumb-item-${index}`}>

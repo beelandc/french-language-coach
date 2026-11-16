@@ -170,7 +170,10 @@ export default function SessionDetail({ sessionId }: SessionDetailProps) {
 
   // Handle PDF export
   const handleExportToPDF = useCallback(async () => {
-    if (!session?.feedback || !sessionId) {
+    // Read feedback once so the callback depends on session?.feedback only, matching its
+    // dependency list (React Compiler preserve-manual-memoization, Issue #251)
+    const feedback = session?.feedback
+    if (!feedback || !sessionId) {
       setPdfError('No feedback available to export')
       return;
     }
@@ -178,7 +181,7 @@ export default function SessionDetail({ sessionId }: SessionDetailProps) {
     try {
       setIsExportingPDF(true);
       setPdfError(null);
-      await generateFeedbackPDF(session.feedback, sessionId);
+      await generateFeedbackPDF(feedback, sessionId);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to export PDF';
       setPdfError(errorMessage);
