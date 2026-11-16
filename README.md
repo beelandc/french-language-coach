@@ -293,6 +293,10 @@ french-language-coach/
 │   ├── LABELING.md          # Error categories, span rules, grammar-score rubric
 │   ├── METHODOLOGY.md       # How the eval scores a model: deterministic matching, LLM judge, metrics (Issue #231)
 │   └── README.md            # How the dataset was produced, its limits, and how to run the harness
+├── mcp_server/              # Read-only MCP server (stdio) over grammar, exercises and due cards, for Claude Code / Claude Desktop (Issue #268)
+│   ├── server.py            # create_server(): the five tools, thin adapters over routers/grammar.py and routers/vocabulary.py
+│   ├── results.py           # Shared success/error result shapes and error codes
+│   └── __main__.py          # Entry point: `python3 -m mcp_server` or `python3 /abs/path/mcp_server/__main__.py`
 ├── frontend/                # React SPA frontend (Vite + TypeScript)
 │   ├── src/
 │   │   ├── components/      # Reusable UI components + Storybook stories
@@ -397,6 +401,7 @@ french-language-coach/
 │   ├── conftest.py         # Pytest fixtures and configuration
 │   ├── test_feedback_validation.py # Strict FeedbackResponse validation; JSON schema kept in sync (Issue #229)
 │   ├── test_feedback_dataset.py # Validates every line of evals/datasets/feedback_v1.jsonl and its composition (Issue #230)
+│   ├── test_mcp_server.py  # MCP server: every tool called through an MCP client, errors, read-only guards, stdio launch (Issue #268)
 │   ├── test_eval_matching.py # Feedback eval: normalization and deterministic matching (Issue #231)
 │   ├── test_eval_judge.py  # Feedback eval: judge parsing, re-ask, cache, validation set, agreement (Issue #231)
 │   ├── test_eval_scoring.py # Feedback eval: per-conversation scores and metrics (Issue #231)
@@ -564,6 +569,148 @@ The app sends each feature to one model at a time, so a live comparison needs tr
 Live traffic is not a controlled experiment: models may have handled different conversations at different times. For same-input comparisons, and for feedback quality, use the eval harness (#231).
 
 Costs are estimated from `data/llm_pricing.json`, the only place prices live. Each entry gives USD per million input, output and cache-read tokens, the date the price was checked (`checked_on`) and a `source` link (Claude Haiku 5.5 also has a higher tier for prompts over 100,000 tokens). Calls to a model missing from the table are logged with a `null` cost. When a vendor changes prices, update the values and `checked_on` in that file.
+
+## MCP Server (Claude Code / Claude Desktop)
+
+`mcp_server/` is a [Model Context Protocol](https://modelcontextprotocol.io) server (Issue #268). It lets Claude Code or Claude Desktop use the app's own grammar lessons, grammar reference, exercises and your due vocabulary cards as tools, so you can ask things like *"quiz me on the subjunctive using my due cards"*. It runs over stdio and is started by the MCP client; the FastAPI backend doesn't need to be running.
+
+- **Read-only.** There are no write tools, every tool is annotated `readOnlyHint`, and the server never commits to the database. It doesn't record reviews or create cards (card creation with learner approval belongs to #270).
+- **No LLM calls.** The server only serves data; the model doing the tutoring is the one in your MCP client.
+- **Same data as the app.** The tools call the routers' own query functions (`routers/grammar.py` helpers, `routers.vocabulary.query_due_cards`), so results match the API.
+
+### Running it
+
+Install the requirements (`pip install -r requirements.txt`, which includes the `mcp` SDK), then:
+
+```bash
+python3 -m mcp_server                                        # from the repo root
+python3 /absolute/path/to/french-language-coach/mcp_server/__main__.py   # from anywhere
+```
+
+The server makes the repo root its working directory on startup, so it finds `.env` and the database whatever directory the client launches it from. Use the interpreter that has the requirements installed (e.g. `/absolute/path/to/french-language-coach/.venv/bin/python` if you use a venv) in the configs below.
+
+**Claude Code:**
+
+```bash
+claude mcp add french-coach -- python3 /absolute/path/to/french-language-coach/mcp_server/__main__.py
+```
+
+or in a project `.mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "french-coach": {
+      "command": "python3",
+      "args": ["/absolute/path/to/french-language-coach/mcp_server/__main__.py"]
+    }
+  }
+}
+```
+
+**Claude Desktop** (`claude_desktop_config.json`; Settings → Developer → Edit Config):
+
+```json
+{
+  "mcpServers": {
+    "french-coach": {
+      "command": "/usr/local/bin/python3",
+      "args": ["/absolute/path/to/french-language-coach/mcp_server/__main__.py"]
+    }
+  }
+}
+```
+
+Claude Desktop doesn't use your shell's `PATH`, so give the full path to the interpreter.
+
+**API key requirement (temporary).** The server imports the backend's modules, and the backend's settings currently refuse to load unless the configured LLM provider's key is set: with the defaults, `MISTRAL_API_KEY`. The server never uses the key. If the repo's `.env` has it, nothing else is needed; otherwise set it to any value, e.g. add `"env": {"MISTRAL_API_KEY": "unused"}` to the config above. Removing this requirement is tracked in #275.
+
+**Database.** `get_due_cards` reads the database at `DATABASE_URL` (default `./french_coach.db` in the repo root). Start the backend once (`uvicorn main:app`) to create the tables and seed the vocabulary decks. Until then the tool returns a `database_unavailable` error; the grammar tools work without a database.
+
+### Tools
+
+| Tool | What it returns | Arguments |
+|------|-----------------|-----------|
+| `search_grammar_reference` | Reference entries (term, definition, examples, common pitfalls) matching a case-insensitive substring search | `query`, `category`, `difficulty`, `limit` (1-50, default 10), `page` |
+| `get_lesson` | One full grammar lesson (sections and examples) | `lesson_id` (e.g. `subjunctive`) |
+| `list_exercises` | Practice exercises, with answers | `topic`, `exercise_type`, `difficulty`, `limit`, `page` |
+| `recommend_lessons_for_focus_area` | Up to 3 lesson summaries for a weakness, in English or French; `fallback_used` is true when nothing matched and general beginner lessons are returned | `focus_area` |
+| `get_due_cards` | Vocabulary cards due for review today, oldest first, with deck name | `limit`, `page` |
+
+Paged results include `total`, `page`, `total_pages` and `has_more`. An empty result is a success with a `hint` suggesting what to try next.
+
+**Errors** are returned as tool errors (`isError: true`) with a JSON body the model can act on:
+
+```json
+{"error": {"code": "lesson_not_found", "message": "No lesson with id 'subjonctif'.",
+           "hint": "Use one of the suggested ids, or call recommend_lessons_for_focus_area or search_grammar_reference to find lesson ids.",
+           "details": {"did_you_mean": ["subjunctive"]}}}
+```
+
+| Code | When |
+|------|------|
+| `invalid_arguments` | An argument fails the input schema (unknown enum value, `limit` out of range, missing `lesson_id`); `details.errors` lists each field and problem |
+| `lesson_not_found` | Unknown `lesson_id`; `details.did_you_mean` suggests close ids |
+| `page_out_of_range` | `page` is past the last page; `details.max_page` gives the range |
+| `database_unavailable` | The vocabulary database can't be read (not created yet, or a bad `DATABASE_URL`) |
+
+### Demo transcript
+
+The prompt *"Quiz me on the subjunctive using my due cards."* The tool calls and results below are real output from the server, launched over stdio against a local development database on 2026-11-16 and abbreviated (`…`). The assistant's replies are illustrative: they show how a model can use these results, not a recorded model response.
+
+> **You:** Quiz me on the subjunctive using my due cards.
+
+**Tool call:** `recommend_lessons_for_focus_area({"focus_area": "subjunctive"})`
+
+```json
+{"focus_area": "subjunctive", "matched_topics": ["Moods"], "fallback_used": false,
+ "lessons": [{"id": "conditional", "title": "Conditional Mood", "topic": "Moods", "difficulty": "intermediate"},
+             {"id": "imperative", "title": "Imperative Mood", "topic": "Moods", "difficulty": "beginner"},
+             {"id": "subjunctive", "title": "Subjunctive Mood", "topic": "Moods", "difficulty": "intermediate"}]}
+```
+
+**Tool call:** `get_lesson({"lesson_id": "subjunctive"})`
+
+```json
+{"lesson": {"id": "subjunctive", "title": "Subjunctive Mood", "topic": "Moods", "difficulty": "intermediate",
+  "sections": [
+   {"title": "Introduction to Subjunctive", "content": "The subjunctive mood is used to express various states of unreality such as doubt, possibility, necessity, or action that has not yet occurred. …",
+    "examples": ["Il faut que je parte (I must leave)", "Je doute qu'il vienne (I doubt that he is coming)", "…"]},
+   {"title": "Formation", "content": "The subjunctive is formed by taking the third person plural (ils/elles) form of the present tense, removing the -ent ending, and adding the subjunctive endings: -e, -es, -e, -ions, -iez, -ent.", "examples": ["…"]},
+   {"title": "Irregular Subjunctive Stems", "…": "…"},
+   {"title": "Common Triggers for Subjunctive", "…": "…"}, "…"]}}
+```
+
+**Tool call:** `list_exercises({"topic": "subjunctive"})`
+
+```json
+{"topic": "subjunctive", "exercise_type": null, "difficulty": null, "total": 0, "page": 1, "total_pages": 0, "has_more": false,
+ "exercises": [],
+ "hint": "No exercises matched. Available exercise topics: ['Sentence Structure', 'Verbs']. To practise a grammar point without exercises, use search_grammar_reference or get_lesson and write practice items from their examples."}
+```
+
+**Tool call:** `get_due_cards({"limit": 5})`
+
+```json
+{"today": "2026-11-16", "total": 548, "page": 1, "total_pages": 110, "has_more": true,
+ "cards": [{"id": 1, "deck_id": 1, "deck_name": "Travel", "card_id": "airplane", "front": "avion", "back": "airplane", "next_review_date": "2026-06-16"},
+           {"id": 2, "deck_id": 1, "deck_name": "Travel", "card_id": "train", "front": "train", "back": "train", "next_review_date": "2026-06-16"},
+           {"id": 3, "deck_id": 1, "deck_name": "Travel", "card_id": "bus", "front": "bus", "back": "bus", "next_review_date": "2026-06-16"},
+           {"id": 4, "deck_id": 1, "deck_name": "Travel", "card_id": "taxi", "front": "taxi", "back": "taxi", "next_review_date": "2026-06-16"},
+           {"id": 5, "deck_id": 1, "deck_name": "Travel", "card_id": "subway", "front": "métro", "back": "subway", "next_review_date": "2026-06-16"}]}
+```
+
+> **Assistant (illustrative):** You have 548 cards due; I'll use the first five, all from your Travel deck. There are no subjunctive exercises in the app yet, so I've built these from the Subjunctive Mood lesson. Each sentence needs the subjunctive after a trigger like *il faut que* or *bien que*. Translate into French:
+>
+> 1. I must take the **plane** tomorrow. *(il faut que + prendre)*
+> 2. Although the **train** is late, we are staying calm. *(bien que + être)*
+> 3. I want you to take the **bus** with me. *(vouloir que + prendre)*
+> 4. It's possible that the **taxi** isn't coming. *(il est possible que + venir)*
+> 5. I doubt that the **subway** is open at midnight. *(douter que + être)*
+>
+> **You:** 1. Il faut que je prends l'avion demain.
+>
+> **Assistant (illustrative):** Close, but *il faut que* needs the subjunctive: **Il faut que je prenne l'avion demain.** *Prendre* takes its stem from *ils prennent* → *prenn-* + *-e*. And *avion* ✓. Next: number 2.
 
 ## Why Mistral
 

@@ -448,6 +448,44 @@ async def submit_review(
 # Endpoint: GET /vocabulary/due/
 # ============================================================================
 
+async def query_due_cards(db: AsyncSession, today: date) -> list[DueCardResponse]:
+    """Return every card due for review on ``today``, oldest first.
+
+    A card is due when its ``next_review_date`` is on or before ``today``. This
+    is the single due-card query shared by ``GET /vocabulary/due/`` and the MCP
+    server's ``get_due_cards`` tool (issue #268). It only reads.
+
+    Args:
+        db: Async database session to query with.
+        today: The date to compare ``next_review_date`` against.
+
+    Returns:
+        List of DueCardResponse, ordered by next_review_date ascending, each
+        with its deck name ("Unknown Deck" if the deck is missing).
+    """
+    # Load the deck relationship for deck_name
+    result = await db.execute(
+        select(CardModel)
+        .options(selectinload(CardModel.deck))
+        .where(CardModel.next_review_date <= today)
+        .order_by(CardModel.next_review_date.asc())
+    )
+    cards = result.scalars().all()
+
+    return [
+        DueCardResponse(
+            id=card.id,
+            deck_id=card.deck_id,
+            deck_name=card.deck.name if card.deck else "Unknown Deck",
+            card_id=card.card_id,
+            front=card.front,
+            back=card.back,
+            next_review_date=card.next_review_date
+        )
+        for card in cards
+    ]
+
+
 @router.get("/due/", response_model=DueCardsResponse)
 async def get_due_cards(
     page: int = Query(1, ge=1, description="Page number, starting at 1"),
@@ -469,32 +507,9 @@ async def get_due_cards(
     Raises:
         HTTPException 404: If page exceeds total_pages
     """
-    today = get_today()
-    
     # Query cards that are due (next_review_date <= today)
-    # Load deck relationship for deck_name
-    result = await db.execute(
-        select(CardModel)
-        .options(selectinload(CardModel.deck))
-        .where(CardModel.next_review_date <= today)
-        .order_by(CardModel.next_review_date.asc())
-    )
-    cards = result.scalars().all()
-    
-    # Convert to DueCardResponse format
-    due_cards = [
-        DueCardResponse(
-            id=card.id,
-            deck_id=card.deck_id,
-            deck_name=card.deck.name if card.deck else "Unknown Deck",
-            card_id=card.card_id,
-            front=card.front,
-            back=card.back,
-            next_review_date=card.next_review_date
-        )
-        for card in cards
-    ]
-    
+    due_cards = await query_due_cards(db, get_today())
+
     # Apply pagination
     paginated_cards, pagination = paginate_items(due_cards, page, per_page)
     
