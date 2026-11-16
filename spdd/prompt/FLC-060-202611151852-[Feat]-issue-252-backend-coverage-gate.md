@@ -324,6 +324,7 @@ Implemented by Claude Code (Claude Opus 5.5) from the prompt above, in this orde
 - [x] **Allowlisted line format**: `ALLOWLISTED main.py: 71% - <reason>` instead of `(<reason>)`, because reasons already end in `(follow-up: #259)` and nested parentheses read badly.
 - [x] **Percent formatting**: module percentages are rounded to the configured precision, like coverage.py's report (71.17 → "71%"); the threshold prints without a trailing ".0".
 - [x] **Path lists written out twice** (push and pull_request) rather than a YAML anchor, to match the other workflows and avoid depending on anchor support in Actions.
+- [x] **Demo threshold**: the AC5 total-gate step used `fail_under = 99` rather than the prompt's 95, because CI's total is 96.90% (see the CI vs local note below), so 95 would have passed.
 - [x] **Follow-up issue body fix**: the first version of #259 named a non-existent `main.py` function; corrected to `seed_vocabulary_decks()` right after creation.
 - [x] **Total after omitting `seed_all_decks.py`**: 93.74% (2158 statements, 135 missed), up from 91.17%. Expected; that file was 61 uncovered statements.
 
@@ -333,7 +334,7 @@ Implemented by Claude Code (Claude Opus 5.5) from the prompt above, in this orde
 - [x] Code follows existing patterns (script mirrors `scripts/validate_*.py`; workflow keeps the house style)
 - [x] Tests pass at 80%+ coverage (new script 100%; backend total 93.74%)
 - [x] Documentation updated (README, CLAUDE.md)
-- [ ] All acceptance criteria met (AC5 demo and AC8 CI run pending, see Verification)
+- [x] All acceptance criteria met (see Verification)
 
 ### Issues Found
 - Pre-existing, left as is per user decision: "Upload Test Results" uploads `pytest.xml`, which no step generates.
@@ -355,10 +356,10 @@ Local runs (macOS, Python 3.12.8, pytest-cov 7.1.0, coverage 7.14.0):
 | Workflow YAML | `yaml.safe_load` | Parses; push and pull_request paths identical |
 
 - [x] `pytest-cov` is in `requirements.txt`
-- [x] CI runs tests with coverage and fails below 80% using `.coveragerc`'s threshold (verified locally; CI run pending)
+- [x] CI runs tests with coverage and fails below the threshold in `.coveragerc` (verified locally and in CI, see the AC5 demo)
 - [x] Per-module decision (total + per-module script) recorded in the analysis and implemented; allowlist with reasons + #259
 - [x] Workflow triggers on every backend-affecting path, including `schemas/**`, `scenarios.py` (`'*.py'`), `data/**`, `.coveragerc`
-- [ ] Failing coverage fails `status-gateway`, demonstrated on a throwaway draft PR (pending: done after the real PR's CI is green)
+- [x] Failing coverage fails `status-gateway`: draft PR #261 (closed, branch deleted). Step 1 (untested `services/coverage_gate_canary.py`): per-module check failed (`0% < 80%`), run [43778439563](https://github.com/beelandc/french-language-coach/actions/runs/43778439563), gateway [43778439709](https://github.com/beelandc/french-language-coach/actions/runs/43778439709) failed. Step 2 (`fail_under = 99`): pytest step failed (`99.0% not reached. Total coverage: 96.90%`), run [43778699186](https://github.com/beelandc/french-language-coach/actions/runs/43778699186), gateway [43778699134](https://github.com/beelandc/french-language-coach/actions/runs/43778699134) failed. Linked in a PR #260 comment
 - [x] Coverage report visible from the CI run (job summary + `coverage-report` artifact, confirmed on run 43778008085)
 - [x] README / CLAUDE.md document the gate and the local command
 - [x] `main` passes the new gate: PR #260 run [43778008085](https://github.com/beelandc/french-language-coach/actions/runs/43778008085): Run Backend Tests pass (867 passed, total 96.90%, per-module PASS), Status Check Gateway pass, `coverage-report` artifact uploaded
