@@ -1,8 +1,8 @@
 # evals/
 
-Offline evaluation data for the French Language Coach. Nothing in the app imports this directory.
+Offline evaluation data and tooling for the French Language Coach. Nothing in the app imports this directory.
 
-The first dataset is the ground truth for end-of-session **feedback quality** (issue #230). The eval harness (#231) will run each configured model (Mistral Large, Claude Sonnet 5.5, Claude Haiku 5.5) over it and compare the models' corrections and grammar scores with these labels, alongside cost and latency.
+The first dataset is the ground truth for end-of-session **feedback quality** (issue #230). The [feedback eval harness](#feedback-eval-harness-231) (#231) runs each configured model (Mistral Large, Claude Sonnet 5.5, Claude Haiku 5.5) over it and compares the models' corrections and grammar scores with these labels, alongside cost and latency.
 
 ## Layout
 
@@ -10,8 +10,15 @@ The first dataset is the ground truth for end-of-session **feedback quality** (i
 evals/
 ├── __init__.py
 ├── schema.py                 # Pydantic models for a record + load_dataset()
+├── run_feedback_eval.py      # Eval harness CLI: configs, guardrails, run loop (#231)
+├── matching.py               # Deterministic matching of corrections to labeled errors (#231)
+├── judge.py                  # LLM judge, judge-validation set loader, agreement (#231)
+├── scoring.py                # Per-conversation scores and per-model metrics (#231)
+├── report.py                 # JSON + Markdown reports (#231)
 ├── datasets/
-│   └── feedback_v1.jsonl     # 27 labeled conversations, one JSON object per line
+│   ├── feedback_v1.jsonl     # 27 labeled conversations, one JSON object per line
+│   └── judge_validation_v1.jsonl # 22 hand verdicts used to check the judge (#231)
+├── results/                  # Dated eval reports (feedback_eval_<YYYYMMDD-HHMMSS>.json/.md)
 ├── LABELING.md               # Error categories, span rules, grammar-score rubric
 └── README.md                 # This file
 ```
@@ -97,6 +104,106 @@ Read eval results with these in mind:
 - **Not every category is used.** `negation` and `spelling` have no examples in v1.
 
 A native or C1+ speaker's review of the advanced conversations would be the most valuable improvement for a v2.
+
+## Feedback eval harness (#231)
+
+`run_feedback_eval.py` runs each selected model over the dataset and reports error recall, precision, correction accuracy, grammar-score error, schema validity, cost and latency, side by side.
+
+**It makes real, paid API calls, so no CI workflow runs it** (`tests/test_eval_runner.py` checks that no workflow mentions it). Its unit tests use fake providers.
+
+### Running it
+
+From the repo root, with `MISTRAL_API_KEY` and `ANTHROPIC_API_KEY` set in `.env`:
+
+```bash
+python3 -m evals.run_feedback_eval --dry-run          # plan + upper-bound cost estimate, no calls
+python3 -m evals.run_feedback_eval --limit 3          # smoke run: 3 conversations per model
+python3 -m evals.run_feedback_eval                    # full run, default models
+python3 -m evals.run_feedback_eval --models all       # adds the Claude Opus 5.5 ceiling run
+```
+
+| Flag | Default | Meaning |
+|------|---------|---------|
+| `--models` | `mistral-large,claude-sonnet,claude-haiku` | Comma-separated keys, or `all` (adds `claude-opus`) |
+| `--limit N` | all | At most N conversations per model, taken in turn from each difficulty level (`--limit 4` → fb-001, fb-010, fb-019, fb-002) |
+| `--ids` | all | Comma-separated record ids (applied before `--limit`) |
+| `--max-spend-usd X` | `5.00` | Spend cap for the whole run (models + judge) |
+| `--dry-run` | off | Show the plan and an upper-bound cost estimate; no calls, no reports |
+| `--judge-provider`, `--judge-model` | `mistral`, `mistral-large-latest` | Judge model, e.g. `anthropic` / `claude-opus-5-5` as a sensitivity check |
+| `--skip-judge-validation` | off | Don't measure judge agreement (the report says so) |
+| `--claude-effort` | app default (`medium`) | Claude feedback effort: `low`, `medium`, `high`, `xhigh`, `max` |
+| `--export-judge-sample N` | `0` | Also write up to N judge-decided pairs as `<report>_judge_sample.jsonl`, for hand review and a future validation set |
+| `--dataset`, `--judge-validation`, `--output-dir` | v1 files, `evals/results/` | Paths |
+
+Exit codes: `0` completed, `1` setup error or a model stopped after repeated provider errors, `2` stopped by the spend cap, `130` interrupted (Ctrl-C). Argument errors exit with `2` (argparse).
+
+**Configurations** (`EVAL_CONFIGS`): `mistral-large` (`mistral-large-latest`, the current baseline), `claude-sonnet` (`claude-sonnet-5-5`), `claude-haiku` (`claude-haiku-5-5`), and `claude-opus` (`claude-opus-5-5`, only with `--models all` or by name). Each runs through the app's own provider layer (`LLMService.get_feedback`): the same prompt, schema-constrained or JSON-mode output, strict validation and single corrective retry as the app.
+
+**Cost.** The first smoke run (`--limit 3`, three models, with judge validation) cost **$0.08**: about $0.004 per conversation for Mistral Large, $0.009 for Sonnet 5.5 and $0.0006 for Haiku 5.5, plus $0.035 for the judge-validation pass. A full default run should cost around $0.50. `--dry-run` prints a deliberately pessimistic upper bound (about $3 for a full default run).
+
+### Guardrails
+
+- **Spend cap.** Before every feedback request and every judge call, the harness adds the spend recorded so far to a projection of the next call: the largest cost seen so far for that model, or, before the first call, an estimate from the prompt length plus 8,000 output tokens (1,000 for the judge). If the sum would exceed the cap, it stops, writes a partial report (`status: stopped_spend_cap`) and exits with `2`.
+- **Preflight, before any call:** every model (and the judge) must have a price in `data/llm_pricing.json`, otherwise the cap can't be enforced; every model's API key must be set (errors name the variable, never its value); the judge-validation set must load and have at least 10 items.
+- **Repeated provider errors.** After 3 provider errors in a row (bad key, outage), a model is marked `aborted_errors` and the run moves on.
+- **Isolated recording.** Calls are recorded in an in-memory database, never in the app's `french_coach.db`, so eval runs don't show up in the metrics dashboard or comparison report (#236, #238). Cost and latency come from those `llm_calls` records.
+- Calls are sequential, so latency isn't affected by concurrency.
+
+### Matching corrections to labeled errors
+
+The models return `example_corrections` as `{original, corrected, explanation}` with no message index, so each correction is first located and then compared with the labeled errors:
+
+1. **Normalize** both sides for matching only: Unicode NFC, curly apostrophes and quotes to ASCII, lowercase, collapsed whitespace, no space before `? ! ; :`, and surrounding punctuation stripped. Duplicate corrections are dropped, and corrections that change nothing are counted as no-ops.
+2. **Locate.** The candidates are the labeled errors in the learner messages that contain the correction's `original`, or every labeled error in the conversation if it isn't found verbatim.
+3. **Deterministic match.** The spans overlap (one contains the other), and the model's replacement yields the labeled `corrected` form or one of its `alternatives` in place of the labeled span. A wider model span can cover several labeled errors at once.
+4. **LLM judge** for everything else: a span match with a different fix, or a correction whose span matches no candidate. The judge sees the learner message, the labeled error and the correction, but not which model wrote it. It answers whether the correction addresses the labeled error and whether the fix is acceptable French. Replies are parsed strictly, with one re-ask; a second failure counts as a judge error (not matched). Verdicts are cached within a run.
+5. A labeled error is **detected** if any correction addresses it, and **correctly fixed** if any of those fixes is acceptable. A correction that addresses no labeled error is a **false correction**.
+
+### Metrics
+
+Reported per model, overall and per difficulty level:
+
+| Metric | Definition |
+|--------|------------|
+| Error recall | Detected labeled errors ÷ labeled errors, over every attempted conversation. A conversation with invalid feedback or a provider error misses all its errors, so failing never helps a model |
+| Precision (false corrections) | Corrections that address a labeled error ÷ all corrections, over valid feedback. The false-correction count is shown, plus the count on the clean conversations |
+| Correction accuracy | Correctly fixed ÷ detected labeled errors |
+| Grammar MAE | Mean \|model `grammar_score` − label\| over valid feedback (n shown) |
+| Schema validity | Valid on the first attempt, and valid after the one retry, ÷ attempted conversations |
+| Cost per conversation | Mean summed `estimated_cost_usd` of a conversation's feedback calls, retry included. Judge cost is reported separately |
+| p50 / p95 latency | Nearest-rank percentiles of per-conversation latency (attempts summed); per-call percentiles are in the Details table |
+
+### Judge choice
+
+The default judge is **Mistral Large** (`mistral-large-latest`), chosen in the #231 SPDD analysis and confirmed by the maintainer. The dataset's conversations, labels and preferred corrections were drafted by a Claude model (see [Limits](#limits)), so a Claude judge would stack a second Claude-favoring bias on top. Mistral Large shares a provider only with the Mistral baseline. Third-party judges would need a new provider, which is out of scope. To mitigate self-preference, the judge:
+
+- only rules on pairs the deterministic pass can't decide,
+- is never told which model wrote a correction,
+- has a narrow task (does this correction fix this labeled error?),
+- reports its validation agreement broken down by the style of the drafted correction (Mistral-like, Claude-like or neutral), so a one-sided bias would show.
+
+Rerun with `--judge-provider anthropic --judge-model claude-opus-5-5` as a sensitivity check. Every report states the judge, which tested models share its provider, and this reasoning.
+
+### Judge validation
+
+`datasets/judge_validation_v1.jsonl` holds 22 hand-judged pairs: a labeled error from `feedback_v1`, a drafted tutor correction, and the verdict (`addresses_error`, `correction_acceptable`). They cover correct paraphrases with different spans, correct fixes that differ from the label, wrong or partial fixes on the right span, and unrelated corrections in the same message. 10 are negative. Every run judges all of them first and reports the agreement rate, per-field agreement, agreement by correction style, and each disagreement with the judge's reason. `tests/test_eval_judge.py` validates the file in CI.
+
+The items and verdicts were **drafted by Claude Code (Claude Opus 5.5)** for the maintainer to review, the same process as the dataset. They aren't hand verdicts on real model outputs. `--export-judge-sample` collects real judged pairs to review for a v2 set.
+
+| Version | Human review | Date | Changes from review |
+|---------|--------------|------|---------------------|
+| judge_validation_v1 | Pending | | |
+
+In the first smoke run, the judge agreed with the drafted verdicts on 20 of 22 items (90.9%). Both disagreements were wrong fixes the judge called "not addressed", so the judge prompt was clarified: a wrong fix of the right mistake still addresses it. A rerun then agreed on 21 of 22 (95.5%). The remaining item, jv-016 ("Si on aurait su" → "Si on aurait pu savoir"), is a judgment call worth a look in the review. Because the prompt was changed after seeing these items, the agreement figure is somewhat optimistic until the set is extended with items the prompt hasn't been tuned on.
+
+### Reports
+
+Each run (completed, stopped by the cap, or interrupted) writes `results/feedback_eval_<YYYYMMDD-HHMMSS>.json` and `.md`, named by UTC start time, with `-2`, `-3` appended on a collision:
+
+- **JSON**: run metadata (status, git commit, dataset path and SHA-256, options), the judge and its rationale, prices with their `checked_on` dates, **total spend** split into feedback per model, judge matching and judge validation, judge agreement, and per model its metrics plus every conversation (raw corrections, per-error match details, false corrections, outcome, cost, latency, attempts).
+- **Markdown**: the same results as tables (summary, per difficulty, details, spend, judge, prices) and the caveats.
+
+The harness never commits anything. Commit a run's reports when they're meant to be cited (#232 publishes results from a committed run).
 
 ## Versioning
 

@@ -2,7 +2,7 @@
 
 French Language Coach is an app for practising French. It offers AI conversation practice (scenario role-play with end-of-session feedback), grammar lessons, a searchable grammar reference, interactive exercises, and spaced-repetition vocabulary flashcards.
 
-The repo also serves as a testbed for AI-assisted development and model selection. It is built with two coding agents, Mistral Vibe and Claude Code, which follow the same project instructions. Every AI-generated change goes through [SPDD](SPDD.md) (an analysis artifact, then a prompt artifact, then code) and CI (a single `status-gateway` check and an 80% test coverage target) before a human merges it. The app's LLM features run on either the Mistral API or Anthropic's Claude API, chosen per feature in configuration: Mistral is the default, and Claude can be selected for chat, feedback or both (see [LLM Integration](#llm-integration)). Every LLM call is logged with token counts, latency and estimated cost. Next, we plan to compare Mistral and Claude on the app's own feedback workload, measuring accuracy, cost and latency (see the [Model evaluation milestone](https://github.com/beelandc/french-language-coach/milestone/6)). The hand-labeled feedback dataset for that comparison is in [`evals/`](evals/README.md) (#230); there are no results yet.
+The repo also serves as a testbed for AI-assisted development and model selection. It is built with two coding agents, Mistral Vibe and Claude Code, which follow the same project instructions. Every AI-generated change goes through [SPDD](SPDD.md) (an analysis artifact, then a prompt artifact, then code) and CI (a single `status-gateway` check and an 80% test coverage target) before a human merges it. The app's LLM features run on either the Mistral API or Anthropic's Claude API, chosen per feature in configuration: Mistral is the default, and Claude can be selected for chat, feedback or both (see [LLM Integration](#llm-integration)). Every LLM call is logged with token counts, latency and estimated cost. Next, we plan to compare Mistral and Claude on the app's own feedback workload, measuring accuracy, cost and latency (see the [Model evaluation milestone](https://github.com/beelandc/french-language-coach/milestone/6)). The hand-labeled feedback dataset and the eval harness that runs the comparison are in [`evals/`](evals/README.md) (#230, #231); results haven't been published yet (#232).
 
 ## What it does
 
@@ -280,11 +280,18 @@ french-language-coach/
 ├── scripts/
 │   ├── validate_grammar_lessons.py  # Validation script for grammar lessons
 │   └── validate_grammar_reference.py  # Validation script for grammar reference entries
-├── evals/                   # Offline evaluation data; not imported by the app (Issue #230)
+├── evals/                   # Offline evaluation data and the feedback eval harness; not imported by the app (Issues #230, #231)
 │   ├── schema.py            # Pydantic models for a labeled feedback record + load_dataset()
+│   ├── run_feedback_eval.py # Eval harness CLI (`python3 -m evals.run_feedback_eval`): paid API calls, never run in CI (Issue #231)
+│   ├── matching.py          # Deterministic matching of model corrections to labeled errors (Issue #231)
+│   ├── judge.py             # LLM judge for undecided pairs + judge-validation agreement (Issue #231)
+│   ├── scoring.py           # Per-conversation scores and per-model metrics (Issue #231)
+│   ├── report.py            # Dated JSON + Markdown reports (Issue #231)
 │   ├── datasets/feedback_v1.jsonl # 27 hand-labeled learner conversations: errors to catch + grammar score
+│   ├── datasets/judge_validation_v1.jsonl # 22 hand verdicts used to check the judge (Issue #231)
+│   ├── results/             # Eval reports, feedback_eval_<YYYYMMDD-HHMMSS>.json/.md (Issue #231)
 │   ├── LABELING.md          # Error categories, span rules, grammar-score rubric
-│   └── README.md            # How the dataset was produced, who reviewed it, and its limits
+│   └── README.md            # How the dataset was produced, its limits, and how to run the harness
 ├── frontend/                # React SPA frontend (Vite + TypeScript)
 │   ├── src/
 │   │   ├── components/      # Reusable UI components + Storybook stories
@@ -389,6 +396,11 @@ french-language-coach/
 │   ├── conftest.py         # Pytest fixtures and configuration
 │   ├── test_feedback_validation.py # Strict FeedbackResponse validation; JSON schema kept in sync (Issue #229)
 │   ├── test_feedback_dataset.py # Validates every line of evals/datasets/feedback_v1.jsonl and its composition (Issue #230)
+│   ├── test_eval_matching.py # Feedback eval: normalization and deterministic matching (Issue #231)
+│   ├── test_eval_judge.py  # Feedback eval: judge parsing, re-ask, cache, validation set, agreement (Issue #231)
+│   ├── test_eval_scoring.py # Feedback eval: per-conversation scores and metrics (Issue #231)
+│   ├── test_eval_report.py # Feedback eval: JSON/Markdown reports and file naming (Issue #231)
+│   ├── test_eval_runner.py # Feedback eval: CLI, preflight, spend cap, fake-provider runs, no-CI check (Issue #231)
 │   ├── test_scenarios.py   # Tests for difficulty levels in scenarios
 │   └── test_schemas.py     # Tests for Pydantic schemas
 └── README.md
@@ -534,7 +546,7 @@ Mistral can return a reply as a list of content chunks, with a reasoning (`think
 
 Each provider call writes one row to the `llm_calls` table: feature, provider, model, session id, input tokens (uncached), output tokens, cache-read tokens, latency in ms, estimated cost in USD, status (`success` or `error`) and an error message. Each feedback attempt is its own row, so a request that needed a retry writes two rows. Failed validation is logged as `invalid_json: …` (unparseable) or `schema_mismatch: …` (wrong shape), so a model's schema-validity rate is its feedback rows with status `success` divided by those plus its `invalid_json` and `schema_mismatch` rows. Logging is best-effort: a failure to write a row never breaks the user's request. `GET /metrics/llm` returns totals and p50/p95 latency per feature, provider and model.
 
-All metrics endpoints accept the same filters (date range, feature, provider, model, status). `GET /metrics/llm/calls` lists individual calls, `GET /metrics/llm/timeseries` gives hourly or daily statistics, and `GET /metrics/llm/pricing` shows the prices behind the estimates (Issue #236). `GET /metrics/llm/report` compares models within each feature against a baseline (Mistral by default) on reliability, latency, tokens and cost, as JSON, Markdown or CSV. It covers operational metrics only: feedback quality comes from the eval harness (#231). Live traffic is not a controlled experiment, so the report shows each model's sample size and date range and warns when they are too thin to compare.
+All metrics endpoints accept the same filters (date range, feature, provider, model, status). `GET /metrics/llm/calls` lists individual calls, `GET /metrics/llm/timeseries` gives hourly or daily statistics, and `GET /metrics/llm/pricing` shows the prices behind the estimates (Issue #236). `GET /metrics/llm/report` compares models within each feature against a baseline (Mistral by default) on reliability, latency, tokens and cost, as JSON, Markdown or CSV. It covers operational metrics only: feedback quality comes from the [eval harness](evals/README.md#feedback-eval-harness-231) (#231). Live traffic is not a controlled experiment, so the report shows each model's sample size and date range and warns when they are too thin to compare.
 
 The **LLM metrics dashboard** at `/admin/metrics` (Issue #237) puts these endpoints in the browser. Shared filters (date range presets or a custom UTC date range, feature, provider, model, status) drive summary cards, a sortable per-model breakdown, charts of calls, cost and p50/p95 latency over time, a cost-per-call vs p95-latency comparison, a paginated call log (failed calls show their error, and calls link to their session), and the price table with check dates and sources. Filters live in the URL query string, so a view can be bookmarked. A small "Admin: LLM metrics" link in the page footer leads there. The page has **no authentication** until Phase 5, so anyone who can reach the app can see it; that's fine for the current single-user local setup.
 
