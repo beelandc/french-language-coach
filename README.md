@@ -2,7 +2,7 @@
 
 French Language Coach is an app for practising French. It offers AI conversation practice (scenario role-play with end-of-session feedback), grammar lessons, a searchable grammar reference, interactive exercises, and spaced-repetition vocabulary flashcards.
 
-The repo also serves as a testbed for AI-assisted development and model selection. It is built with two coding agents, Mistral Vibe and Claude Code, which follow the same project instructions. Every AI-generated change goes through [SPDD](SPDD.md) (an analysis artifact, then a prompt artifact, then code) and CI (a single `status-gateway` check and an 80% test coverage target) before a human merges it. The app's LLM features run on either the Mistral API or Anthropic's Claude API, chosen per feature in configuration: Mistral is the default, and Claude can be selected for chat, feedback or both (see [LLM Integration](#llm-integration)). Every LLM call is logged with token counts, latency and estimated cost. Next, we plan to compare Mistral and Claude on the app's own feedback workload, measuring accuracy, cost and latency (see the [Model evaluation milestone](https://github.com/beelandc/french-language-coach/milestone/6)); there are no results yet.
+The repo also serves as a testbed for AI-assisted development and model selection. It is built with two coding agents, Mistral Vibe and Claude Code, which follow the same project instructions. Every AI-generated change goes through [SPDD](SPDD.md) (an analysis artifact, then a prompt artifact, then code) and CI (a single `status-gateway` check and an 80% test coverage target) before a human merges it. The app's LLM features run on either the Mistral API or Anthropic's Claude API, chosen per feature in configuration: Mistral is the default, and Claude can be selected for chat, feedback or both (see [LLM Integration](#llm-integration)). Every LLM call is logged with token counts, latency and estimated cost. Next, we plan to compare Mistral and Claude on the app's own feedback workload, measuring accuracy, cost and latency (see the [Model evaluation milestone](https://github.com/beelandc/french-language-coach/milestone/6)). The hand-labeled feedback dataset for that comparison is in [`evals/`](evals/README.md) (#230); there are no results yet.
 
 ## What it does
 
@@ -280,6 +280,11 @@ french-language-coach/
 ├── scripts/
 │   ├── validate_grammar_lessons.py  # Validation script for grammar lessons
 │   └── validate_grammar_reference.py  # Validation script for grammar reference entries
+├── evals/                   # Offline evaluation data; not imported by the app (Issue #230)
+│   ├── schema.py            # Pydantic models for a labeled feedback record + load_dataset()
+│   ├── datasets/feedback_v1.jsonl # 27 hand-labeled learner conversations: errors to catch + grammar score
+│   ├── LABELING.md          # Error categories, span rules, grammar-score rubric
+│   └── README.md            # How the dataset was produced, who reviewed it, and its limits
 ├── frontend/                # React SPA frontend (Vite + TypeScript)
 │   ├── src/
 │   │   ├── components/      # Reusable UI components + Storybook stories
@@ -383,6 +388,7 @@ french-language-coach/
 │   ├── __init__.py
 │   ├── conftest.py         # Pytest fixtures and configuration
 │   ├── test_feedback_validation.py # Strict FeedbackResponse validation; JSON schema kept in sync (Issue #229)
+│   ├── test_feedback_dataset.py # Validates every line of evals/datasets/feedback_v1.jsonl and its composition (Issue #230)
 │   ├── test_scenarios.py   # Tests for difficulty levels in scenarios
 │   └── test_schemas.py     # Tests for Pydantic schemas
 └── README.md
