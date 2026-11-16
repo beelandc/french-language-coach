@@ -13,3 +13,13 @@ omit =
     frontend/*
     .venv/*
     scripts/*
+    # Issue #252: standalone generator of data/vocabulary_cards/*.json. The app
+    # and tests never import it, so it's in the same category as scripts/.
+    # (seed_database.py is NOT omitted: main.py runs it on first startup.)
+    seed_all_decks.py
+
+[report]
+# Issue #252: single source of truth for the coverage threshold. pytest-cov
+# uses it as the default for --cov-fail-under, and
+# scripts/check_module_coverage.py applies it to each module.
+fail_under = 80

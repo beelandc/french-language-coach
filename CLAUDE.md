@@ -51,7 +51,8 @@ pip install -r requirements.txt
 uvicorn main:app --reload                         # API on :8000
 python3 -m pytest tests/ -v --tb=short            # same as CI
 python3 -m pytest tests/test_grammar_router.py -v # single file
-python3 -m pytest --cov=. --cov-report=term-missing
+python3 -m pytest tests/ --cov --cov-report=term-missing --cov-report=json  # CI coverage gate:
+python3 scripts/check_module_coverage.py coverage.json                       # total + per-module 80%
 python3 scripts/validate_grammar_lessons.py       # content validation
 python3 scripts/validate_grammar_reference.py
 ```
@@ -85,6 +86,7 @@ npm run storybook           # :6006
 - **Frontend test discovery gap (pre-existing)**: `npm run test` only runs the Storybook project in `vite.config.ts`, and Jest only matches `*.jest.test.*` / `__tests__/`. Plain `src/**/*.test.tsx` files are **not run by either** today. When you add frontend tests, confirm they're discovered (`npx vitest list --filesOnly`, or `npx jest --listTests`) and say in the PR how they ran.
 - **Jest coverage excludes** several directories and files (see `frontend/jest.config.cjs`), originally because of TS compile issues (fixed in #250; shrinking the list is tracked in #233). Don't assume pages, hooks or utils are covered.
 - **Scenario data is duplicated**: IDs and names in `scenarios.py` are also hardcoded in `ScenarioSelector.tsx`, `ChatInterface.tsx` and `SessionDetail.tsx` (issue #126). Change them together.
+- **Backend coverage gate (#252)**: the 80% threshold is `fail_under` in `.coveragerc`, so partial `--cov` runs (one test file) report a coverage failure; add `--cov-fail-under=0`. The per-module exceptions are `ALLOWLIST` in `scripts/check_module_coverage.py` (tracked in #259); new modules must reach 80% rather than join it.
 - **`.venv` is optional**: the README suggests one, but CI uses system Python 3.12. Use `python3` either way.
 
 ## Commits & PRs

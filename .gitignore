@@ -46,6 +46,9 @@ env/
 .DS_Store
 Thumbs.db
 .coverage
+coverage.xml
+coverage.json
+htmlcov/
 
 # Claude Code (personal, machine-specific settings; .claude/settings.json is shared and committed)
 .claude/settings.local.json
