@@ -22,4 +22,4 @@ omit =
 # Issue #252: single source of truth for the coverage threshold. pytest-cov
 # uses it as the default for --cov-fail-under, and
 # scripts/check_module_coverage.py applies it to each module.
-fail_under = 80
+fail_under = 99
