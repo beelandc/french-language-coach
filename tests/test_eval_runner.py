@@ -477,6 +477,12 @@ class TestMain:
         assert "interrupted" in capsys.readouterr().err
 
 
+def test_progress_output_is_flushed_by_default():
+    """Progress must reach a redirected log file as it happens (seen in the first full run)."""
+    out = run_eval.__kwdefaults__["out"]
+    assert out.func is print and out.keywords == {"flush": True}
+
+
 def test_no_workflow_runs_the_harness():
     """AC: the harness makes paid API calls, so no CI workflow may invoke it."""
     workflows = list((REPO_ROOT / ".github" / "workflows").glob("*.yml"))

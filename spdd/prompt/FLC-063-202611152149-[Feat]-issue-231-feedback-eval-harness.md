@@ -541,6 +541,7 @@ Implemented by Claude Code (Claude Opus 5.5) from the prompt above, 2026-11-15.
 - [x] **22 validation items** instead of "~20".
 - [x] The `sys.path` shim and the `__main__` guard are `# pragma: no cover`. The only uncovered line is the "≥ 999 conversations" guard in `run_eval()`.
 - [x] Argparse argument errors exit with 2, the same code as a spend-cap stop. Documented in `evals/README.md` rather than overriding argparse.
+- [x] **Progress output flushed (after the first full run).** The first full run froze on a Mistral call after the machine slept: the socket stayed open but no data arrived. Its log showed nothing because stdout was block-buffered when redirected. Ctrl-C wrote a partial report as designed (exit 130, $0.137 spent). `run_eval()`'s default `out` is now `print(..., flush=True)`, with a regression test. The underlying hang comes from the provider layer having no explicit request timeout, which is outside this issue's scope; it's tracked in **#267**.
 
 ### Quality Checks
 - [x] Code follows existing patterns (fake providers via `LLMService(providers=...)`, strict Pydantic JSONL schemas, Google-style docstrings)
@@ -553,6 +554,15 @@ Implemented by Claude Code (Claude Opus 5.5) from the prompt above, 2026-11-15.
 - **Judge-check rerun** after the prompt fix (`--models claude-haiku --ids fb-001`): $0.0315. **Total paid spend in this issue: $0.1142.**
 - **For the maintainer's review:** jv-016 ("Si on aurait su" → "Si on aurait pu savoir") is the remaining disagreement. The drafted verdict says the correction addresses the error but fixes it wrongly; the judge says it doesn't address the tense error at all. Either reading is defensible.
 - Mistral Large took 14–34 s per feedback call against 3–7 s for the Claude models. That's measured data, not a harness problem, but worth watching in the full run.
+- **First full run** (`python3 -u -m evals.run_feedback_eval --export-judge-sample 50` under `caffeinate -i`, commit `d4521f5`, report `evals/results/feedback_eval_20261116-042618.*`, **not committed**; citing a run is #232's job): completed in 23 min, **$0.4258**. All 81 conversations were schema-valid on the first attempt, with no provider errors.
+
+  | Model | Recall | Precision (false) | Correction accuracy | Grammar MAE | Cost / conversation | p50 / p95 latency |
+  |---|---|---|---|---|---|---|
+  | Mistral Large | 88.7% (63/71) | 88.7% (8) | 100% | 6.19 | $0.0044 | 26.0 / 36.2 s |
+  | Claude Sonnet 5.5 | 95.8% (68/71) | 81.0% (16) | 100% | 9.59 | $0.0084 | 5.1 / 9.0 s |
+  | Claude Haiku 5.5 | 87.3% (62/71) | 88.4% (8) | 98.4% | 12.63 | $0.0005 | 4.4 / 7.7 s |
+
+  Judge agreement was 20/22 (90.9%); jv-014 flipped back from the rerun, so the judge isn't consistent across runs on that item. Every false correction and miss was checked by hand. False corrections are mostly stylistic rewrites of correct French; a few are real errors (Haiku "gentille" → "gentil"; Sonnet "corrected" the deliberate trap "je crains qu'on me licencie"). The misses are genuine. Total paid spend in this issue, including the interrupted run: **$0.6768**.
 
 ---
 

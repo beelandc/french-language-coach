@@ -26,6 +26,7 @@ if __package__ in (None, ""):  # pragma: no cover
 
 import argparse
 import asyncio
+import functools
 import hashlib
 import math
 import subprocess
@@ -634,7 +635,7 @@ async def run_eval(
     settings_factory: SettingsFactory = build_settings,
     providers: Optional[dict[str, LLMProvider]] = None,
     now: Callable[[], datetime] = lambda: datetime.now(timezone.utc),
-    out: Callable[[str], None] = print,
+    out: Callable[[str], None] = functools.partial(print, flush=True),
 ) -> RunResult:
     """Run the eval and write its reports.
 
@@ -643,7 +644,8 @@ async def run_eval(
         settings_factory: Builds per-config ``Settings`` (tests pass dummy keys).
         providers: Pre-built providers by id, shared by every service (tests pass fakes).
         now: Clock (UTC), for the run id and timestamps.
-        out: Progress output.
+        out: Progress output; flushed by default so a log file shows progress as it
+            happens when stdout is redirected.
 
     Raises:
         PreflightError: The run couldn't start; nothing was called or written.

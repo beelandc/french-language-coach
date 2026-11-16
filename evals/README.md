@@ -139,7 +139,7 @@ Exit codes: `0` completed, `1` setup error or a model stopped after repeated pro
 
 **Configurations** (`EVAL_CONFIGS`): `mistral-large` (`mistral-large-latest`, the current baseline), `claude-sonnet` (`claude-sonnet-5-5`), `claude-haiku` (`claude-haiku-5-5`), and `claude-opus` (`claude-opus-5-5`, only with `--models all` or by name). Each runs through the app's own provider layer (`LLMService.get_feedback`): the same prompt, schema-constrained or JSON-mode output, strict validation and single corrective retry as the app.
 
-**Cost.** The first smoke run (`--limit 3`, three models, with judge validation) cost **$0.08**: about $0.004 per conversation for Mistral Large, $0.009 for Sonnet 5.5 and $0.0006 for Haiku 5.5, plus $0.035 for the judge-validation pass. A full default run should cost around $0.50. `--dry-run` prints a deliberately pessimistic upper bound (about $3 for a full default run).
+**Cost.** The first smoke run (`--limit 3`, three models, with judge validation) cost **$0.08**: about $0.004 per conversation for Mistral Large, $0.009 for Sonnet 5.5 and $0.0006 for Haiku 5.5, plus $0.035 for the judge-validation pass. The first full default run (27 conversations × 3 models, 2026-11-16) cost **$0.43** and took 23 minutes, most of it Mistral Large (about 26 s per feedback call, against 4–5 s for the Claude models). `--dry-run` prints a deliberately pessimistic upper bound (about $3 for a full default run).
 
 ### Guardrails
 
@@ -194,7 +194,7 @@ The items and verdicts were **drafted by Claude Code (Claude Opus 5.5)** for the
 |---------|--------------|------|---------------------|
 | judge_validation_v1 | Pending | | |
 
-In the first smoke run, the judge agreed with the drafted verdicts on 20 of 22 items (90.9%). Both disagreements were wrong fixes the judge called "not addressed", so the judge prompt was clarified: a wrong fix of the right mistake still addresses it. A rerun then agreed on 21 of 22 (95.5%). The remaining item, jv-016 ("Si on aurait su" → "Si on aurait pu savoir"), is a judgment call worth a look in the review. Because the prompt was changed after seeing these items, the agreement figure is somewhat optimistic until the set is extended with items the prompt hasn't been tuned on.
+In the first smoke run, the judge agreed with the drafted verdicts on 20 of 22 items (90.9%). Both disagreements were wrong fixes the judge called "not addressed", so the judge prompt was clarified: a wrong fix of the right mistake still addresses it. A rerun then agreed on 21 of 22 (95.5%), and the first full run on 20 of 22 (90.9%): the judge's verdict on jv-014 ("Je l'ai essayé" → "Je l'ai essayer") varies from run to run. The other disagreement, jv-016 ("Si on aurait su" → "Si on aurait pu savoir"), is a judgment call worth a look in the review. Because the prompt was changed after seeing these items, the agreement figure is somewhat optimistic until the set is extended with items the prompt hasn't been tuned on.
 
 ### Reports
 
