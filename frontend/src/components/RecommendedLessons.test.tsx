@@ -54,7 +54,7 @@ describe('RecommendedLessons', () => {
 
   describe('Rendering', () => {
     it('renders the section heading and lessons after loading', async () => {
-      ;(grammarApi.getRecommendations as any).mockResolvedValue(
+      vi.mocked(grammarApi.getRecommendations).mockResolvedValue(
         buildResponse('Past Tenses', mockLessons, ['Past Tenses'])
       )
       render(
@@ -72,7 +72,7 @@ describe('RecommendedLessons', () => {
     })
 
     it('renders a lesson card for each recommended lesson', async () => {
-      ;(grammarApi.getRecommendations as any).mockResolvedValue(
+      vi.mocked(grammarApi.getRecommendations).mockResolvedValue(
         buildResponse('Past Tenses', mockLessons, ['Past Tenses'])
       )
       render(
@@ -88,7 +88,7 @@ describe('RecommendedLessons', () => {
     })
 
     it('shows title, topic, and difficulty for each lesson', async () => {
-      ;(grammarApi.getRecommendations as any).mockResolvedValue(
+      vi.mocked(grammarApi.getRecommendations).mockResolvedValue(
         buildResponse('Past Tenses', [mockLessons[0]], ['Past Tenses'])
       )
       render(
@@ -104,7 +104,7 @@ describe('RecommendedLessons', () => {
     })
 
     it('renders up to 3 lessons (backend caps at 3)', async () => {
-      ;(grammarApi.getRecommendations as any).mockResolvedValue(
+      vi.mocked(grammarApi.getRecommendations).mockResolvedValue(
         buildResponse('Past Tenses', mockLessons, ['Past Tenses'])
       )
       render(
@@ -121,7 +121,7 @@ describe('RecommendedLessons', () => {
 
   describe('Loading state', () => {
     it('renders a loading indicator while fetching', () => {
-      ;(grammarApi.getRecommendations as any).mockImplementation(() => new Promise(() => {}))
+      vi.mocked(grammarApi.getRecommendations).mockImplementation(() => new Promise(() => {}))
       render(
         <MemoryRouter>
           <RecommendedLessons focusArea="Past Tenses" />
@@ -132,7 +132,7 @@ describe('RecommendedLessons', () => {
     })
 
     it('replaces loading with lessons once the request resolves', async () => {
-      ;(grammarApi.getRecommendations as any).mockResolvedValue(
+      vi.mocked(grammarApi.getRecommendations).mockResolvedValue(
         buildResponse('Past Tenses', [mockLessons[0]], ['Past Tenses'])
       )
       render(
@@ -150,7 +150,7 @@ describe('RecommendedLessons', () => {
 
   describe('Error state', () => {
     it('renders an error message when the request fails', async () => {
-      ;(grammarApi.getRecommendations as any).mockRejectedValue(new Error('Failed to load recommendations'))
+      vi.mocked(grammarApi.getRecommendations).mockRejectedValue(new Error('Failed to load recommendations'))
       render(
         <MemoryRouter>
           <RecommendedLessons focusArea="Past Tenses" />
@@ -163,7 +163,7 @@ describe('RecommendedLessons', () => {
     })
 
     it('uses a fallback message for non-Error rejections', async () => {
-      ;(grammarApi.getRecommendations as any).mockRejectedValue('network down')
+      vi.mocked(grammarApi.getRecommendations).mockRejectedValue('network down')
       render(
         <MemoryRouter>
           <RecommendedLessons focusArea="Past Tenses" />
@@ -175,7 +175,7 @@ describe('RecommendedLessons', () => {
     })
 
     it('still renders the section heading in the error state', async () => {
-      ;(grammarApi.getRecommendations as any).mockRejectedValue(new Error('boom'))
+      vi.mocked(grammarApi.getRecommendations).mockRejectedValue(new Error('boom'))
       render(
         <MemoryRouter>
           <RecommendedLessons focusArea="Past Tenses" />
@@ -189,7 +189,7 @@ describe('RecommendedLessons', () => {
 
   describe('Empty state', () => {
     it('renders an empty message when no lessons are returned', async () => {
-      ;(grammarApi.getRecommendations as any).mockResolvedValue(buildResponse('x', []))
+      vi.mocked(grammarApi.getRecommendations).mockResolvedValue(buildResponse('x', []))
       render(
         <MemoryRouter>
           <RecommendedLessons focusArea="x" />
@@ -202,7 +202,7 @@ describe('RecommendedLessons', () => {
     })
 
     it('treats a missing lessons array as empty', async () => {
-      ;(grammarApi.getRecommendations as any).mockResolvedValue({
+      vi.mocked(grammarApi.getRecommendations).mockResolvedValue({
         focus_area: 'x',
         matched_topics: [],
         lessons: undefined,
@@ -220,7 +220,7 @@ describe('RecommendedLessons', () => {
 
   describe('Fallback (unknown focus_area)', () => {
     it('renders general lessons returned for an unknown focus_area (backend fallback)', async () => {
-      ;(grammarApi.getRecommendations as any).mockResolvedValue(
+      vi.mocked(grammarApi.getRecommendations).mockResolvedValue(
         buildResponse('Pratiquer davantage', fallbackLessons, [])
       )
       render(
@@ -238,7 +238,7 @@ describe('RecommendedLessons', () => {
 
   describe('Navigation', () => {
     it('navigates to the lesson viewer route when a card is clicked', async () => {
-      ;(grammarApi.getRecommendations as any).mockResolvedValue(
+      vi.mocked(grammarApi.getRecommendations).mockResolvedValue(
         buildResponse('Past Tenses', [mockLessons[0]], ['Past Tenses'])
       )
       renderWithRouter('/feedback/1')
@@ -254,7 +254,7 @@ describe('RecommendedLessons', () => {
 
   describe('API invocation', () => {
     it('calls getRecommendations with the trimmed focus_area', async () => {
-      ;(grammarApi.getRecommendations as any).mockResolvedValue(buildResponse('Past Tenses', mockLessons))
+      vi.mocked(grammarApi.getRecommendations).mockResolvedValue(buildResponse('Past Tenses', mockLessons))
       render(
         <MemoryRouter>
           <RecommendedLessons focusArea={'  Past Tenses  '} />
@@ -266,7 +266,7 @@ describe('RecommendedLessons', () => {
     })
 
     it('re-fetches when the focus_area changes', async () => {
-      ;(grammarApi.getRecommendations as any).mockResolvedValue(buildResponse('Past Tenses', mockLessons))
+      vi.mocked(grammarApi.getRecommendations).mockResolvedValue(buildResponse('Past Tenses', mockLessons))
       const { rerender } = render(
         <MemoryRouter>
           <RecommendedLessons focusArea="Past Tenses" />
@@ -275,7 +275,7 @@ describe('RecommendedLessons', () => {
       await waitFor(() => {
         expect(grammarApi.getRecommendations).toHaveBeenCalledWith('Past Tenses')
       })
-      ;(grammarApi.getRecommendations as any).mockResolvedValue(buildResponse('Pronouns', [mockLessons[0]]))
+      vi.mocked(grammarApi.getRecommendations).mockResolvedValue(buildResponse('Pronouns', [mockLessons[0]]))
       rerender(
         <MemoryRouter>
           <RecommendedLessons focusArea="Pronouns" />

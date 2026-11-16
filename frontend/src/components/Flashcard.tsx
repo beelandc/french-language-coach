@@ -8,19 +8,8 @@
  * It follows the styling and accessibility patterns established by DeckCard.
  */
 
-import { useState, useCallback, useEffect, useRef } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import type { FlashcardProps, CardData } from '../types/index'
-
-/**
- * Rating button configuration for the rating buttons
- * Maps label to numeric rating value for SM-2 algorithm
- */
-export const RATING_BUTTONS: { label: string; value: number; color: string }[] = [
-  { label: 'Again', value: 1, color: '#f44336' },   // Red - card was forgotten
-  { label: 'Hard', value: 2, color: '#ff9800' },   // Orange - recalled with difficulty
-  { label: 'Good', value: 3, color: '#4caf50' },   // Green - recalled correctly
-  { label: 'Easy', value: 4, color: '#2196f3' },   // Blue - recalled easily
-]
 
 /**
  * Minimum swipe distance (in pixels) to trigger flip action
@@ -48,6 +37,19 @@ export default function Flashcard({ card, flipped: controlledFlipped, onFlip }: 
   // Use controlled state if provided, otherwise manage internally
   const [internalFlipped, setInternalFlipped] = useState(false)
   const isFlipped = controlledFlipped !== undefined ? controlledFlipped : internalFlipped
+
+  // Reset the internal flip state when the card (or controlled mode) changes. React's
+  // "adjust state when a prop changes" pattern: compare with the previous values during
+  // render instead of setting state in an effect (Issue #251).
+  const [prevCardId, setPrevCardId] = useState(card.id)
+  const [prevControlledFlipped, setPrevControlledFlipped] = useState(controlledFlipped)
+  if (card.id !== prevCardId || controlledFlipped !== prevControlledFlipped) {
+    setPrevCardId(card.id)
+    setPrevControlledFlipped(controlledFlipped)
+    if (controlledFlipped === undefined) {
+      setInternalFlipped(false)
+    }
+  }
 
   // Track touch position for swipe detection
   const [touchStart, setTouchStart] = useState<TouchPosition | null>(null)
@@ -101,13 +103,6 @@ export default function Flashcard({ card, flipped: controlledFlipped, onFlip }: 
   const handleTouchEnd = useCallback(() => {
     setTouchStart(null)
   }, [])
-
-  // Reset flipped state when card changes
-  useEffect(() => {
-    if (controlledFlipped === undefined) {
-      setInternalFlipped(false)
-    }
-  }, [card.id, controlledFlipped])
 
   // Get content for front side
   const frontContent = (

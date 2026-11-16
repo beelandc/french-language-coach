@@ -116,11 +116,6 @@ export default function LessonBrowser({
     fetchLessons()
   }, [fetchLessons])
 
-  // Reset to first page when filters change
-  useEffect(() => {
-    setCurrentPage(1)
-  }, [topicFilter, difficultyFilter])
-
   // Filter lessons client-side based on search query
   const filteredLessons = useMemo(() => {
     if (!debouncedSearchQuery) {
@@ -149,17 +144,20 @@ export default function LessonBrowser({
     setSearchQuery(query)
   }, [])
 
-  // Handle topic filter change
+  // Handle topic filter change. A new topic resets to the first page (done here rather
+  // than in an effect, Issue #251); re-selecting the current topic keeps the page.
   const handleTopicFilter = useCallback((topic: string) => {
     setTopicFilter(topic)
-  }, [])
+    if (topic !== topicFilter) setCurrentPage(1)
+  }, [topicFilter])
 
-  // Handle difficulty filter change
+  // Handle difficulty filter change. A new difficulty resets to the first page (Issue #251).
   const handleDifficultyFilter = useCallback(
     (difficulty: Difficulty | '') => {
       setDifficultyFilter(difficulty)
+      if (difficulty !== difficultyFilter) setCurrentPage(1)
     },
-    []
+    [difficultyFilter]
   )
 
   // Handle clear filters

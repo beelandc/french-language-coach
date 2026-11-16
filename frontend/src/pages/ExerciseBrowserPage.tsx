@@ -70,13 +70,13 @@ export default function ExerciseBrowserPage() {
         try {
           const response = await fetch('/data/grammar/exercises/')
           if (!response.ok) {
-            throw new Error('Failed to load exercises directory')
+            throw new Error('Failed to load exercises directory', { cause: err })
           }
           // This won't work directly, we need to list the files
           // For now, set empty and show error
           setError('Exercise directory listing not available. Try accessing an exercise directly.')
           setExercises([])
-        } catch (fallbackErr) {
+        } catch {
           setError(err instanceof Error ? err.message : 'Failed to load exercises')
           setExercises([])
         }

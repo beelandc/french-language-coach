@@ -4,10 +4,8 @@
  * Uses mock data and mock API for Storybook
  */
 
-import { useState } from 'react'
 import type { Meta, StoryObj } from '@storybook/react'
 import LessonBrowser from './LessonBrowser'
-import type { LessonBrowserProps } from '../types/index'
 
 // Mock lesson data for Storybook
 const mockLessons = [

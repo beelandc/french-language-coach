@@ -45,7 +45,8 @@ jobs:
               'Jest Unit Tests',
               'Vitest Unit Tests',
               'Cypress E2E Tests',
-              'Frontend Type Check'
+              'Frontend Type Check',
+              'Frontend Lint'
             ];
             
             // Get all workflows to build a map of name -> id

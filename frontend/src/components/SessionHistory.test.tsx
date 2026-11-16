@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import SessionHistory from './SessionHistory'
-import type { SessionSummary, SessionListResponse, PaginationInfo } from '../types'
+import type { SessionListResponse, PaginationInfo } from '../types'
 
 // Mock the API client
 vi.mock('../utils/api', () => ({
@@ -72,16 +72,6 @@ const mockEmptySessionListResponse: SessionListResponse = {
     per_page: 10,
     total_pages: 0,
   } as PaginationInfo,
-}
-
-const mockSessionWithNoScore: SessionSummary = {
-  id: '1',
-  scenario_id: 'cafe_order',
-  scenario_name: 'Ordering at a Café',
-  difficulty: 'intermediate',
-  created_at: '2026-05-15T10:00:00Z',
-  ended_at: '2026-05-15T10:15:00Z',
-  overall_score: null,
 }
 
 // Helper to render component

@@ -276,7 +276,7 @@ describe('DifficultySelector', () => {
         <DifficultySelector onDifficultyChange={vi.fn()} defaultDifficulty="beginner" />
       )
       
-      let beginnerBtn = screen.getByText('Beginner')
+      const beginnerBtn = screen.getByText('Beginner')
       expect(beginnerBtn.parentElement).toHaveClass('selected')
       
       // Change defaultDifficulty prop

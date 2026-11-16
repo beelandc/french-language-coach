@@ -739,6 +739,15 @@ cd frontend
 npm run typecheck
 ```
 
+#### Lint
+
+`npm run lint` (ESLint) must pass with no errors. CI enforces this through the `Frontend Lint` workflow ([Issue #251](https://github.com/beelandc/french-language-coach/issues/251)). Warnings don't fail the check. The remaining `react-hooks/set-state-in-effect` warnings in data-fetching effects are tracked in [Issue #262](https://github.com/beelandc/french-language-coach/issues/262). Generated output (`dist/`, `coverage/`, `storybook-static/`) is ignored.
+
+```bash
+cd frontend
+npm run lint
+```
+
 #### Vitest (Primary Test Framework)
 
 **To run all frontend tests:**
@@ -816,6 +825,7 @@ This project uses GitHub Actions for Continuous Integration with the following w
 - **vitest-tests.yml** - Runs frontend Vitest tests when frontend files change
 - **cypress-tests.yml** - Runs end-to-end Cypress tests when frontend files change
 - **frontend-typecheck.yml** (`Frontend Type Check`) - Runs `npm run typecheck` (`tsc -b`) when frontend files change. Type-check only: it never runs `vite build`
+- **frontend-lint.yml** (`Frontend Lint`) - Runs `npm run lint` (ESLint) when frontend files change. Lint errors fail the check; warnings don't
 
 All test workflows use path-based filtering to run only when relevant files are modified, improving CI efficiency.
 
@@ -832,7 +842,7 @@ This workflow always runs on PRs to main and checks the status of all test workf
 **How it works:**
 1. Runs on every PR to main (no path filtering)
 2. Uses the GitHub API to query all workflow runs for the current PR's head commit
-3. Filters to only the test workflows (pytest, jest, vitest, cypress, frontend type check)
+3. Filters to only the test workflows (pytest, jest, vitest, cypress, frontend type check, frontend lint)
 4. If no test workflows ran (e.g., docs-only PR), succeeds with message
 5. If workflows are still in progress, reports pending status
 6. If any triggered workflow failed, fails with details

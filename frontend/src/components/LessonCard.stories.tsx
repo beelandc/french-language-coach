@@ -4,7 +4,6 @@
 
 import type { Meta, StoryObj } from '@storybook/react'
 import LessonCard from './LessonCard'
-import type { LessonCardProps } from '../types/index'
 
 const meta = {
   title: 'Components/LessonCard',

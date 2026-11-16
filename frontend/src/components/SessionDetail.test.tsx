@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import SessionDetail from './SessionDetail'
-import type { Session, Message, Feedback } from '../types'
 
 // Mock the API client
 vi.mock('../utils/api', () => ({
@@ -33,100 +32,6 @@ vi.mock('react-router-dom', async () => {
     useNavigate: () => mockNavigate,
   }
 })
-
-// Test data
-const mockSessionWithFeedback: Session = {
-  id: '123',
-  scenario_id: 'cafe_order',
-  created_at: '2026-05-15T10:00:00Z',
-  ended_at: '2026-05-15T10:15:00Z',
-  difficulty: 'intermediate',
-  messages: [
-    {
-      id: '1',
-      session_id: '123',
-      role: 'user',
-      content: 'Bonjour, je voudrais un café.',
-      created_at: '2026-05-15T10:00:00Z',
-    },
-    {
-      id: '2',
-      session_id: '123',
-      role: 'assistant',
-      content: 'Bonjour ! Que souhaitez-vous ?',
-      created_at: '2026-05-15T10:01:00Z',
-    },
-  ],
-  feedback: {
-    grammar_score: 85,
-    vocabulary_score: 90,
-    fluency_score: 88,
-    overall_score: 88,
-    strengths: ['Good vocabulary usage', 'Natural phrasing'],
-    focus_area: 'grammar',
-    example_corrections: [
-      {
-        original: 'je voudrais un café',
-        corrected: 'Je voudrais un café',
-        explanation: 'Capitalize first person singular',
-      },
-    ],
-  },
-}
-
-const mockSessionWithoutFeedback: Session = {
-  id: '456',
-  scenario_id: 'ask_directions',
-  created_at: '2026-05-15T11:00:00Z',
-  ended_at: null,
-  difficulty: 'beginner',
-  messages: [
-    {
-      id: '1',
-      session_id: '456',
-      role: 'user',
-      content: 'Où est la gare ?',
-      created_at: '2026-05-15T11:00:00Z',
-    },
-  ],
-  feedback: null,
-}
-
-const mockEmptySession: Session = {
-  id: '789',
-  scenario_id: 'job_interview',
-  created_at: '2026-05-15T12:00:00Z',
-  ended_at: null,
-  difficulty: 'intermediate',
-  messages: [],
-  feedback: null,
-}
-
-const mockSessionWithEmptyFeedback: Session = {
-  id: '101',
-  scenario_id: 'hotel_checkin',
-  created_at: '2026-05-15T13:00:00Z',
-  ended_at: '2026-05-15T13:10:00Z',
-  difficulty: 'advanced',
-  messages: [
-    {
-      id: '1',
-      session_id: '101',
-      role: 'user',
-      content: 'Hello',
-      created_at: '2026-05-15T13:00:00Z',
-    },
-  ],
-  feedback: {
-    grammar_score: 50,
-    vocabulary_score: 50,
-    fluency_score: 50,
-    overall_score: 50,
-    strengths: [],
-    focus_area: '',
-    example_corrections: [],
-  },
-}
 
 // Helper to render component with router
 const renderWithRouter = (sessionId: string) => {
@@ -490,7 +395,7 @@ describe('SessionDetail Component', () => {
   describe('No Session ID', () => {
     it('handles empty session ID', async () => {
       render(
-        <MemoryRouter initialEntries="/sessions/"}>
+        <MemoryRouter initialEntries={['/sessions/']}>
           <Routes>
             <Route path="/sessions/:sessionId?" element={<SessionDetail sessionId="" />} />
           </Routes>

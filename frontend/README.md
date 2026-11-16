@@ -118,7 +118,7 @@ The FastAPI backend already serves static files from the `static/` directory. Af
 | `npm run dev` | Start Vite development server |
 | `npm run build` | Type-check (`tsc -b`), then build for production |
 | `npm run typecheck` | Type-check only (`tsc -b`); enforced in CI by the `Frontend Type Check` workflow |
-| `npm run lint` | Run ESLint |
+| `npm run lint` | Run ESLint (CI gate: errors fail the `Frontend Lint` check, warnings don't) |
 | `npm run preview` | Preview production build locally |
 | `npm run storybook` | Start Storybook dev server at http://localhost:6006 |
 | `npm run build-storybook` | Build Storybook for deployment |

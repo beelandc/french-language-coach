@@ -17,7 +17,7 @@ const mockJsPDF = vi.fn().mockImplementation(() => ({
   setTextColor: vi.fn(),
   text: vi.fn(),
   getTextWidth: vi.fn((text: string) => text.length * 0.5), // Approximate width
-  splitTextToSize: vi.fn((text: string, maxWidth: number) => [text]),
+  splitTextToSize: vi.fn((text: string) => [text]),
   line: vi.fn(),
   circle: vi.fn(),
   addPage: vi.fn(),
@@ -275,7 +275,7 @@ describe('pdfExport utility', () => {
   describe('isPDFExportAvailable', () => {
     it('should return true in browser environment', () => {
       // Simulate browser environment
-      global.window = {} as any;
+      global.window = {} as unknown as Window & typeof globalThis;
       
       expect(isPDFExportAvailable()).toBe(true);
       

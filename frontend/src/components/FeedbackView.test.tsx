@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import FeedbackView from './FeedbackView';
 import { generateFeedbackPDF } from '../utils/pdfExport';
+import type { Correction } from '../types';
 
 // Mock the useSessions hook
 const mockUseSessions = vi.fn();
@@ -24,7 +25,7 @@ vi.mock('./ScoreCard', () => ({
 }));
 
 vi.mock('./CorrectionItem', () => ({
-  default: ({ correction }: { correction: any }) => (
+  default: ({ correction }: { correction: Correction }) => (
     <div data-testid="correction-item">
       <span>{correction.original}</span>
       <span>{correction.corrected}</span>
@@ -201,8 +202,7 @@ describe('FeedbackView Component', () => {
 
     it('should display error message when PDF export fails', async () => {
       const mockError = new Error('Failed to export PDF');
-      // @ts-ignore - We're mocking the implementation
-      generateFeedbackPDF.mockRejectedValue(mockError);
+      vi.mocked(generateFeedbackPDF).mockRejectedValue(mockError);
       
       renderComponent('123');
       
@@ -226,8 +226,7 @@ describe('FeedbackView Component', () => {
       });
 
       // Mock a long-running export
-      // @ts-ignore
-      generateFeedbackPDF.mockImplementation(() => new Promise(() => {}));
+      vi.mocked(generateFeedbackPDF).mockImplementation(() => new Promise(() => {}));
       
       const exportButton = screen.getByText('Export to PDF');
       fireEvent.click(exportButton);

@@ -66,7 +66,7 @@ npm run test                # Vitest (Storybook story tests, headless Chromium v
 npm run test:coverage
 npm run test:jest           # Jest: *.jest.test.tsx and __tests__/
 npm run test:jest:coverage
-npm run lint
+npm run lint                # ESLint; CI gate (errors fail, warnings don't)
 npm run typecheck           # tsc -b, type-check only (tsconfigs set noEmit); CI gate
 npm run e2e:run             # Cypress (needs backend + dev server running)
 npm run storybook           # :6006
@@ -77,7 +77,7 @@ npm run storybook           # :6006
 - **Backend (FastAPI, async SQLAlchemy, SQLite)**: `main.py` (app, router registration, SPA fallback; auto-seeds vocabulary decks on startup) → `routers/` (HTTP layer) → `services/llm/` (`llm_service`: per-feature Mistral/Claude providers for chat + JSON feedback, logs each call to `llm_calls`; `services/mistral.py` is a compatibility alias) → `models/` (ORM) with `schemas/` (Pydantic). Scenario system prompts live in `scenarios.py`. Static content is JSON under `data/` (grammar lessons, reference, exercises, vocabulary decks, LLM price table `llm_pricing.json`).
 - **Frontend (React 19 + TS + Vite, react-router)**: `frontend/src/pages/` (routes, wired in `App.tsx`), `components/` (each with `.stories.tsx` and tests), `hooks/`, `utils/api.ts` (typed API client), `types/index.ts`.
 - **Tests**: `tests/` (pytest; `conftest.py` uses in-memory SQLite, factory-boy factories in `tests/factories.py`), `frontend/src/**` (Vitest / Jest), `frontend/cypress/` (E2E).
-- **CI**: `.github/workflows/`. Path-filtered pytest/vitest/jest/cypress jobs and the `Frontend Type Check` job (`tsc -b`, no build), plus `status-gateway.yml`, the one required check.
+- **CI**: `.github/workflows/`. Path-filtered pytest/vitest/jest/cypress jobs, the `Frontend Type Check` job (`tsc -b`, no build) and the `Frontend Lint` job (`npm run lint`), plus `status-gateway.yml`, the one required check.
 
 ## Gotchas
 
