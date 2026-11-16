@@ -47,18 +47,21 @@ import coverage
 # Known exceptions to the per-module threshold. Entries are temporary: remove
 # each one as soon as its module reaches the threshold (the script warns when
 # that happens). Every reason must name the follow-up issue that tracks it.
+# seed_database.py shows the warning in CI (fresh database, ~92%) but is 0%
+# locally once ./french_coach.db has decks, so keep it until #259 tests it.
 ALLOWLIST: dict[str, str] = {
     "main.py": (
-        "startup auto-seed branch and static/index.html routes are untested "
-        "(follow-up: #259)"
+        "static/index.html routes are untested; the auto-seed branch runs only "
+        "when ./french_coach.db has no decks (follow-up: #259)"
     ),
     "database.py": (
         "get_db() is overridden by the test database in tests/conftest.py "
         "(follow-up: #259)"
     ),
     "seed_database.py": (
-        "runtime seeder (main.py runs it on first startup) with no tests "
-        "(follow-up: #259)"
+        "no tests of its own; covered only as a side effect when the test "
+        "app's startup seeds an empty ./french_coach.db, as in CI, and 0% "
+        "otherwise (follow-up: #259)"
     ),
 }
 

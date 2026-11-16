@@ -327,6 +327,8 @@ Implemented by Claude Code (Claude Opus 5.5) from the prompt above, in this orde
 - [x] **Follow-up issue body fix**: the first version of #259 named a non-existent `main.py` function; corrected to `seed_vocabulary_decks()` right after creation.
 - [x] **Total after omitting `seed_all_decks.py`**: 93.74% (2158 statements, 135 missed), up from 91.17%. Expected; that file was 61 uncovered statements.
 
+- [x] **CI vs local coverage differ (found on the first PR run)**: CI reported a 96.90% total, `main.py` 77% and `seed_database.py` 92% (with the "allowlisted but now meets 80%" warning), against 93.74% / 71% / 0% locally. Cause: `tests/conftest.py:69` (`with TestClient(app)`) runs `main.py`'s startup hook against the real `database.engine` (`./french_coach.db`). On a fresh runner the database has no decks, so `seed_vocabulary_decks()` → `seed_database()` runs. Locally the database already had decks, so it was skipped. Reproduced CI's numbers exactly with `DATABASE_URL` pointing to an empty temp file. Changes: rewrote the `main.py` and `seed_database.py` allowlist reasons and the README table (CI numbers) and added a README note on reproducing CI exactly. **Kept `seed_database.py` allowlisted** despite the CI warning, because local runs against a seeded database measure it at 0% and would fail the per-module check. This is a pre-existing test-isolation gap (the test suite writes to the developer's `french_coach.db`), not caused by this issue; added to follow-up #259.
+
 ### Quality Checks
 - [x] Code follows existing patterns (script mirrors `scripts/validate_*.py`; workflow keeps the house style)
 - [x] Tests pass at 80%+ coverage (new script 100%; backend total 93.74%)
@@ -357,9 +359,9 @@ Local runs (macOS, Python 3.12.8, pytest-cov 7.1.0, coverage 7.14.0):
 - [x] Per-module decision (total + per-module script) recorded in the analysis and implemented; allowlist with reasons + #259
 - [x] Workflow triggers on every backend-affecting path, including `schemas/**`, `scenarios.py` (`'*.py'`), `data/**`, `.coveragerc`
 - [ ] Failing coverage fails `status-gateway`, demonstrated on a throwaway draft PR (pending: done after the real PR's CI is green)
-- [x] Coverage report visible from the CI run (job summary + `coverage-report` artifact; confirm on the PR run)
+- [x] Coverage report visible from the CI run (job summary + `coverage-report` artifact, confirmed on run 43778008085)
 - [x] README / CLAUDE.md document the gate and the local command
-- [ ] `main` passes the new gate (pending: this PR's CI run)
+- [x] `main` passes the new gate: PR #260 run [43778008085](https://github.com/beelandc/french-language-coach/actions/runs/43778008085): Run Backend Tests pass (867 passed, total 96.90%, per-module PASS), Status Check Gateway pass, `coverage-report` artifact uploaded
 - [x] No breaking changes; no application code changed; no change to which existing tests run
 - [ ] Human review completed
 

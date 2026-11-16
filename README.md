@@ -698,11 +698,13 @@ These two commands are what CI runs, and CI fails if either one fails:
 
 Allowlisted modules (known exceptions, tracked in [Issue #259](https://github.com/beelandc/french-language-coach/issues/259)):
 
-| Module | Coverage | Reason |
+| Module | Coverage (CI) | Reason |
 |---|---|---|
-| `main.py` | 71% | Startup auto-seed branch and `static/index.html` routes are untested |
+| `main.py` | 77% | `static/index.html` routes are untested; the auto-seed branch runs only when `./french_coach.db` has no decks |
 | `database.py` | 78% | `get_db()` is overridden by the test database in `tests/conftest.py` |
-| `seed_database.py` | 0% | Runtime seeder (`main.py` runs it on first startup) with no tests |
+| `seed_database.py` | 92% | No tests of its own: it's covered only because the test app's startup seeds an empty `./french_coach.db`, so CI warns that it could leave the allowlist, but it's 0% locally once that database has decks |
+
+Local numbers for `main.py`, `seed_database.py` and the total depend on your `./french_coach.db`. The test client runs the app's startup hook against the real database (a known test-isolation gap, tracked in #259), and the seed code only runs when that database has no decks. To reproduce CI's numbers exactly, point the run at an empty database file, e.g. `DATABASE_URL="sqlite+aiosqlite:////tmp/flc-ci.db" python3 -m pytest tests/ --cov ...` (delete the file first).
 
 `fail_under` applies to every `--cov` run, so a partial run (one test file) reports a coverage failure. Add `--cov-fail-under=0` to see a partial report without the gate, e.g. `python3 -m pytest tests/test_scenarios.py --cov --cov-fail-under=0`.
 
