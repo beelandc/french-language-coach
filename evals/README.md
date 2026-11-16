@@ -81,9 +81,7 @@ Errors follow the level: gender, articles and contractions at beginner level; ê
 
 | Version | Human review | Date | Changes from review |
 |---------|--------------|------|---------------------|
-| feedback_v1 | **Pending** | | |
-
-Update this table when the review is done (date, and what was changed or confirmed).
+| feedback_v1 | CB | 1/15/26 | N/A |
 
 ## Limits
 
