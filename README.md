@@ -578,54 +578,80 @@ Costs are estimated from `data/llm_pricing.json`, the only place prices live. Ea
 - **No LLM calls.** The server only serves data; the model doing the tutoring is the one in your MCP client.
 - **Same data as the app.** The tools call the routers' own query functions (`routers/grammar.py` helpers, `routers.vocabulary.query_due_cards`), so results match the API.
 
-### Running it
+### How it runs
 
-Install the requirements (`pip install -r requirements.txt`, which includes the `mcp` SDK), then:
+**You don't start this server yourself.** You register it with Claude Code or Claude Desktop once, and the client starts it as a background process whenever it needs the tools, then stops it. The client and server talk over the process's stdin and stdout.
+
+If you start it by hand in a terminal, it appears to hang and prints nothing. That's expected: it's waiting for a client to send protocol messages on stdin, and it never writes to the terminal because stdout carries those messages. Press Ctrl+C to stop it (Python prints a `KeyboardInterrupt` traceback, which is harmless). To check that it works, use the [verification steps](#verify-the-connection) below instead.
+
+The server doesn't need the FastAPI backend running. On startup it switches to the repo root, so it finds `.env` and the database whichever directory the client launches it from.
+
+### Setup
+
+**1. Install the requirements** into the Python interpreter the client will use:
 
 ```bash
-python3 -m mcp_server                                        # from the repo root
-python3 /absolute/path/to/french-language-coach/mcp_server/__main__.py   # from anywhere
+cd /absolute/path/to/french-language-coach
+pip install -r requirements.txt        # includes the mcp SDK
 ```
 
-The server makes the repo root its working directory on startup, so it finds `.env` and the database whatever directory the client launches it from. Use the interpreter that has the requirements installed (e.g. `/absolute/path/to/french-language-coach/.venv/bin/python` if you use a venv) in the configs below.
+**2. Find two absolute paths.** Clients launch the server from an unknown directory, so use full paths in the config:
 
-**Claude Code:**
+| What | How to find it | Example |
+|------|----------------|---------|
+| The Python interpreter with the requirements installed | `which python3` (or `.venv/bin/python` inside the repo if you use a venv) | `/usr/local/bin/python3` |
+| The server's entry point | `<repo>/mcp_server/__main__.py` | `/Users/you/repositories/french-language-coach/mcp_server/__main__.py` |
+
+**3. Make sure `MISTRAL_API_KEY` is set (temporary).** The server imports the backend's modules, and the backend's settings currently refuse to load without a key for the configured LLM provider (with the defaults, `MISTRAL_API_KEY`). The server never uses the key. If the repo's `.env` already has it, you don't need to do anything. Otherwise pass any value through the client config, as shown below. Removing this requirement is tracked in #275.
+
+**4. Make sure the database exists (for `get_due_cards` only).** `get_due_cards` reads `DATABASE_URL` (default `french_coach.db` in the repo root). If you've never run the app, start the backend once (`uvicorn main:app`) to create the tables and seed the vocabulary decks, then stop it. Until then `get_due_cards` returns a `database_unavailable` error; the grammar tools work without a database.
+
+**5. Register the server with your client** (pick one or both).
+
+**Claude Code:** run this once, from any directory:
 
 ```bash
-claude mcp add french-coach -- python3 /absolute/path/to/french-language-coach/mcp_server/__main__.py
+claude mcp add french-coach -- /usr/local/bin/python3 /Users/you/repositories/french-language-coach/mcp_server/__main__.py
 ```
 
-or in a project `.mcp.json`:
-
-```json
-{
-  "mcpServers": {
-    "french-coach": {
-      "command": "python3",
-      "args": ["/absolute/path/to/french-language-coach/mcp_server/__main__.py"]
-    }
-  }
-}
-```
-
-**Claude Desktop** (`claude_desktop_config.json`; Settings → Developer → Edit Config):
+Everything after `--` is the command Claude Code runs to start the server. Add `-e MISTRAL_API_KEY=unused` before `--` if your `.env` doesn't have the key. By default the server is registered for the current project only. Use `--scope user` to make it available in every project, or `--scope project` to write a `.mcp.json` file to share through the repo. The `.mcp.json` equivalent is:
 
 ```json
 {
   "mcpServers": {
     "french-coach": {
       "command": "/usr/local/bin/python3",
-      "args": ["/absolute/path/to/french-language-coach/mcp_server/__main__.py"]
+      "args": ["/Users/you/repositories/french-language-coach/mcp_server/__main__.py"]
     }
   }
 }
 ```
 
-Claude Desktop doesn't use your shell's `PATH`, so give the full path to the interpreter.
+**Claude Desktop:** open Settings → Developer → Edit Config, add the server to `claude_desktop_config.json`, then restart Claude Desktop:
 
-**API key requirement (temporary).** The server imports the backend's modules, and the backend's settings currently refuse to load unless the configured LLM provider's key is set: with the defaults, `MISTRAL_API_KEY`. The server never uses the key. If the repo's `.env` has it, nothing else is needed; otherwise set it to any value, e.g. add `"env": {"MISTRAL_API_KEY": "unused"}` to the config above. Removing this requirement is tracked in #275.
+```json
+{
+  "mcpServers": {
+    "french-coach": {
+      "command": "/usr/local/bin/python3",
+      "args": ["/Users/you/repositories/french-language-coach/mcp_server/__main__.py"],
+      "env": {"MISTRAL_API_KEY": "unused"}
+    }
+  }
+}
+```
 
-**Database.** `get_due_cards` reads the database at `DATABASE_URL` (default `./french_coach.db` in the repo root). Start the backend once (`uvicorn main:app`) to create the tables and seed the vocabulary decks. Until then the tool returns a `database_unavailable` error; the grammar tools work without a database.
+Claude Desktop doesn't use your shell's `PATH`, so `command` must be the interpreter's full path. The `env` line is only needed if your `.env` doesn't have the key.
+
+### Verify the connection
+
+- **Claude Code:** run `claude mcp list` (or `claude mcp get french-coach`). Claude Code starts the server, checks it, and shows it as connected. Inside a Claude Code session, `/mcp` shows the server and its five tools.
+- **Claude Desktop:** after restarting, the server and its tools appear in the tools / connectors menu of the chat input.
+- Then try a prompt such as *"Quiz me on the subjunctive using my due cards."*
+
+If the server fails to connect, the usual causes are a relative path in the config, an interpreter without the requirements installed, or a missing `MISTRAL_API_KEY`. To see the actual error, run the exact command from your config in a terminal. A working server sits silently waiting (Ctrl+C to stop); a broken one exits right away with a traceback.
+
+You can also start it from the repo root with `python3 -m mcp_server`. It's the same server, but the absolute-path form above is what client configs need.
 
 ### Tools
 

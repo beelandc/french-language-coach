@@ -443,6 +443,14 @@ Implemented by Claude Code (Claude Opus 5.5) from the prompt above, 2026-11-16.
 - [x] **Recommendation test input.** Used `focus_area="subjonctif"` (matches only `Moods`) instead of `"Accord du subjonctif"`. "accord" also maps to "Nouns and Adjectives", and the router sorts matches by id and caps them at 3, so the subjunctive lesson drops out of that result. This is existing router behaviour and out of scope (see Issues Found).
 - [x] **Extra tests** beyond the prompt list: `test_required_arguments`, `test_unknown_tool_is_left_to_the_sdk`, `test_main_runs_stdio`, and `get_due_cards` page-past-end.
 - [x] **Demo transcript.** Uses real tool output captured over stdio against the local dev DB. The assistant turns, including a short follow-up correction, are labelled illustrative.
+- [x] **README setup rewrite after human review (PR #276).** The reviewer found the "Running it" section unclear. It listed `python3 -m mcp_server` and the absolute-path command in one block, which read like two commands to run, and running the server by hand looked like a hang with no output. The section is now "How it runs" / "Setup" / "Verify the connection":
+  - the client launches the server, so you don't run it yourself
+  - a manual run is silent by design (stdio); Ctrl+C stops it with a harmless `KeyboardInterrupt` traceback, checked locally
+  - numbered setup steps: install, find the two absolute paths, API key, database, register
+  - `claude mcp add` with `-e` and `--scope` explained (checked against `claude mcp add --help`, Claude Code 2.1.325)
+  - a Claude Desktop config with the optional `env` key
+  - verification with `claude mcp list` / `claude mcp get` / `/mcp`, and troubleshooting by running the configured command by hand
+  - `python3 -m mcp_server` kept only as a one-line note
 
 ### Quality Checks
 - [x] Code follows existing patterns (thin adapters over router helpers; `Args`/`Returns`/`Raises` docstrings)
