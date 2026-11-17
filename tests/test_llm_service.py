@@ -21,6 +21,11 @@ from services.llm.base import (
 from services.llm.mistral_provider import MistralProvider
 from services.llm.recorder import record_call
 from services.llm.service import LLMService, build_provider
+from services.llm.rubric import (
+    RUBRIC_PREAMBLE,
+    FeedbackRubricError,
+    build_feedback_system_prompt,
+)
 from tests.llm_fakes import (
     VALID_FEEDBACK_JSON,
     make_claude_client,
@@ -337,7 +342,7 @@ class TestFeedbackValidationAndRetry:
         assert retry["messages"][1]["content"] == bad
         assert "schema_mismatch: grammar_score: Input should be a valid integer" in retry["messages"][2]["content"]
         assert retry["output_config"]["format"]["type"] == "json_schema"
-        assert retry["system"] == llm_base.FEEDBACK_PROMPT
+        assert retry["system"] == build_feedback_system_prompt(make_settings())
         rows = await all_calls(test_db)
         assert statuses(rows) == [("error", "schema_mismatch"), ("success", "")]
         assert rows[0].error_message == "schema_mismatch: grammar_score: Input should be a valid integer"
@@ -505,3 +510,54 @@ class TestRecorder:
         service = LLMService(settings=make_settings(), providers={"mistral": MistralProvider("m", client=client)})
 
         assert await service.get_chat_response(HISTORY, "SYS", db=db) == "Bonjour"
+
+
+class TestFeedbackSystemPrompt:
+    """Issue #269: the service sends the prompt built from its settings on every attempt."""
+
+    @pytest.mark.asyncio
+    async def test_rubric_on_by_default_on_both_mistral_attempts(self, test_db):
+        # Given Mistral returns invalid JSON, then valid feedback (default settings: rubric on)
+        service, client = mistral_service(
+            make_mistral_response('{"grammar_score": 72', prompt_tokens=50, completion_tokens=5),
+            make_mistral_response(VALID_FEEDBACK_JSON, prompt_tokens=90, completion_tokens=60),
+        )
+
+        # When
+        await service.get_feedback(HISTORY, db=test_db)
+
+        # Then both attempts start with the base prompt + rubric
+        expected = build_feedback_system_prompt(make_settings())
+        assert expected.startswith(llm_base.FEEDBACK_PROMPT + RUBRIC_PREAMBLE)
+        assert "## Error taxonomy" in expected
+        for call in client.chat.complete_async.await_args_list:
+            assert call.kwargs["messages"][0] == {"role": "system", "content": expected}
+
+    @pytest.mark.asyncio
+    async def test_rubric_off_sends_exactly_the_original_prompt_to_claude(self, test_db):
+        client = make_claude_client(side_effect=[make_claude_response(VALID_FEEDBACK_JSON, 100, 20)])
+        service = LLMService(
+            settings=make_settings(
+                FEEDBACK_PROVIDER="anthropic", FEEDBACK_MODEL="claude-sonnet-5-5", FEEDBACK_RUBRIC=False
+            ),
+            providers={"anthropic": AnthropicProvider("a", client=client)},
+        )
+
+        await service.get_feedback(HISTORY, db=test_db)
+
+        assert client.messages.create.await_args.kwargs["system"] == llm_base.FEEDBACK_PROMPT
+
+    @pytest.mark.asyncio
+    async def test_missing_rubric_file_raises_before_any_call(self, test_db):
+        # Given the rubric points at a file that doesn't exist
+        client = make_mistral_client(make_mistral_response(VALID_FEEDBACK_JSON))
+        service = LLMService(
+            settings=make_settings(FEEDBACK_RUBRIC_FILE="data/missing-rubric.md"),
+            providers={"mistral": MistralProvider("m", client=client)},
+        )
+
+        # When / Then: a clear error naming the path, no provider call, nothing recorded
+        with pytest.raises(FeedbackRubricError, match="data/missing-rubric.md"):
+            await service.get_feedback(HISTORY, db=test_db)
+        client.chat.complete_async.assert_not_awaited()
+        assert await all_calls(test_db) == []

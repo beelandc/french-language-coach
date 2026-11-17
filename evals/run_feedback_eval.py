@@ -11,6 +11,7 @@ It makes real, paid API calls, so it is never run in CI. Run it from the repo ro
     python3 -m evals.run_feedback_eval --dry-run
     python3 -m evals.run_feedback_eval --limit 3
     python3 -m evals.run_feedback_eval --models all --max-spend-usd 8
+    python3 -m evals.run_feedback_eval --rubric both   # with vs without the rubric (#269)
 
 Calls are recorded in an in-memory database, never in the app's ``french_coach.db``.
 See ``evals/README.md`` for the flags, metric definitions and the judge choice.
@@ -26,6 +27,7 @@ if __package__ in (None, ""):  # pragma: no cover
 
 import argparse
 import asyncio
+import dataclasses
 import functools
 import hashlib
 import math
@@ -86,6 +88,11 @@ from services.llm.base import (
     build_transcript,
 )
 from services.llm.pricing import estimate_cost_usd, load_price_table
+from services.llm.rubric import (
+    FeedbackRubricError,
+    build_feedback_system_prompt,
+    feedback_rubric_sha256,
+)
 from services.llm.service import LLMService
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -93,11 +100,16 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 
 @dataclass(frozen=True)
 class EvalConfig:
-    """A model configuration under test."""
+    """A model configuration under test.
+
+    ``rubric`` says whether its feedback prompt includes the French feedback rubric
+    (issue #269); the no-rubric arm of a model is keyed ``<key>:no-rubric``.
+    """
 
     key: str
     provider: str
     model: str
+    rubric: bool = True
 
 
 EVAL_CONFIGS: dict[str, EvalConfig] = {
@@ -110,6 +122,9 @@ DEFAULT_CONFIG_KEYS = ("mistral-large", "claude-sonnet", "claude-haiku")
 DEFAULT_JUDGE = ("mistral", "mistral-large-latest")
 DEFAULT_MAX_SPEND_USD = 5.00
 CLAUDE_EFFORTS = ("low", "medium", "high", "xhigh", "max")
+#: --rubric choices (issue #269): rubric arm only, no-rubric arm only, or both.
+RUBRIC_MODES = ("on", "off", "both")
+NO_RUBRIC_SUFFIX = ":no-rubric"
 
 #: Session ids: config ``i`` (1-based) uses ``i * SESSION_STRIDE + record ordinal``.
 SESSION_STRIDE = 1000
@@ -163,6 +178,7 @@ class RunOptions:
     judge_validation: Path = JUDGE_VALIDATION_PATH
     output_dir: Path = RESULTS_DIR
     export_judge_sample: int = 0
+    rubric: str = "on"
 
 
 @dataclass
@@ -268,6 +284,11 @@ def parse_args(argv: Optional[list[str]] = None) -> RunOptions:
         "--export-judge-sample", type=_non_negative_int, default=0,
         help="also write up to N judge-decided pairs for hand review",
     )
+    parser.add_argument(
+        "--rubric", choices=RUBRIC_MODES, default="on",
+        help="feedback prompt with the rubric (on, the app default), without it (off), "
+        "or both arms per model (default: on)",
+    )
     args = parser.parse_args(argv)
     return RunOptions(
         models=args.models,
@@ -283,7 +304,28 @@ def parse_args(argv: Optional[list[str]] = None) -> RunOptions:
         judge_validation=args.judge_validation,
         output_dir=args.output_dir,
         export_judge_sample=args.export_judge_sample,
+        rubric=args.rubric,
     )
+
+
+def expand_rubric_arms(configs: list[EvalConfig], mode: str) -> list[EvalConfig]:
+    """Return the configurations to run for a ``--rubric`` mode, in model order.
+
+    ``on`` keeps each config (rubric on, base key); ``off`` replaces it with its
+    no-rubric arm (``<key>:no-rubric``); ``both`` runs the rubric arm, then the
+    no-rubric arm, for each model.
+    """
+    if mode not in RUBRIC_MODES:
+        raise ValueError(f"unknown rubric mode: {mode!r}")
+    expanded: list[EvalConfig] = []
+    for config in configs:
+        if mode in ("on", "both"):
+            expanded.append(dataclasses.replace(config, rubric=True))
+        if mode in ("off", "both"):
+            expanded.append(
+                dataclasses.replace(config, key=config.key + NO_RUBRIC_SUFFIX, rubric=False)
+            )
+    return expanded
 
 
 def select_records(
@@ -345,9 +387,14 @@ def config_effort(config: EvalConfig, override: Optional[str]) -> Optional[str]:
     return override or DEFAULT_EFFORT[FEATURE_FEEDBACK]
 
 
-def estimate_feedback_cost(config: EvalConfig, record: FeedbackEvalRecord) -> float:
-    """A-priori cost of one feedback call, with a generous output allowance."""
-    chars = len(FEEDBACK_PROMPT) + len(build_transcript([m.model_dump() for m in record.messages]))
+def estimate_feedback_cost(
+    config: EvalConfig, record: FeedbackEvalRecord, system_prompt: str = FEEDBACK_PROMPT
+) -> float:
+    """A-priori cost of one feedback call, with a generous output allowance.
+
+    ``system_prompt`` is the config's actual feedback prompt (with or without the rubric).
+    """
+    chars = len(system_prompt) + len(build_transcript([m.model_dump() for m in record.messages]))
     cost = estimate_cost_usd(
         config.provider, config.model, math.ceil(chars / CHARS_PER_TOKEN),
         FEEDBACK_OUTPUT_ALLOWANCE, 0,
@@ -494,11 +541,18 @@ def _preflight(
     config_settings: dict[str, Settings] = {}
     for config in configs:
         try:
-            config_settings[config.key] = settings_factory(
-                config.provider, config.model, options.claude_effort
-            )
+            settings = settings_factory(config.provider, config.model, options.claude_effort)
         except ValidationError as exc:
             raise PreflightError(f"{config.key}: {settings_error_message(exc)}") from None
+        # The arm decides the rubric, whatever FEEDBACK_RUBRIC says in .env (issue #269).
+        config_settings[config.key] = settings.model_copy(
+            update={"FEEDBACK_RUBRIC": config.rubric}
+        )
+        if config.rubric:
+            try:
+                build_feedback_system_prompt(config_settings[config.key])
+            except FeedbackRubricError as exc:
+                raise PreflightError(f"rubric: {exc}") from None
     try:
         judge_settings = settings_factory(options.judge_provider, options.judge_model, None)
     except ValidationError as exc:
@@ -622,6 +676,7 @@ def _print_plan(
     for config in configs:
         effort = config_effort(config, options.claude_effort)
         suffix = f", effort {effort}" if effort else ""
+        suffix += ", rubric on" if config.rubric else ", rubric off"
         out(f"  model: {config.key} ({config.provider}/{config.model}{suffix})")
     out(f"  conversations per model: {len(records)} ({', '.join(r.id for r in records)})")
     validation = "skipped" if options.skip_judge_validation else f"{len(items)} validation items"
@@ -658,15 +713,17 @@ async def run_eval(
     if len(records) >= SESSION_STRIDE:
         raise PreflightError(f"at most {SESSION_STRIDE - 1} conversations per run")
     records_by_id = {record.id: record for record in records_all}
-    configs = [EVAL_CONFIGS[key] for key in options.models]
+    configs = expand_rubric_arms([EVAL_CONFIGS[key] for key in options.models], options.rubric)
     config_settings, judge_settings, items = _preflight(
         options, configs, records_by_id, settings_factory
     )
+    prompts = {c.key: build_feedback_system_prompt(config_settings[c.key]) for c in configs}
+    rubric_info = _rubric_info(configs, config_settings)
 
     judge_apriori = estimate_judge_cost(options.judge_provider, options.judge_model, records_all)
     labeled = sum(len(record.errors) for record in records)
     estimate = round(
-        sum(estimate_feedback_cost(c, r) for c in configs for r in records)
+        sum(estimate_feedback_cost(c, r, prompts[c.key]) for c in configs for r in records)
         + judge_apriori * (len(items) + labeled * len(configs)),
         8,
     )
@@ -725,6 +782,7 @@ async def run_eval(
                 records=records,
                 items=items,
                 validation_outcomes=validation_outcomes,
+                rubric_info=rubric_info,
             )
     finally:
         await engine.dispose()
@@ -770,6 +828,7 @@ async def _assemble_report(
     records: list[FeedbackEvalRecord],
     items: list,
     validation_outcomes: list[ValidationOutcome],
+    rubric_info: Optional[dict[str, str]] = None,
 ) -> dict[str, Any]:
     """Gather spend from the eval database and build the report document."""
     feedback_by_config = {}
@@ -831,6 +890,7 @@ async def _assemble_report(
             "max_spend_usd": options.max_spend_usd,
             "claude_effort": options.claude_effort,
             "skip_judge_validation": options.skip_judge_validation,
+            "rubric": options.rubric,
         },
         judge={
             "provider": options.judge_provider,
@@ -849,13 +909,26 @@ async def _assemble_report(
                 "provider": run.config.provider,
                 "model": run.config.model,
                 "effort": run.effort,
+                "rubric": run.config.rubric,
                 "status": run.status,
                 "metrics": aggregate_metrics(run.scores) if run.scores else None,
                 "conversations": [score.to_dict() for score in run.scores],
             }
             for run in runs
         ],
+        rubric=rubric_info,
     )
+
+
+def _rubric_info(
+    configs: list[EvalConfig], config_settings: dict[str, Settings]
+) -> Optional[dict[str, str]]:
+    """Path and SHA-256 of the rubric used by the rubric arms, or ``None`` if none."""
+    for config in configs:
+        if config.rubric:
+            path = config_settings[config.key].FEEDBACK_RUBRIC_FILE
+            return {"path": path, "sha256": feedback_rubric_sha256(path)}
+    return None
 
 
 def main(argv: Optional[list[str]] = None) -> int:

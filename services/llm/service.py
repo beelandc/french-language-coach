@@ -26,6 +26,7 @@ from services.llm.base import (
     LLMResult,
 )
 from services.llm.recorder import record_call
+from services.llm.rubric import build_feedback_system_prompt
 
 logger = logging.getLogger(__name__)
 
@@ -175,7 +176,10 @@ class LLMService:
     ) -> dict[str, Any]:
         """Return validated structured feedback for a conversation.
 
-        Each attempt's output is validated with :func:`validate_feedback`. On an
+        The system prompt is built once from settings (:func:`build_feedback_system_prompt`:
+        the base prompt plus the rubric when ``FEEDBACK_RUBRIC`` is on, issue #269) and
+        sent on every attempt. Each attempt's output is validated with
+        :func:`validate_feedback`. On an
         ``invalid_json`` or ``schema_mismatch`` failure the provider is called exactly once
         more with a :class:`FeedbackCorrection` (the failed output and its error). Every
         attempt is recorded as its own ``llm_calls`` row; failed attempts carry an
@@ -186,9 +190,12 @@ class LLMService:
 
         Raises:
             FeedbackValidationError: Both attempts failed validation.
+            FeedbackRubricError: The rubric is enabled but its file can't be used
+                (raised before any provider call, so nothing is recorded).
             Exception: Any provider error (not retried), after it has been recorded.
         """
         provider_id, model = self.route(FEATURE_FEEDBACK)
+        system_prompt = build_feedback_system_prompt(self._settings)
         provider = self.get_provider(provider_id)
         correction: Optional[FeedbackCorrection] = None
         errors: list[str] = []
@@ -196,7 +203,9 @@ class LLMService:
 
         for attempt in range(1, FEEDBACK_MAX_ATTEMPTS + 1):
             result, latency_ms = await self._timed_call(
-                lambda c=correction: provider.feedback(messages, model, correction=c),
+                lambda c=correction: provider.feedback(
+                    messages, model, correction=c, system_prompt=system_prompt
+                ),
                 db=db,
                 feature=FEATURE_FEEDBACK,
                 provider_id=provider_id,

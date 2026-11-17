@@ -90,16 +90,18 @@ class AnthropicProvider(LLMProvider):
         messages: list[dict[str, str]],
         model: str,
         correction: Optional[FeedbackCorrection] = None,
+        system_prompt: str = FEEDBACK_PROMPT,
     ) -> LLMResult:
         """Return feedback JSON constrained to the ``FeedbackResponse`` schema.
 
-        On the corrective retry, the failed output and the correction turn follow the
-        transcript (see :func:`build_feedback_turns`); the schema is kept.
+        ``system_prompt`` is sent as ``system``. On the corrective retry, the failed
+        output and the correction turn follow the transcript (see
+        :func:`build_feedback_turns`); the schema is kept.
         """
         response = await self._client.messages.create(
             model=model,
             max_tokens=MAX_TOKENS,
-            system=FEEDBACK_PROMPT,
+            system=system_prompt,
             messages=build_feedback_turns(messages, correction),
             output_config={
                 "effort": self.feedback_effort,

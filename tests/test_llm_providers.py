@@ -119,6 +119,18 @@ class TestMistralProvider:
         assert kwargs["response_format"] == {"type": "json_object"}
 
     @pytest.mark.asyncio
+    async def test_feedback_sends_the_given_system_prompt(self):
+        # Issue #269: the service passes the prompt with the rubric
+        client = make_mistral_client(make_mistral_response(VALID_FEEDBACK_JSON))
+        provider = MistralProvider(api_key="test", client=client)
+
+        await provider.feedback(HISTORY, "mistral-large-latest", system_prompt="PROMPT + RUBRIC")
+
+        messages = client.chat.complete_async.await_args.kwargs["messages"]
+        assert messages[0] == {"role": "system", "content": "PROMPT + RUBRIC"}
+        assert messages[1:] == build_feedback_turns(HISTORY)
+
+    @pytest.mark.asyncio
     async def test_usage_normalises_cached_tokens_from_dict(self):
         client = make_mistral_client(
             make_mistral_response("Bonjour", prompt_tokens=1200, completion_tokens=150, cached_tokens=200)
@@ -347,6 +359,21 @@ class TestAnthropicProvider:
         assert kwargs["system"] == FEEDBACK_PROMPT
         assert kwargs["messages"] == build_feedback_turns(HISTORY, correction)
         assert kwargs["output_config"]["format"] == {"type": "json_schema", "schema": FEEDBACK_JSON_SCHEMA}
+
+    @pytest.mark.asyncio
+    async def test_feedback_sends_the_given_system_prompt(self):
+        # Issue #269: the service passes the prompt with the rubric, on the retry too
+        client = make_claude_client(make_claude_response(VALID_FEEDBACK_JSON))
+        provider = AnthropicProvider(api_key="t", client=client)
+        correction = FeedbackCorrection(previous_output="{}", error="schema_mismatch: x")
+
+        await provider.feedback(
+            HISTORY, "claude-sonnet-5-5", correction=correction, system_prompt="PROMPT + RUBRIC"
+        )
+
+        kwargs = client.messages.create.await_args.kwargs
+        assert kwargs["system"] == "PROMPT + RUBRIC"
+        assert kwargs["messages"] == build_feedback_turns(HISTORY, correction)
 
     @pytest.mark.asyncio
     async def test_feedback_effort_override(self):
