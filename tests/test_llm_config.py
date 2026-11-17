@@ -30,28 +30,72 @@ def make_settings(**overrides) -> Settings:
     return Settings(_env_file=None, **overrides)
 
 
-class TestDefaults:
-    def test_defaults_reproduce_original_behaviour(self):
-        # Given only a Mistral key / When settings load
-        settings = make_settings(MISTRAL_API_KEY="key")
+#: Explicit routing that opts both features back into Mistral Large.
+ALL_MISTRAL = {
+    "CHAT_PROVIDER": "mistral",
+    "CHAT_MODEL": "mistral-large-latest",
+    "FEEDBACK_PROVIDER": "mistral",
+    "FEEDBACK_MODEL": "mistral-large-latest",
+}
 
-        # Then both features use Mistral Large and no Claude overrides are set
-        assert settings.CHAT_PROVIDER == "mistral"
-        assert settings.CHAT_MODEL == "mistral-large-latest"
-        assert settings.FEEDBACK_PROVIDER == "mistral"
-        assert settings.FEEDBACK_MODEL == "mistral-large-latest"
+
+class TestDefaults:
+    def test_defaults_use_claude_sonnet_for_both_features(self):
+        # Given only an Anthropic key / When settings load
+        settings = make_settings(ANTHROPIC_API_KEY="key")
+
+        # Then both features use Claude Sonnet 5.5 (issue #232 decision record)
+        # and no Claude effort overrides are set
+        assert settings.CHAT_PROVIDER == "anthropic"
+        assert settings.CHAT_MODEL == "claude-sonnet-5-5"
+        assert settings.FEEDBACK_PROVIDER == "anthropic"
+        assert settings.FEEDBACK_MODEL == "claude-sonnet-5-5"
         assert settings.CLAUDE_CHAT_EFFORT is None
         assert settings.CLAUDE_FEEDBACK_EFFORT is None
         assert settings.LLM_PRICING_FILE == "data/llm_pricing.json"
+        assert settings.MISTRAL_API_KEY is None
+
+    def test_default_config_requires_anthropic_key(self):
+        with pytest.raises(ValidationError, match="ANTHROPIC_API_KEY"):
+            make_settings(ANTHROPIC_API_KEY=None)
+
+    def test_default_config_does_not_require_mistral_key(self):
+        settings = make_settings(ANTHROPIC_API_KEY="key", MISTRAL_API_KEY=None)
+        assert settings.MISTRAL_API_KEY is None
+
+    def test_empty_anthropic_key_counts_as_missing_with_defaults(self):
+        with pytest.raises(ValidationError, match="ANTHROPIC_API_KEY"):
+            make_settings(ANTHROPIC_API_KEY="")
+
+
+class TestMistralOptIn:
+    def test_all_mistral_config_needs_no_anthropic_key(self):
+        # Given explicit Mistral routing and only a Mistral key
+        settings = make_settings(MISTRAL_API_KEY="key", **ALL_MISTRAL)
+
+        # Then both features use Mistral Large
+        assert settings.CHAT_PROVIDER == "mistral"
+        assert settings.FEEDBACK_MODEL == "mistral-large-latest"
         assert settings.ANTHROPIC_API_KEY is None
 
-    def test_default_config_still_requires_mistral_key(self):
+    def test_all_mistral_config_requires_mistral_key(self):
         with pytest.raises(ValidationError, match="MISTRAL_API_KEY"):
-            make_settings(MISTRAL_API_KEY=None)
+            make_settings(MISTRAL_API_KEY=None, **ALL_MISTRAL)
 
     def test_empty_mistral_key_counts_as_missing(self):
         with pytest.raises(ValidationError, match="MISTRAL_API_KEY"):
-            make_settings(MISTRAL_API_KEY="")
+            make_settings(MISTRAL_API_KEY="", **ALL_MISTRAL)
+
+    def test_environment_values_override_the_defaults(self, monkeypatch):
+        # Given a .env-style environment that pins Mistral (e.g. an older .env.example)
+        monkeypatch.setenv("MISTRAL_API_KEY", "m")
+        for name, value in ALL_MISTRAL.items():
+            monkeypatch.setenv(name, value)
+
+        # When settings load / Then the explicit values win over the Claude defaults
+        settings = make_settings()
+        assert settings.CHAT_PROVIDER == "mistral"
+        assert settings.FEEDBACK_PROVIDER == "mistral"
 
 
 class TestProviderValidation:
@@ -73,6 +117,8 @@ class TestProviderValidation:
         settings = make_settings(
             MISTRAL_API_KEY="m",
             ANTHROPIC_API_KEY="a",
+            CHAT_PROVIDER="mistral",
+            CHAT_MODEL="mistral-large-latest",
             FEEDBACK_PROVIDER="anthropic",
             FEEDBACK_MODEL="claude-sonnet-5-5",
         )
@@ -105,9 +151,9 @@ class TestProviderValidation:
 class TestEffortValidation:
     @pytest.mark.parametrize("effort", ["low", "medium", "high", "xhigh", "max"])
     def test_valid_effort_values(self, effort):
-        settings = make_settings(MISTRAL_API_KEY="key", CLAUDE_CHAT_EFFORT=effort)
+        settings = make_settings(ANTHROPIC_API_KEY="key", CLAUDE_CHAT_EFFORT=effort)
         assert settings.CLAUDE_CHAT_EFFORT == effort
 
     def test_invalid_effort_rejected(self):
         with pytest.raises(ValidationError):
-            make_settings(MISTRAL_API_KEY="key", CLAUDE_FEEDBACK_EFFORT="extreme")
+            make_settings(ANTHROPIC_API_KEY="key", CLAUDE_FEEDBACK_EFFORT="extreme")

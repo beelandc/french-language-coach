@@ -1,7 +1,9 @@
 """Application settings loaded from environment variables and ``.env``.
 
-LLM provider and model are chosen per feature (issue #228). The defaults reproduce the
-original behaviour: both chat and feedback run on Mistral ``mistral-large-latest``.
+LLM provider and model are chosen per feature (issue #228). The defaults follow the
+model-choice decision record (issue #232, ``docs/decisions/001-model-choice.md``): both
+chat and feedback run on Claude Sonnet 5.5. Mistral (``mistral-large-latest``) can be
+selected per feature.
 """
 
 from typing import Literal, Optional
@@ -26,11 +28,11 @@ class Settings(BaseSettings):
     ANTHROPIC_API_KEY: Optional[str] = None
     DATABASE_URL: str = "sqlite+aiosqlite:///./french_coach.db"
 
-    # Per-feature LLM routing (issue #228)
-    CHAT_PROVIDER: ProviderId = "mistral"
-    CHAT_MODEL: str = "mistral-large-latest"
-    FEEDBACK_PROVIDER: ProviderId = "mistral"
-    FEEDBACK_MODEL: str = "mistral-large-latest"
+    # Per-feature LLM routing (issue #228). Defaults from the decision record (issue #232).
+    CHAT_PROVIDER: ProviderId = "anthropic"
+    CHAT_MODEL: str = "claude-sonnet-5-5"
+    FEEDBACK_PROVIDER: ProviderId = "anthropic"
+    FEEDBACK_MODEL: str = "claude-sonnet-5-5"
 
     # Optional Claude effort overrides; when unset the provider's defaults apply
     # (chat: low, feedback: medium).

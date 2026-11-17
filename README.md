@@ -2,7 +2,7 @@
 
 French Language Coach is an app for practising French. It offers AI conversation practice (scenario role-play with end-of-session feedback), grammar lessons, a searchable grammar reference, interactive exercises, and spaced-repetition vocabulary flashcards.
 
-The repo also serves as a testbed for AI-assisted development and model selection. It is built with two coding agents, Mistral Vibe and Claude Code, which follow the same project instructions. Every AI-generated change goes through [SPDD](SPDD.md) (an analysis artifact, then a prompt artifact, then code) and CI (a single `status-gateway` check and an 80% test coverage target) before a human merges it. The app's LLM features run on either the Mistral API or Anthropic's Claude API, chosen per feature in configuration: Mistral is the default, and Claude can be selected for chat, feedback or both (see [LLM Integration](#llm-integration)). Every LLM call is logged with token counts, latency and estimated cost. Next, we plan to compare Mistral and Claude on the app's own feedback workload, measuring accuracy, cost and latency (see the [Model evaluation milestone](https://github.com/beelandc/french-language-coach/milestone/6)). The hand-labeled feedback dataset and the eval harness that runs the comparison are in [`evals/`](evals/README.md) (#230, #231); results haven't been published yet (#232).
+The repo also serves as a testbed for AI-assisted development and model selection. It is built with two coding agents, Mistral Vibe and Claude Code, which follow the same project instructions. Every AI-generated change goes through [SPDD](SPDD.md) (an analysis artifact, then a prompt artifact, then code) and CI (a single `status-gateway` check and an 80% test coverage target) before a human merges it. The app's LLM features run on either Anthropic's Claude API or the Mistral API, chosen per feature in configuration: Claude Sonnet 5.5 is the default for both chat and feedback, and Mistral can be selected for either (see [LLM Integration](#llm-integration)). Every LLM call is logged with token counts, latency and estimated cost. Mistral and Claude were compared on the app's own feedback workload, measuring accuracy, cost and latency, with a hand-labeled dataset and an eval harness in [`evals/`](evals/README.md) (#230, #231). The results and the model choice they led to are in [Evaluation](#evaluation) and [decision record 001](docs/decisions/001-model-choice.md) (#232).
 
 ## What it does
 
@@ -113,25 +113,26 @@ Each scenario supports three difficulty levels that affect the AI's system promp
    cp .env.example .env
    ```
 
-5. Get a Mistral API key from [https://console.mistral.ai/](https://console.mistral.ai/) and add it to `.env`:
-   ```
-   MISTRAL_API_KEY=your_api_key_here
-   ```
-   The defaults run both LLM features on Mistral. To use Claude for a feature, also add an Anthropic API key from [https://platform.claude.com/](https://platform.claude.com/) and set that feature's provider and model:
+5. Get an Anthropic API key from [https://platform.claude.com/](https://platform.claude.com/) and add it to `.env`:
    ```
    ANTHROPIC_API_KEY=your_api_key_here
-   FEEDBACK_PROVIDER=anthropic
-   FEEDBACK_MODEL=claude-sonnet-5-5
    ```
+   The defaults run both LLM features on Claude Sonnet 5.5 ([why](docs/decisions/001-model-choice.md)). To use Mistral for a feature, also add a Mistral API key from [https://console.mistral.ai/](https://console.mistral.ai/) and set that feature's provider and model:
+   ```
+   MISTRAL_API_KEY=your_api_key_here
+   FEEDBACK_PROVIDER=mistral
+   FEEDBACK_MODEL=mistral-large-latest
+   ```
+   Values set in `.env` override the defaults. An `.env` copied from an older `.env.example` sets all four provider/model variables to Mistral, so update or remove those lines to use the Claude defaults. The eval harness's default judge also uses `MISTRAL_API_KEY` (see [`evals/README.md`](evals/README.md#feedback-eval-harness-231)).
 
    | Variable | Default | Description |
    |----------|---------|-------------|
-   | `MISTRAL_API_KEY` | (none) | Mistral API key. Required when any feature uses `mistral` (the default). |
-   | `ANTHROPIC_API_KEY` | (none) | Anthropic API key. Required when any feature uses `anthropic`. |
-   | `CHAT_PROVIDER` | `mistral` | Provider for scenario chat and the opening greeting: `mistral` or `anthropic` (Claude). |
-   | `CHAT_MODEL` | `mistral-large-latest` | Model for chat, e.g. `claude-haiku-5-5` or `claude-sonnet-5-5` with `anthropic`. |
-   | `FEEDBACK_PROVIDER` | `mistral` | Provider for end-of-session feedback: `mistral` or `anthropic`. |
-   | `FEEDBACK_MODEL` | `mistral-large-latest` | Model for feedback. |
+   | `ANTHROPIC_API_KEY` | (none) | Anthropic API key. Required when any feature uses `anthropic` (the default). |
+   | `MISTRAL_API_KEY` | (none) | Mistral API key. Required when any feature uses `mistral`, and for the eval harness's default judge. |
+   | `CHAT_PROVIDER` | `anthropic` | Provider for scenario chat and the opening greeting: `anthropic` (Claude) or `mistral`. |
+   | `CHAT_MODEL` | `claude-sonnet-5-5` | Model for chat, e.g. `claude-haiku-5-5` with `anthropic` or `mistral-large-latest` with `mistral`. |
+   | `FEEDBACK_PROVIDER` | `anthropic` | Provider for end-of-session feedback: `anthropic` or `mistral`. |
+   | `FEEDBACK_MODEL` | `claude-sonnet-5-5` | Model for feedback. |
    | `CLAUDE_CHAT_EFFORT` | `low` when unset | Optional Claude effort for chat: `low`, `medium`, `high`, `xhigh`, `max`. |
    | `CLAUDE_FEEDBACK_EFFORT` | `medium` when unset | Optional Claude effort for feedback. |
    | `LLM_PRICING_FILE` | `data/llm_pricing.json` | Optional path to the LLM price table used for cost estimates. |
@@ -181,7 +182,7 @@ Each scenario supports three difficulty levels that affect the AI's system promp
 - **Frontend**: React 19 + TypeScript + Vite, React Router v6
 - **Storybook**: Component documentation at http://localhost:6006
 - **Database**: SQLite via SQLAlchemy (async)
-- **AI**: Mistral API (default model: `mistral-large-latest`) and Anthropic Claude API (`claude-sonnet-5-5`, `claude-haiku-5-5`, optionally `claude-opus-5-5`), chosen per feature through the provider layer in `services/llm/`
+- **AI**: Anthropic Claude API (default model: `claude-sonnet-5-5` for chat and feedback; also `claude-haiku-5-5`, optionally `claude-opus-5-5`) and Mistral API (`mistral-large-latest`), chosen per feature through the provider layer in `services/llm/` (see [decision record 001](docs/decisions/001-model-choice.md))
 - **Package management**: pip + requirements.txt (backend), npm (frontend)
 
 ## Architecture
@@ -393,6 +394,8 @@ french-language-coach/
 │   ├── settings.json        # Claude Code shared project permissions (committed)
 │   └── skills/              # Claude Code project skills: /spdd-analysis, /spdd-prompt
 ├── spdd/                    # SPDD artifacts: analysis/, prompt/, template/
+├── docs/
+│   └── decisions/           # Decision records, e.g. 001-model-choice.md (Issue #232)
 ├── .env.example             # Template: API keys, per-feature LLM provider/model, DATABASE_URL
 ├── .gitignore               # Python, .env, __pycache__, *.db
 ├── requirements.txt         # fastapi, uvicorn, sqlalchemy, aiosqlite, mistralai, anthropic, python-dotenv, pydantic
@@ -469,8 +472,8 @@ french-language-coach/
 ### Data Flow
 
 1. **User selects scenario** → POST /sessions/ creates session record → chat provider generates the opening greeting
-2. **User sends message** → POST /sessions/{id}/messages/ → chat provider (Mistral by default) → AI response stored in session
-3. **User requests feedback** → POST /sessions/{id}/feedback/ → feedback provider (Mistral by default) with feedback prompt → JSON validated against `FeedbackResponse` (one corrective retry) → feedback stored in session, or 502 with the session left open
+2. **User sends message** → POST /sessions/{id}/messages/ → chat provider (Claude Sonnet 5.5 by default) → AI response stored in session
+3. **User requests feedback** → POST /sessions/{id}/feedback/ → feedback provider (Claude Sonnet 5.5 by default) with feedback prompt → JSON validated against `FeedbackResponse` (one corrective retry) → feedback stored in session, or 502 with the session left open
 4. **Frontend displays** conversation history and feedback report
 
 Each LLM call writes one row to `llm_calls` (tokens, latency, estimated cost, success or error), summarised by `GET /metrics/llm`.
@@ -500,7 +503,7 @@ All LLM calls go through the provider layer in `services/llm/` (Issue #228). `LL
 | `chat` | Opening greeting (`POST /sessions/`) and each turn (`POST /sessions/{id}/messages/`) | `CHAT_PROVIDER`, `CHAT_MODEL` |
 | `feedback` | End-of-session report (`POST /sessions/{id}/feedback/`) | `FEEDBACK_PROVIDER`, `FEEDBACK_MODEL` |
 
-Both providers use async SDK clients, so LLM calls don't block the FastAPI event loop. Defaults: both features on Mistral `mistral-large-latest`. Set a provider to `anthropic` to use Claude on the first-party Anthropic API (models in scope: `claude-sonnet-5-5`, `claude-haiku-5-5`, optionally `claude-opus-5-5`).
+Both providers use async SDK clients, so LLM calls don't block the FastAPI event loop. Defaults: both features on Claude Sonnet 5.5 (`claude-sonnet-5-5`) on the first-party Anthropic API, chosen from the [evaluation](#evaluation) ([decision record 001](docs/decisions/001-model-choice.md)). Other models in scope: `claude-haiku-5-5`, optionally `claude-opus-5-5`, and Mistral `mistral-large-latest` (set a feature's provider to `mistral`).
 
 ### 1. Conversation Mode (`chat`)
 
@@ -562,8 +565,8 @@ The **Comparison report** tab on the same page (Issue #238, `?view=report`) show
 
 The app sends each feature to one model at a time, so a live comparison needs traffic recorded under each configuration:
 
-1. Use the app for a while with the defaults (Mistral for chat and feedback).
-2. Switch one feature in `.env`, e.g. `FEEDBACK_PROVIDER=anthropic` and `FEEDBACK_MODEL=claude-haiku-5-5` (or `CHAT_PROVIDER` / `CHAT_MODEL` for chat), restart the backend and use the app again. Repeat for other models you want to compare.
+1. Use the app for a while with the defaults (Claude Sonnet 5.5 for chat and feedback).
+2. Switch one feature in `.env`, e.g. `FEEDBACK_MODEL=claude-haiku-5-5`, or `FEEDBACK_PROVIDER=mistral` and `FEEDBACK_MODEL=mistral-large-latest` (or `CHAT_PROVIDER` / `CHAT_MODEL` for chat), restart the backend and use the app again. Repeat for other models you want to compare.
 3. Open `/admin/metrics?view=report`. Each model needs at least 20 calls in the selected range to be ranked in the summary.
 
 Live traffic is not a controlled experiment: models may have handled different conversations at different times. For same-input comparisons, and for feedback quality, use the eval harness (#231).
@@ -602,7 +605,7 @@ pip install -r requirements.txt        # includes the mcp SDK
 | The Python interpreter with the requirements installed | `which python3` (or `.venv/bin/python` inside the repo if you use a venv) | `/usr/local/bin/python3` |
 | The server's entry point | `<repo>/mcp_server/__main__.py` | `/Users/you/repositories/french-language-coach/mcp_server/__main__.py` |
 
-**3. Make sure `MISTRAL_API_KEY` is set (temporary).** The server imports the backend's modules, and the backend's settings currently refuse to load without a key for the configured LLM provider (with the defaults, `MISTRAL_API_KEY`). The server never uses the key. If the repo's `.env` already has it, you don't need to do anything. Otherwise pass any value through the client config, as shown below. Removing this requirement is tracked in #275.
+**3. Make sure `ANTHROPIC_API_KEY` is set (temporary).** The server imports the backend's modules, and the backend's settings currently refuse to load without a key for the configured LLM provider (with the defaults, `ANTHROPIC_API_KEY`; if your `.env` routes both features to Mistral, `MISTRAL_API_KEY` instead). The server never uses the key. If the repo's `.env` already has it, you don't need to do anything. Otherwise pass any value through the client config, as shown below. Removing this requirement is tracked in #275.
 
 **4. Make sure the database exists (for `get_due_cards` only).** `get_due_cards` reads `DATABASE_URL` (default `french_coach.db` in the repo root). If you've never run the app, start the backend once (`uvicorn main:app`) to create the tables and seed the vocabulary decks, then stop it. Until then `get_due_cards` returns a `database_unavailable` error; the grammar tools work without a database.
 
@@ -614,7 +617,7 @@ pip install -r requirements.txt        # includes the mcp SDK
 claude mcp add french-coach -- /usr/local/bin/python3 /Users/you/repositories/french-language-coach/mcp_server/__main__.py
 ```
 
-Everything after `--` is the command Claude Code runs to start the server. Add `-e MISTRAL_API_KEY=unused` before `--` if your `.env` doesn't have the key. By default the server is registered for the current project only. Use `--scope user` to make it available in every project, or `--scope project` to write a `.mcp.json` file to share through the repo. The `.mcp.json` equivalent is:
+Everything after `--` is the command Claude Code runs to start the server. Add `-e ANTHROPIC_API_KEY=unused` before `--` if your `.env` doesn't have the key. By default the server is registered for the current project only. Use `--scope user` to make it available in every project, or `--scope project` to write a `.mcp.json` file to share through the repo. The `.mcp.json` equivalent is:
 
 ```json
 {
@@ -635,7 +638,7 @@ Everything after `--` is the command Claude Code runs to start the server. Add `
     "french-coach": {
       "command": "/usr/local/bin/python3",
       "args": ["/Users/you/repositories/french-language-coach/mcp_server/__main__.py"],
-      "env": {"MISTRAL_API_KEY": "unused"}
+      "env": {"ANTHROPIC_API_KEY": "unused"}
     }
   }
 }
@@ -649,7 +652,7 @@ Claude Desktop doesn't use your shell's `PATH`, so `command` must be the interpr
 - **Claude Desktop:** after restarting, the server and its tools appear in the tools / connectors menu of the chat input.
 - Then try a prompt such as *"Quiz me on the subjunctive using my due cards."*
 
-If the server fails to connect, the usual causes are a relative path in the config, an interpreter without the requirements installed, or a missing `MISTRAL_API_KEY`. To see the actual error, run the exact command from your config in a terminal. A working server sits silently waiting (Ctrl+C to stop); a broken one exits right away with a traceback.
+If the server fails to connect, the usual causes are a relative path in the config, an interpreter without the requirements installed, or a missing `ANTHROPIC_API_KEY` (step 3). To see the actual error, run the exact command from your config in a terminal. A working server sits silently waiting (Ctrl+C to stop); a broken one exits right away with a traceback.
 
 You can also start it from the repo root with `python3 -m mcp_server`. It's the same server, but the absolute-path form above is what client configs need.
 
@@ -738,9 +741,38 @@ The prompt *"Quiz me on the subjunctive using my due cards."* The tool calls and
 >
 > **Assistant (illustrative):** Close, but *il faut que* needs the subjunctive: **Il faut que je prenne l'avion demain.** *Prendre* takes its stem from *ils prennent* → *prenn-* + *-e*. And *avion* ✓. Next: number 2.
 
-## Why Mistral
+## Evaluation
 
-Mistral's models have demonstrably stronger French language quality than most alternatives. Mistral trains its models with native French fluency — giving Mistral Large demonstrated benchmark advantages in French language comprehension and generation compared to models trained primarily on English. For a French language coaching application, this is not a minor detail: it means more natural phrasing, better idiomatic corrections, and more culturally authentic conversation scenarios.
+Mistral Large, Claude Sonnet 5.5 and Claude Haiku 5.5 were compared on the app's own end-of-session feedback task (Issue #231). Each model ran through the app's feedback path on 27 hand-labeled learner conversations containing 71 labeled errors, and was scored on how many errors it caught, how many of its corrections addressed a real error, how close its grammar score came to the label, and its cost and latency. The metrics are defined in [`evals/README.md`](evals/README.md#metrics).
+
+| Model | Recall | Precision (false) | Correction accuracy | Grammar MAE (n) | Schema valid 1st / final | Cost / conversation | p50 / p95 latency (ms) |
+|---|---|---|---|---|---|---|---|
+| Mistral Large (`mistral-large-latest`) | 88.7% (63/71) | 88.7% (8) | 100.0% | 6.19 (27) | 100.0% / 100.0% | $0.004373 | 25,968 / 36,195 |
+| Claude Sonnet 5.5 (effort medium) | 95.8% (68/71) | 81.0% (16) | 100.0% | 9.59 (27) | 100.0% / 100.0% | $0.008381 | 5,143 / 8,980 |
+| Claude Haiku 5.5 (effort medium) | 87.3% (62/71) | 88.4% (8) | 98.4% | 12.63 (27) | 100.0% / 100.0% | $0.000546 | 4,386 / 7,736 |
+
+Source: run [`feedback_eval_20261116-042618`](evals/results/feedback_eval_20261116-042618.md) ([JSON](evals/results/feedback_eval_20261116-042618.json)), 2026-11-16, $0.43 in total. The report breaks the results down by difficulty level.
+
+**Decision.** Claude Sonnet 5.5 is now the default for both chat and feedback. For feedback, it caught the most errors and returned feedback about five times faster than Mistral Large, at about twice the cost. In exchange, it made more unrequested style suggestions and its grammar scores were less well calibrated. Mistral Large had the best-calibrated grammar scores. Chat quality wasn't evaluated, so the chat choice rests on responsiveness. The reasoning, the trade-offs and what would change the choice are in [decision record 001](docs/decisions/001-model-choice.md).
+
+**Limitations.**
+- **Small dataset:** 27 synthetic conversations with 71 labeled errors, so small differences aren't meaningful.
+- **Single labeler:** one model drafted the labels and one maintainer (about B1) reviewed them, which may favor Claude-style corrections.
+- **Judge agreement:** the judge agreed with 20 of 22 Claude-drafted hand verdicts (90.9%), and those verdicts are still pending human review.
+- **One run per model.**
+- **Chat not evaluated.**
+
+See [`evals/README.md`](evals/README.md#limits) for the full list.
+
+## Model choice
+
+### The case for Mistral
+
+Mistral's models have a strong reputation for French. Mistral trains its models with native French fluency, and published benchmarks (references below) show Mistral Large ahead of comparable models trained mostly on English in French comprehension and generation. For a French coaching app, that would mean more natural phrasing, better idiomatic corrections and more authentic conversation scenarios. That's why the app originally ran on Mistral Large.
+
+### What this app's eval found
+
+Those benchmarks measure general French ability, not this app's task. On the app's own feedback workload ([Evaluation](#evaluation)), Mistral Large had the best-calibrated grammar scores and good precision. It showed no advantage at catching learners' errors: Claude Sonnet 5.5 caught 68 of 71 to Mistral Large's 63. It was also about five times slower (26 s vs 5 s per feedback at the median). The app now defaults to Claude Sonnet 5.5 for both features, and Mistral Large is still a configuration change away (set a feature's provider to `mistral` and its model to `mistral-large-latest`). The French-quality claim for conversation hasn't been tested here: there's no chat eval yet. See [decision record 001](docs/decisions/001-model-choice.md).
 
 The codebase was originally built with Mistral Vibe, Mistral's AI-assisted coding environment, and is now developed with both Mistral Vibe and Claude Code, Anthropic's AI coding agent.
 
@@ -846,7 +878,7 @@ This project uses **GitHub Flow with Issue-Based Branching**: one dedicated bran
 
 - No user authentication (this includes the admin LLM metrics page at `/admin/metrics`)
 - Single-user only (all sessions stored in one database)
-- Requires an API key for each configured LLM provider (Mistral by default, Anthropic for Claude); both are paid services
+- Requires an API key for each configured LLM provider (Anthropic by default, Mistral if selected); both are paid services
 - LLM cost figures in `/metrics/llm` are estimates from the price table, not vendor invoices
 
 ## Running Tests

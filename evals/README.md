@@ -89,7 +89,7 @@ Errors follow the level: gender, articles and contractions at beginner level; ê
 
 | Version | Human review | Date | Changes from review |
 |---------|--------------|------|---------------------|
-| feedback_v1 | CB | 1/15/26 | N/A |
+| feedback_v1 | CB | 11/15/26 | N/A |
 
 ## Limits
 
@@ -204,7 +204,7 @@ Each run (completed, stopped by the cap, or interrupted) writes `results/feedbac
 - **JSON**: run metadata (status, git commit, dataset path and SHA-256, options), the judge and its rationale, prices with their `checked_on` dates, **total spend** split into feedback per model, judge matching and judge validation, judge agreement, and per model its metrics plus every conversation (raw corrections, per-error match details, false corrections, outcome, cost, latency, attempts).
 - **Markdown**: the same results as tables (summary, per difficulty, details, spend, judge, prices) and the caveats.
 
-The harness never commits anything. Commit a run's reports when they're meant to be cited (#232 publishes results from a committed run).
+The harness never commits anything. Commit a run's reports when they're meant to be cited. #232 published the first full run, [`feedback_eval_20261116-042618`](results/feedback_eval_20261116-042618.md), in the README's [Evaluation](../README.md#evaluation) section and in [decision record 001](../docs/decisions/001-model-choice.md), which sets the app's default models.
 
 ## Versioning
 

@@ -1,6 +1,6 @@
 # French Language Coach — Project Vision Document
 
-*Built with Mistral Vibe and Claude Code · LLM features on the Mistral API, with Claude API support in progress*  
+*Built with Mistral Vibe and Claude Code · LLM features on the Claude API (default) and the Mistral API*  
 *Author: Cecil Beeland · Last updated: November 2026*
 
 ---
@@ -39,7 +39,7 @@ Mistral's models have demonstrably stronger French language quality than most al
 - **Vocabulary:** Better context-aware word suggestions and usage examples
 - **Culture:** Deeper understanding of regional variations and cultural subtleties
 
-The project was originally built with Mistral Vibe, Mistral's AI-assisted coding environment, and is now developed with both Mistral Vibe and Claude Code, Anthropic's AI coding agent. That makes it a testbed for AI-assisted development and model selection: a planned evaluation will compare Mistral and Claude on the app's own feedback workload (accuracy, cost, latency) to test the French-quality claim above rather than assume it (see the "Model evaluation (Claude vs Mistral)" milestone, #228–#232).
+The project was originally built with Mistral Vibe, Mistral's AI-assisted coding environment, and is now developed with both Mistral Vibe and Claude Code, Anthropic's AI coding agent. That makes it a testbed for AI-assisted development and model selection. An evaluation compared Mistral and Claude on the app's own feedback workload (accuracy, cost, latency) to test the French-quality claim above rather than assume it (the "Model evaluation (Claude vs Mistral)" milestone, #228–#232). On that workload Mistral Large had the best-calibrated grammar scores but no advantage at catching errors, and it was about five times slower, so the app now defaults to Claude Sonnet 5.5 for chat and feedback. Chat quality hasn't been evaluated yet. See the README's Evaluation section and [decision record 001](docs/decisions/001-model-choice.md).
 
 ---
 
@@ -117,7 +117,7 @@ Flashcard study with SM-2 spaced repetition. Features implemented:
 - **Frontend:** React 19 SPA with TypeScript, Vite, and React Router v6. Organized into reusable components, pages, custom hooks, and utilities. Production build outputs to `static/` directory.
 - **Backend:** FastAPI with async SQLAlchemy
 - **Storage:** SQLite database with session history
-- **AI:** Mistral-large-latest via Mistral API with structured JSON output
+- **AI:** Claude Sonnet 5.5 via the Anthropic API by default (structured outputs for feedback), with Mistral Large via the Mistral API selectable per feature (JSON mode)
 - **Hosting:** Local development with Vite (port 5173) + FastAPI (port 8000), production via FastAPI serving static files
 
 ---
@@ -185,7 +185,7 @@ Future endpoints:
 - `POST /vocabulary/review/` — submit flashcard review, update spaced repetition intervals
 - `GET /culture/regions/` — list cultural guides
 
-**Model:** `mistral-large-latest` via the Mistral API for all AI-powered features. Structured output (JSON mode) for feedback, grammar explanations, and vocabulary examples.
+**Model:** `claude-sonnet-5-5` via the Anthropic API by default for chat and feedback ([decision record 001](docs/decisions/001-model-choice.md)), with `mistral-large-latest` via the Mistral API selectable per feature. Structured output for feedback, grammar explanations, and vocabulary examples.
 
 **Storage:** SQLite async database for session history, user progress, vocabulary decks, and grammar lesson completion. Future: PostgreSQL for multi-user cloud deployment.
 
