@@ -72,6 +72,8 @@ jobs:
       - name: Run Pytest with Coverage
         env:
           MISTRAL_API_KEY: dummy_test_key
+          # Required by the default providers (Claude Sonnet 5.5, issue #232)
+          ANTHROPIC_API_KEY: dummy_test_key
         # --cov reads source/omit/fail_under from .coveragerc; fails if the total is below fail_under
         run: |
           python3 -m pytest tests/ -v --tb=short --cov --cov-report=term-missing --cov-report=xml --cov-report=json

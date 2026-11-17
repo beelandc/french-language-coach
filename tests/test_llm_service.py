@@ -33,7 +33,19 @@ HISTORY = [{"role": "user", "content": "Bonjour"}, {"role": "assistant", "conten
 
 
 def make_settings(**overrides) -> Settings:
-    values = {"MISTRAL_API_KEY": "m", "ANTHROPIC_API_KEY": "a"}
+    """Settings that route both features to Mistral Large unless overridden.
+
+    The app defaults to Claude Sonnet 5.5 (issue #232); these tests are about Mistral
+    behaviour by default, so the routing is pinned explicitly.
+    """
+    values = {
+        "MISTRAL_API_KEY": "m",
+        "ANTHROPIC_API_KEY": "a",
+        "CHAT_PROVIDER": "mistral",
+        "CHAT_MODEL": "mistral-large-latest",
+        "FEEDBACK_PROVIDER": "mistral",
+        "FEEDBACK_MODEL": "mistral-large-latest",
+    }
     values.update(overrides)
     return Settings(_env_file=None, **values)
 
