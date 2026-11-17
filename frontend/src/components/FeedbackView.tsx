@@ -5,6 +5,7 @@ import type { FeedbackViewProps, Feedback } from '../types'
 import ScoreCard from './ScoreCard'
 import CorrectionItem from './CorrectionItem'
 import RecommendedLessons from './RecommendedLessons'
+import StudyPlan from './StudyPlan'
 import { generateFeedbackPDF } from '../utils/pdfExport'
 
 export default function FeedbackView({ sessionId }: FeedbackViewProps) {
@@ -183,6 +184,9 @@ export default function FeedbackView({ sessionId }: FeedbackViewProps) {
         {feedback.focus_area && feedback.focus_area.trim() && (
           <RecommendedLessons focusArea={feedback.focus_area} />
         )}
+
+        {/* Study plan from the study-coach agent, built on demand (issue #270) */}
+        {sessionId && <StudyPlan sessionId={sessionId} />}
 
         {/* Corrections Section */}
         {feedback.example_corrections && feedback.example_corrections.length > 0 && (

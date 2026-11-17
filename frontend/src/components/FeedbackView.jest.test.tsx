@@ -28,6 +28,11 @@ jest.mock('./RecommendedLessons', () => ({
   default: () => null,
 }))
 
+jest.mock('./StudyPlan', () => ({
+  __esModule: true,
+  default: () => null,
+}))
+
 const FEEDBACK_502_DETAIL =
   'Feedback could not be generated: the AI returned invalid feedback twice. Your session is still open — please try again.'
 

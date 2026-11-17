@@ -3,12 +3,12 @@
 LLM provider and model are chosen per feature (issue #228). The defaults follow the
 model-choice decision record (issue #232, ``docs/decisions/001-model-choice.md``): both
 chat and feedback run on Claude Sonnet 5.5. Mistral (``mistral-large-latest``) can be
-selected per feature.
+selected per feature. The study coach (issue #270) is Claude-only.
 """
 
 from typing import Literal, Optional
 
-from pydantic import model_validator
+from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings
 
 ProviderId = Literal["mistral", "anthropic"]
@@ -47,6 +47,15 @@ class Settings(BaseSettings):
     # french-feedback-rubric Claude Code skill.
     FEEDBACK_RUBRIC: bool = True
     FEEDBACK_RUBRIC_FILE: str = "data/feedback_rubric.md"
+
+    # Post-session study coach (issue #270). Claude only: it runs on the Anthropic SDK's
+    # tool runner, so there is no provider setting. It is left out of the startup key
+    # check below so Mistral-only setups still start; without ANTHROPIC_API_KEY the
+    # study-plan endpoint answers 503. The iteration cap bounds model calls per run.
+    STUDY_COACH_ENABLED: bool = True
+    STUDY_COACH_MODEL: str = "claude-sonnet-5-5"
+    CLAUDE_STUDY_COACH_EFFORT: Optional[ClaudeEffort] = None
+    STUDY_COACH_MAX_ITERATIONS: int = Field(8, ge=2, le=20)
 
     class Config:
         env_file = ".env"

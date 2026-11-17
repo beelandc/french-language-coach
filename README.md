@@ -243,7 +243,8 @@ french-language-coach/
 │   ├── deck.py              # SQLAlchemy ORM model for vocabulary decks (Phase 3)
 │   ├── card.py              # SQLAlchemy ORM model for vocabulary cards with spaced repetition (Phase 3)
 │   ├── card_review.py       # SQLAlchemy ORM model for card review tracking (Issue #59, Phase 3)
-│   └── llm_call.py          # SQLAlchemy ORM model: one llm_calls row per LLM call (Issue #228)
+│   ├── llm_call.py          # SQLAlchemy ORM model: one llm_calls row per LLM call (Issue #228)
+│   └── study_plan.py        # Study plans and flashcard proposals from the study coach (Issue #270)
 ├── schemas/
 │   ├── session.py           # Pydantic schemas for API request/response
 │   ├── grammar_lesson.py    # Pydantic models for grammar lesson validation (Phase 2)
@@ -252,7 +253,8 @@ french-language-coach/
 │   ├── vocabulary_card.py   # Pydantic models for vocabulary card schema (Issue #49, Phase 3)
 │   ├── vocabulary.py        # Pydantic schemas for vocabulary router endpoints (Phase 3)
 │   ├── card_review.py       # Pydantic schemas for card review endpoints (Issue #59, Phase 3)
-│   └── llm_metrics.py       # Pydantic schemas for the /metrics/llm endpoints (Issues #228, #236)
+│   ├── llm_metrics.py       # Pydantic schemas for the /metrics/llm endpoints (Issues #228, #236)
+│   └── study_plan.py        # Study-plan draft (the agent's submit_study_plan input) and response schemas (Issue #270)
 ├── services/
 │   ├── llm/                 # LLM provider layer (Issue #228)
 │   │   ├── base.py          # Provider interface (chat, feedback), LLMResult, shared feedback prompt + JSON schema
@@ -262,6 +264,7 @@ french-language-coach/
 │   │   ├── pricing.py       # Loads the price table, estimates cost per call
 │   │   ├── rubric.py        # Loads data/feedback_rubric.md, builds the feedback system prompt (Issue #269)
 │   │   ├── recorder.py      # Writes one llm_calls row per call
+│   │   ├── study_coach.py   # Study-coach agent: prompt, five tools (four MCP + submit_study_plan), plan validation (Issue #270)
 │   │   └── service.py       # LLMService: routes each feature to its configured provider/model, logs calls, validates feedback (one retry)
 │   └── mistral.py           # Backward-compatibility alias for services.llm.llm_service
 ├── routers/
@@ -273,7 +276,8 @@ french-language-coach/
 │   ├── grammar_progress.py  # GET /grammar/progress/, POST /grammar/progress/ endpoints (Phase 2)
 │   ├── vocabulary.py        # GET /vocabulary/decks/, POST /vocabulary/decks/, GET /vocabulary/decks/{id}/cards/, POST /vocabulary/review/, GET /vocabulary/due/ (Phase 3)
 │   ├── card_review.py       # POST /card-review/ endpoint for spaced repetition tracking (Issue #59, Phase 3)
-│   └── metrics.py           # GET /metrics/llm (+ /calls, /timeseries, /pricing, /report): LLM call metrics (Issues #228, #236)
+│   ├── metrics.py           # GET /metrics/llm (+ /calls, /timeseries, /pricing, /report): LLM call metrics (Issues #228, #236)
+│   └── study_plan.py        # /sessions/{id}/study-plan/: build/get the plan, accept/reject proposed cards (Issue #270)
 ├── scenarios.py             # Static list of 10 built-in conversation scenarios with system prompts
 ├── data/
 │   ├── llm_pricing.json     # LLM price table (USD per million tokens, with date checked and source link) (Issue #228)
@@ -292,6 +296,8 @@ french-language-coach/
 │   ├── judge.py             # LLM judge for undecided pairs + judge-validation agreement (Issue #231)
 │   ├── scoring.py           # Per-conversation scores and per-model metrics (Issue #231)
 │   ├── report.py            # Dated JSON + Markdown reports (Issue #231)
+│   ├── run_study_plan_eval.py # Study-plan eval CLI (`python3 -m evals.run_study_plan_eval`): paid API calls, never run in CI (Issue #270)
+│   ├── datasets/study_plan_targets_v1.json # Target lessons per labeled error for 10 records (Issue #270)
 │   ├── datasets/feedback_v1.jsonl # 27 hand-labeled learner conversations: errors to catch + grammar score
 │   ├── datasets/judge_validation_v1.jsonl # 22 hand verdicts used to check the judge (Issue #231)
 │   ├── results/             # Eval reports, feedback_eval_<YYYYMMDD-HHMMSS>.json/.md (Issue #231)
@@ -318,6 +324,9 @@ french-language-coach/
 │   │   │   ├── ChatInterface.stories.tsx
 │   │   │   ├── FeedbackView.tsx
 │   │   │   ├── FeedbackView.stories.tsx
+│   │   │   ├── StudyPlan.tsx          # Study plan + Accept/Reject proposed cards under the feedback (Issue #270)
+│   │   │   ├── StudyPlan.stories.tsx
+│   │   │   ├── StudyPlan.jest.test.tsx
 │   │   │   ├── SessionDetail.tsx
 │   │   │   ├── SessionDetail.stories.tsx
 │   │   │   ├── ScenarioSelector.tsx
@@ -426,10 +435,14 @@ french-language-coach/
 | GET | `/sessions/` | List all sessions with pagination. Query parameters: `page` (default 1), `per_page` (default 10, max 100), `scenario_id` (filter by scenario), `date_from` (filter by start date), `date_to` (filter by end date), `min_score` (filter by minimum overall score). Returns summary: id, scenario_id, scenario_name, difficulty, created_at, ended_at, overall_score, **is_locked, locked_at, locked_by** |
 | POST | `/sessions/` | Create a new conversation session. Optional `difficulty` parameter: beginner, intermediate (default), or advanced |
 | GET | `/sessions/{id}` | Get session details and messages. Returns `difficulty` field, **is_locked, locked_at, locked_by** |
-| DELETE | `/sessions/{id}` | Delete a session. Returns 204 on success, 404 if not found. **Returns 400 if session is locked** (prevents deletion of sessions in use) |
+| DELETE | `/sessions/{id}` | Delete a session (and its study plan; accepted cards stay). Returns 204 on success, 404 if not found. **Returns 400 if session is locked** (prevents deletion of sessions in use) |
 | POST | `/sessions/{id}/lock` | Lock a session to prevent deletion while in use. Accepts optional `X-Client-ID` header for lock ownership. Auto-unlocks after 10 minutes (TTL). Returns lock status. |
 | POST | `/sessions/{id}/unlock` | Unlock a session to allow deletion. Requires matching `X-Client-ID` header unless lock has expired. Returns lock status. |
 | POST | `/sessions/{id}/messages` | Send a message, get AI reply. Uses session's difficulty level for system prompt |
+| POST | `/sessions/{id}/study-plan/` | Build the session's study plan with the study-coach agent (Issue #270), or return the stored one without a new run. Needs feedback first (400 otherwise). Returns `session_id`, `summary`, `items` (lesson_id, lesson_title, exercise_ids, addresses, why), `proposals` (id, front, back, example, source, status `pending`/`accepted`/`rejected`, already_known, card_id, deck_id), `model`, `created_at`. **No card is written.** 503 if the study coach is off or has no `ANTHROPIC_API_KEY`; 502 if the agent didn't finish a valid plan (nothing stored) |
+| GET | `/sessions/{id}/study-plan/` | The stored study plan; 404 if none yet |
+| POST | `/sessions/{id}/study-plan/cards/{proposal_id}/accept` | Accept a proposed card: creates it in the "Mes mots de session" deck (created on first use) with interval=1, ease_factor=2.5, next_review_date=today+1. Accepting again returns the same card. 409 if the proposal was rejected or the card already existed; 404 if the proposal isn't in this session's plan |
+| POST | `/sessions/{id}/study-plan/cards/{proposal_id}/reject` | Reject a proposed card; writes no card. 409 if already accepted |
 | POST | `/sessions/{id}/feedback` | Generate end-of-session feedback and end the session. The model's output is validated and retried once if invalid. Returns **502** with a `detail` message if feedback can't be generated (invalid output twice, refusal, or empty response). The session stays open, so the request can be retried |
 | GET | `/metrics/llm` | LLM call metrics (Issue #228). Returns `totals` and `groups` (one per feature, provider and model), each with `calls`, `errors`, `input_tokens`, `output_tokens`, `cache_read_tokens`, `estimated_cost_usd` (sum over priced calls), `unpriced_calls`, `latency_p50_ms` and `latency_p95_ms` (nearest rank; `null` when there are no calls). Accepts the shared metrics filters (Issue #236): `date_from`, `date_to` (inclusive, UTC; `YYYY-MM-DD` covers the whole day, or an ISO 8601 datetime; URL-encode a `+` offset as `%2B` or use `Z`), `feature`, `provider`, `model` (exact match) and `status` (`success` or `error`). Invalid dates or `date_from` after `date_to` return 400; an unknown `status` returns 422 |
 | GET | `/metrics/llm/calls` | LLM call log, newest first (Issue #236). Query parameters: `page` (default 1), `per_page` (default 10, max 100) and the shared metrics filters. Returns `calls` (id, created_at, feature, provider, model, session_id, input/output/cache-read tokens, latency_ms, estimated_cost_usd, status, error_message) and `pagination` (same shape as `/sessions/`). A page past the end returns an empty `calls` list |
@@ -506,6 +519,7 @@ All LLM calls go through the provider layer in `services/llm/` (Issue #228). `LL
 |---------|---------|--------|
 | `chat` | Opening greeting (`POST /sessions/`) and each turn (`POST /sessions/{id}/messages/`) | `CHAT_PROVIDER`, `CHAT_MODEL` |
 | `feedback` | End-of-session report (`POST /sessions/{id}/feedback/`) | `FEEDBACK_PROVIDER`, `FEEDBACK_MODEL` |
+| `study_coach` | Post-session study plan (`POST /sessions/{id}/study-plan/`), see [Study coach](#study-coach-issue-270) | Claude only: `STUDY_COACH_MODEL` |
 
 Both providers use async SDK clients, so LLM calls don't block the FastAPI event loop. Defaults: both features on Claude Sonnet 5.5 (`claude-sonnet-5-5`) on the first-party Anthropic API, chosen from the [evaluation](#evaluation) ([decision record 001](docs/decisions/001-model-choice.md)). Other models in scope: `claude-haiku-5-5`, optionally `claude-opus-5-5`, and Mistral `mistral-large-latest` (set a feature's provider to `mistral`).
 
@@ -573,7 +587,7 @@ Mistral can return a reply as a list of content chunks, with a reasoning (`think
 
 ### Cost and latency logging
 
-Each provider call writes one row to the `llm_calls` table: feature, provider, model, session id, input tokens (uncached), output tokens, cache-read tokens, latency in ms, estimated cost in USD, status (`success` or `error`) and an error message. Each feedback attempt is its own row, so a request that needed a retry writes two rows. Failed validation is logged as `invalid_json: …` (unparseable) or `schema_mismatch: …` (wrong shape), so a model's schema-validity rate is its feedback rows with status `success` divided by those plus its `invalid_json` and `schema_mismatch` rows. Logging is best-effort: a failure to write a row never breaks the user's request. `GET /metrics/llm` returns totals and p50/p95 latency per feature, provider and model.
+Each provider call writes one row to the `llm_calls` table: feature, provider, model, session id, input tokens (uncached), output tokens, cache-read tokens, latency in ms, estimated cost in USD, status (`success` or `error`) and an error message. Each feedback attempt is its own row, so a request that needed a retry writes two rows. A `study_coach` row is one whole agent run: tokens summed over its model calls and the run's total latency. Failed validation is logged as `invalid_json: …` (unparseable) or `schema_mismatch: …` (wrong shape), so a model's schema-validity rate is its feedback rows with status `success` divided by those plus its `invalid_json` and `schema_mismatch` rows. Logging is best-effort: a failure to write a row never breaks the user's request. `GET /metrics/llm` returns totals and p50/p95 latency per feature, provider and model.
 
 All metrics endpoints accept the same filters (date range, feature, provider, model, status). `GET /metrics/llm/calls` lists individual calls, `GET /metrics/llm/timeseries` gives hourly or daily statistics, and `GET /metrics/llm/pricing` shows the prices behind the estimates (Issue #236). `GET /metrics/llm/report` compares models within each feature against a baseline (Mistral by default) on reliability, latency, tokens and cost, as JSON, Markdown or CSV. It covers operational metrics only: feedback quality comes from the [eval harness](evals/README.md#feedback-eval-harness-231) (#231). Live traffic is not a controlled experiment, so the report shows each model's sample size and date range and warns when they are too thin to compare.
 
@@ -593,11 +607,35 @@ Live traffic is not a controlled experiment: models may have handled different c
 
 Costs are estimated from `data/llm_pricing.json`, the only place prices live. Each entry gives USD per million input, output and cache-read tokens, the date the price was checked (`checked_on`) and a `source` link (Claude Haiku 5.5 also has a higher tier for prompts over 100,000 tokens). Calls to a model missing from the table are logged with a `null` cost. When a vendor changes prices, update the values and `checked_on` in that file.
 
+## Study coach (Issue #270)
+
+After feedback, the feedback page offers **Build my study plan**. A Claude agent reads the transcript and the feedback, looks up the course's own lessons and exercises for the errors found, and returns a short plan (1 to 4 steps, each tied to the corrections it addresses) plus up to 5 flashcards from the session's vocabulary. Each card has **Accept** and **Reject**; nothing is added to your vocabulary until you accept a card.
+
+- **How it runs.** `services/llm/study_coach.py` runs Claude on the Anthropic SDK's beta tool runner, through `AnthropicProvider.run_tools()` in the provider layer. It's Claude only (the tool runner is an Anthropic SDK feature); Mistral remains available for chat and feedback.
+- **Tools (5).** Four read-only tools from the [MCP server](#mcp-server-claude-code--claude-desktop), reached through an in-process MCP client so the agent uses exactly the same tools and errors: `recommend_lessons_for_focus_area`, `get_lesson`, `list_exercises`, `search_grammar_reference`. The fifth, `submit_study_plan`, is the agent's final answer: it checks that every lesson and exercise id exists and the limits hold, and returns a structured `invalid_plan` error (with `did_you_mean` ids) for the agent to fix. Tool errors such as `lesson_not_found` reach the model as error results, and it recovers from them (tested in `tests/test_study_coach.py`).
+- **Bounded runs.** Each run makes at most `STUDY_COACH_MAX_ITERATIONS` model calls (default 8). A run that hits the cap, is refused, or ends without a valid plan returns 502 and stores nothing. The runner's message-thread feature is turned off, so each call is a plain Messages request.
+- **Logged.** Each run writes one `llm_calls` row (`feature="study_coach"`), success or failure, so the metrics dashboard shows its cost and latency.
+- **One plan per session.** The plan and its card proposals are stored (`study_plans`, `card_proposals`); building again returns the stored plan without a new run.
+- **Cards.** Accepted cards go into the **Mes mots de session** deck, created on the first Accept, with the usual starting review schedule. A proposal whose French side already exists as a card is shown as already known and can't be accepted.
+
+| Setting | Default | Meaning |
+|---------|---------|---------|
+| `STUDY_COACH_ENABLED` | `true` | Turn the feature off (`POST` returns 503) |
+| `STUDY_COACH_MODEL` | `claude-sonnet-5-5` | Claude model for the agent |
+| `CLAUDE_STUDY_COACH_EFFORT` | `medium` | Claude effort for the agent's calls |
+| `STUDY_COACH_MAX_ITERATIONS` | `8` | Most model calls per run (2-20) |
+
+It needs `ANTHROPIC_API_KEY`. It isn't part of the startup key check, so a Mistral-only setup still starts; the study-plan endpoint then answers 503.
+
+**Quality.** `python3 -m evals.run_study_plan_eval` runs the agent on 10 labeled conversations and checks that plans cite real lesson ids and target the labeled grammar errors (pre-registered: 100% real ids, at least 80% of errors covered). It makes paid API calls; use `--dry-run` first for the cost estimate. See [`evals/README.md`](evals/README.md#study-plan-eval-270).
+
+First run ([`study_plan_eval_20261117-160200`](evals/results/study_plan_eval_20261117-160200.md), Claude Sonnet 5.5, $0.63 for 10 runs, mean latency 7.5 s): every cited lesson id was real (24/24, pass), and plans covered **79%** of labeled grammar errors (23/29), just under the 80% threshold (**fail**). The misses were mostly a session's third, lower-priority error left out of a two-step plan; the report lists all six.
+
 ## MCP Server (Claude Code / Claude Desktop)
 
 `mcp_server/` is a [Model Context Protocol](https://modelcontextprotocol.io) server (Issue #268). It lets Claude Code or Claude Desktop use the app's own grammar lessons, grammar reference, exercises and your due vocabulary cards as tools, so you can ask things like *"quiz me on the subjunctive using my due cards"*. It runs over stdio and is started by the MCP client; the FastAPI backend doesn't need to be running.
 
-- **Read-only.** There are no write tools, every tool is annotated `readOnlyHint`, and the server never commits to the database. It doesn't record reviews or create cards (card creation with learner approval belongs to #270).
+- **Read-only.** There are no write tools, every tool is annotated `readOnlyHint`, and the server never commits to the database. It doesn't record reviews or create cards (the [study coach](#study-coach-issue-270) proposes cards in the app, and only the learner's Accept creates them).
 - **No LLM calls.** The server only serves data; the model doing the tutoring is the one in your MCP client.
 - **Same data as the app.** The tools call the routers' own query functions (`routers/grammar.py` helpers, `routers.vocabulary.query_due_cards`), so results match the API.
 

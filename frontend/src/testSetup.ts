@@ -82,6 +82,15 @@ const mockSessionApi = {
     total_pages: 1,
   })),
   deleteSession: vi.fn(async () => undefined),
+  // Study plan (Issue #270): no stored plan, so StudyPlan shows its build button.
+  getStudyPlan: vi.fn(async () => {
+    throw Object.assign(new Error('No study plan for this session yet.'), { status: 404 })
+  }),
+  createStudyPlan: vi.fn(async () => {
+    throw Object.assign(new Error('Study plans are not available in Storybook.'), { status: 503 })
+  }),
+  acceptCardProposal: vi.fn(),
+  rejectCardProposal: vi.fn(),
 }
 
 // Mock metrics API for the admin LLM metrics dashboard (Issue #237).

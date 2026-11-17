@@ -17,6 +17,8 @@ from typing import Any, Optional
 
 FEATURE_CHAT = "chat"
 FEATURE_FEEDBACK = "feedback"
+#: Post-session study-coach agent (issue #270). Claude only; one ``llm_calls`` row per run.
+FEATURE_STUDY_COACH = "study_coach"
 
 
 @dataclass
@@ -49,6 +51,37 @@ class LLMProviderError(Exception):
     def __init__(self, message: str, result: Optional[LLMResult] = None):
         super().__init__(message)
         self.result = result
+
+
+@dataclass
+class AgentRunResult(LLMResult):
+    """Result of one agent run: usage summed over every model call in the run (issue #270).
+
+    Attributes:
+        iterations: Number of model calls the run made.
+    """
+
+    iterations: int = 0
+
+
+#: ``AgentRunError.code`` values.
+AGENT_ITERATION_CAP = "iteration_cap"
+AGENT_NO_PLAN = "no_plan_submitted"
+
+
+class AgentRunError(LLMProviderError):
+    """Raised when an agent run ends without a usable result (issue #270).
+
+    Attributes:
+        code: ``iteration_cap`` (the run stopped at its call limit while still calling
+            tools) or ``no_plan_submitted`` (the model ended its turn without a valid
+            result).
+        result: Usage summed over the run, so the failed run can still be logged.
+    """
+
+    def __init__(self, code: str, detail: str, result: Optional[LLMResult] = None):
+        super().__init__(f"{code}: {detail}", result)
+        self.code = code
 
 
 class FeedbackValidationError(LLMProviderError):

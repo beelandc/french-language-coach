@@ -431,3 +431,49 @@ class TestAnthropicProvider:
             provider = AnthropicProvider(api_key="secret")
         sdk.assert_called_once_with(api_key="secret")
         assert (provider.chat_effort, provider.feedback_effort) == ("low", "medium")
+
+
+class TestRunTools:
+    """Issue #270: AnthropicProvider.run_tools drives the SDK tool runner."""
+
+    def _provider(self, script, **kwargs):
+        from services.llm.anthropic_provider import AnthropicProvider as Provider
+
+        return Provider("a", client=script.client(), **kwargs)
+
+    @pytest.mark.asyncio
+    async def test_sums_usage_and_sends_settings(self):
+        from tests.llm_fakes import ScriptedClaude, text_turn
+
+        script = ScriptedClaude([text_turn("Fini.", usage=(300, 40))])
+        provider = self._provider(script, study_coach_effort="high")
+
+        result = await provider.run_tools(
+            system_prompt="SYS", messages=[{"role": "user", "content": "Go"}],
+            tools=[], model="claude-sonnet-5-5", max_iterations=4,
+        )
+
+        assert (result.text, result.iterations, result.stop_reason) == ("Fini.", 1, "end_turn")
+        assert (result.input_tokens, result.output_tokens, result.cache_read_tokens) == (300, 40, 0)
+        [request] = script.requests
+        assert request["system"] == "SYS"
+        assert request["max_tokens"] == MAX_TOKENS
+        assert request["output_config"] == {"effort": "high"}
+
+    def test_default_study_coach_effort(self):
+        assert AnthropicProvider("a", client=object()).study_coach_effort == "medium"
+
+    @pytest.mark.asyncio
+    async def test_refusal_without_category(self):
+        from tests.llm_fakes import ScriptedClaude, refusal_turn
+
+        turn = refusal_turn(usage=(10, 0))
+        turn["stop_details"] = None
+        provider = self._provider(ScriptedClaude([turn]))
+
+        with pytest.raises(LLMProviderError, match="refusal: unspecified") as excinfo:
+            await provider.run_tools(
+                system_prompt="S", messages=[{"role": "user", "content": "x"}],
+                tools=[], model="m", max_iterations=2,
+            )
+        assert excinfo.value.result.input_tokens == 10

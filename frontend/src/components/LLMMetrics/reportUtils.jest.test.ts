@@ -162,6 +162,7 @@ describe('wording', () => {
   it('has helpers for headings and notices', () => {
     expect(featureTitle('chat')).toBe('Chat')
     expect(featureTitle('')).toBe('')
+    expect(featureTitle('study_coach')).toBe('Study coach')
     expect(missingBaselineMessage('a:b')).toBe('Baseline a:b has no calls for this feature, so no deltas are shown.')
     expect(modelKey({ provider: 'p', model: 'm' })).toBe('p:m')
     expect(isComparable(sampleReport.features[0])).toBe(true)

@@ -15,9 +15,11 @@ evals/
 ├── judge.py                  # LLM judge, judge-validation set loader, agreement (#231)
 ├── scoring.py                # Per-conversation scores and per-model metrics (#231)
 ├── report.py                 # JSON + Markdown reports (#231)
+├── run_study_plan_eval.py    # Study-plan eval CLI: study coach plans vs labeled errors (#270)
 ├── datasets/
 │   ├── feedback_v1.jsonl     # 27 labeled conversations, one JSON object per line
-│   └── judge_validation_v1.jsonl # 22 hand verdicts used to check the judge (#231)
+│   ├── judge_validation_v1.jsonl # 22 hand verdicts used to check the judge (#231)
+│   └── study_plan_targets_v1.json # Target lessons per labeled grammar error, 10 records (#270)
 ├── results/                  # Dated eval reports (feedback_eval_<YYYYMMDD-HHMMSS>.json/.md)
 ├── LABELING.md               # Error categories, span rules, grammar-score rubric
 ├── METHODOLOGY.md            # How the harness scores a model: matching, judge, metrics (#231)
@@ -207,6 +209,27 @@ Each run (completed, stopped by the cap, or interrupted) writes `results/feedbac
 - **Markdown**: the same results as tables (summary, per difficulty, details, spend, judge, prices) and the caveats.
 
 The harness never commits anything. Commit a run's reports when they're meant to be cited. #232 published the first full run, [`feedback_eval_20261116-042618`](results/feedback_eval_20261116-042618.md), in the README's [Evaluation](../README.md#evaluation) section and in [decision record 001](../docs/decisions/001-model-choice.md), which sets the app's default models.
+
+## Study-plan eval (#270)
+
+Checks the [study coach](../README.md#study-coach-issue-270): does a plan cite real lessons, and does it target the errors the learner made?
+
+- **Records:** 10 conversations from `feedback_v1.jsonl` (listed in `datasets/study_plan_targets_v1.json`), chosen so every grammar category labeled in the dataset appears at least once.
+- **Input:** each record's messages plus feedback synthesized from its labels (corrections = labeled errors, focus area = the most frequent grammar category). This measures the study coach on its own, not feedback quality.
+- **Targets:** for each labeled grammar error, the lesson ids that count as targeting it. Vocabulary errors (register, anglicism, lexical) and spelling have no lesson and aren't scored. The targets were written by the implementing AI assistant from a category-to-lesson map, narrowed by each error's note and the lessons' sections, so they're a judgment call; review them before trusting small differences.
+- **Measures (thresholds fixed before the first run):**
+  - `lesson_ids_valid`: share of cited lesson ids that exist. Threshold 100%.
+  - `grammar_errors_covered`: share of targeted errors whose plan cites at least one target lesson. Threshold at least 80%. A failed run counts as covering nothing.
+  - Cost per run (from summed usage and `data/llm_pricing.json`), latency, model calls per run and cards proposed are reported but not scored.
+
+```bash
+python3 -m evals.run_study_plan_eval --dry-run    # no API calls: records + cost estimate
+python3 -m evals.run_study_plan_eval --limit 2    # paid: first two records
+python3 -m evals.run_study_plan_eval              # paid: all 10 (Sonnet 5.5, about $1 estimated)
+python3 -m evals.run_study_plan_eval --model claude-haiku-5-5
+```
+
+It needs `ANTHROPIC_API_KEY` and goes through `LLMService.get_study_plan` (same prompt, tools, iteration cap and validation as the app), without recording to the app's database. Reports are written to `results/study_plan_eval_<YYYYMMDD-HHMMSS>.json` and `.md`. `tests/test_study_plan_eval.py` checks the targets file against the dataset and the lessons, and tests the scoring without API calls.
 
 ## Versioning
 

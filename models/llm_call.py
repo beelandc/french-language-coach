@@ -11,8 +11,12 @@ STATUS_ERROR = "error"
 class LLMCall(BaseModel):
     """Token usage, latency, estimated cost and outcome of one LLM call.
 
+    For ``chat`` and ``feedback`` a row is one provider call. For ``study_coach``
+    (issue #270) a row is one agent run: tokens are summed over every model call in the
+    run and ``latency_ms`` is the whole run's wall-clock time.
+
     Attributes:
-        feature: Feature the call served (``chat`` or ``feedback``).
+        feature: Feature the call served (``chat``, ``feedback`` or ``study_coach``).
         provider: Provider id (``mistral`` or ``anthropic``).
         model: Model requested from the provider.
         session_id: Conversation session the call belongs to, if any. Stored without a

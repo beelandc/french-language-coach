@@ -34,6 +34,9 @@ import type {
   LLMReportFormat,
   ModelReport,
   ReportDownload,
+  // Study plan types (Issue #270)
+  StudyPlan,
+  CardProposal,
 } from '../types/index'
 
 // Use relative paths for development (Vite proxy handles routing)
@@ -42,6 +45,21 @@ const API_BASE = '' // Empty string = relative to current origin
 
 interface ApiOptions extends RequestInit {
   data?: unknown
+}
+
+/**
+ * Error thrown by {@link api} for non-2xx responses. It is an `Error` with the
+ * server's `detail` as its message (as before), plus the HTTP status so callers can
+ * tell, for example, a 404 from other failures (Issue #270).
+ */
+export class HttpError extends Error {
+  status: number
+
+  constructor(message: string, status: number) {
+    super(message)
+    this.name = 'HttpError'
+    this.status = status
+  }
 }
 
 /**
@@ -72,7 +90,7 @@ export async function api<T>(endpoint: string, options: ApiOptions = {}): Promis
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}))
     const errorMessage = errorData.detail || `HTTP error! status: ${response.status}`
-    throw new Error(errorMessage)
+    throw new HttpError(errorMessage, response.status)
   }
 
   // Handle 204 No Content responses (e.g., DELETE requests)
@@ -131,6 +149,26 @@ export const sessionApi = {
     api<SessionLockResponse>(`/sessions/${sessionId}/unlock`, {
       method: 'POST',
       headers: clientId ? { 'X-Client-ID': clientId } : undefined,
+    }),
+
+  /** Build the session's study plan, or return the stored one (Issue #270). */
+  createStudyPlan: (sessionId: string) =>
+    api<StudyPlan>(`/sessions/${sessionId}/study-plan/`, { method: 'POST' }),
+
+  /** Get the session's stored study plan; rejects with HttpError status 404 if none. */
+  getStudyPlan: (sessionId: string) =>
+    api<StudyPlan>(`/sessions/${sessionId}/study-plan/`, { method: 'GET' }),
+
+  /** Accept a proposed flashcard: the server creates the card (Issue #270). */
+  acceptCardProposal: (sessionId: string, proposalId: number) =>
+    api<CardProposal>(`/sessions/${sessionId}/study-plan/cards/${proposalId}/accept`, {
+      method: 'POST',
+    }),
+
+  /** Reject a proposed flashcard; no card is written (Issue #270). */
+  rejectCardProposal: (sessionId: string, proposalId: number) =>
+    api<CardProposal>(`/sessions/${sessionId}/study-plan/cards/${proposalId}/reject`, {
+      method: 'POST',
     }),
 }
 
@@ -463,4 +501,7 @@ export type {
   ReportMetadata,
   ModelReport,
   ReportDownload,
+  // Study plan types (Issue #270)
+  StudyPlan,
+  CardProposal,
 } from '../types/index'
