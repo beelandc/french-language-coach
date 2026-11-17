@@ -1,0 +1,253 @@
+{
+  "eval": "study_plan",
+  "issue": 270,
+  "generated_at": "2026-11-17T16:02:00+00:00",
+  "model": "claude-sonnet-5-5",
+  "provider": "anthropic",
+  "effort": "medium",
+  "max_iterations": 8,
+  "dataset": "evals/datasets/feedback_v1.jsonl",
+  "targets": "evals/datasets/study_plan_targets_v1.json",
+  "thresholds": {
+    "lesson_ids_valid": 1.0,
+    "grammar_errors_covered": 0.8
+  },
+  "metrics": {
+    "records": 10,
+    "completed": 10,
+    "failed": 0,
+    "cited_lessons": 24,
+    "lesson_ids_valid": 1.0,
+    "targeted_errors": 29,
+    "covered_errors": 23,
+    "grammar_errors_covered": 0.7931034482758621,
+    "total_cost_usd": 0.63193,
+    "mean_cost_usd": 0.063193,
+    "mean_latency_ms": 7473,
+    "max_latency_ms": 10500,
+    "mean_iterations": 3.4,
+    "mean_cards": 4.5,
+    "passed": {
+      "lesson_ids_valid": true,
+      "grammar_errors_covered": false
+    }
+  },
+  "records": [
+    {
+      "id": "fb-001",
+      "difficulty": "beginner",
+      "status": "ok",
+      "targeted_errors": 3,
+      "covered_errors": 2,
+      "cited_lessons": [
+        "articles",
+        "gender-agreement"
+      ],
+      "invalid_lessons": [],
+      "uncovered": [
+        2
+      ],
+      "cards": 5,
+      "iterations": 3,
+      "input_tokens": 21045,
+      "output_tokens": 816,
+      "cost_usd": 0.05025,
+      "latency_ms": 6234,
+      "error": null
+    },
+    {
+      "id": "fb-002",
+      "difficulty": "beginner",
+      "status": "ok",
+      "targeted_errors": 3,
+      "covered_errors": 2,
+      "cited_lessons": [
+        "articles",
+        "gender-agreement"
+      ],
+      "invalid_lessons": [],
+      "uncovered": [
+        2
+      ],
+      "cards": 4,
+      "iterations": 3,
+      "input_tokens": 21367,
+      "output_tokens": 866,
+      "cost_usd": 0.051394,
+      "latency_ms": 6645,
+      "error": null
+    },
+    {
+      "id": "fb-003",
+      "difficulty": "beginner",
+      "status": "ok",
+      "targeted_errors": 3,
+      "covered_errors": 2,
+      "cited_lessons": [
+        "gender-agreement",
+        "present-tense-regular"
+      ],
+      "invalid_lessons": [],
+      "uncovered": [
+        1
+      ],
+      "cards": 5,
+      "iterations": 3,
+      "input_tokens": 23074,
+      "output_tokens": 906,
+      "cost_usd": 0.055208,
+      "latency_ms": 6213,
+      "error": null
+    },
+    {
+      "id": "fb-005",
+      "difficulty": "beginner",
+      "status": "ok",
+      "targeted_errors": 3,
+      "covered_errors": 2,
+      "cited_lessons": [
+        "negation",
+        "gender-agreement",
+        "direct-object-pronouns"
+      ],
+      "invalid_lessons": [],
+      "uncovered": [
+        0
+      ],
+      "cards": 4,
+      "iterations": 4,
+      "input_tokens": 31654,
+      "output_tokens": 1471,
+      "cost_usd": 0.078018,
+      "latency_ms": 10500,
+      "error": null
+    },
+    {
+      "id": "fb-008",
+      "difficulty": "beginner",
+      "status": "ok",
+      "targeted_errors": 2,
+      "covered_errors": 2,
+      "cited_lessons": [
+        "articles",
+        "present-tense-irregular",
+        "imparfait"
+      ],
+      "invalid_lessons": [],
+      "uncovered": [],
+      "cards": 5,
+      "iterations": 5,
+      "input_tokens": 44913,
+      "output_tokens": 1377,
+      "cost_usd": 0.103596,
+      "latency_ms": 10023,
+      "error": null
+    },
+    {
+      "id": "fb-011",
+      "difficulty": "intermediate",
+      "status": "ok",
+      "targeted_errors": 3,
+      "covered_errors": 3,
+      "cited_lessons": [
+        "articles",
+        "passe-compose",
+        "gender-agreement"
+      ],
+      "invalid_lessons": [],
+      "uncovered": [],
+      "cards": 4,
+      "iterations": 3,
+      "input_tokens": 23022,
+      "output_tokens": 940,
+      "cost_usd": 0.055444,
+      "latency_ms": 6451,
+      "error": null
+    },
+    {
+      "id": "fb-014",
+      "difficulty": "intermediate",
+      "status": "ok",
+      "targeted_errors": 3,
+      "covered_errors": 2,
+      "cited_lessons": [
+        "gender-agreement",
+        "imparfait"
+      ],
+      "invalid_lessons": [],
+      "uncovered": [
+        1
+      ],
+      "cards": 5,
+      "iterations": 3,
+      "input_tokens": 22966,
+      "output_tokens": 927,
+      "cost_usd": 0.055202,
+      "latency_ms": 6206,
+      "error": null
+    },
+    {
+      "id": "fb-017",
+      "difficulty": "intermediate",
+      "status": "ok",
+      "targeted_errors": 3,
+      "covered_errors": 3,
+      "cited_lessons": [
+        "passe-compose",
+        "conditional",
+        "prepositions-conjunctions-adverbs"
+      ],
+      "invalid_lessons": [],
+      "uncovered": [],
+      "cards": 5,
+      "iterations": 4,
+      "input_tokens": 31911,
+      "output_tokens": 1145,
+      "cost_usd": 0.075272,
+      "latency_ms": 9103,
+      "error": null
+    },
+    {
+      "id": "fb-021",
+      "difficulty": "advanced",
+      "status": "ok",
+      "targeted_errors": 3,
+      "covered_errors": 3,
+      "cited_lessons": [
+        "subjunctive",
+        "conditional",
+        "direct-object-pronouns"
+      ],
+      "invalid_lessons": [],
+      "uncovered": [],
+      "cards": 4,
+      "iterations": 3,
+      "input_tokens": 22815,
+      "output_tokens": 987,
+      "cost_usd": 0.0555,
+      "latency_ms": 7211,
+      "error": null
+    },
+    {
+      "id": "fb-022",
+      "difficulty": "advanced",
+      "status": "ok",
+      "targeted_errors": 3,
+      "covered_errors": 2,
+      "cited_lessons": [
+        "subjunctive"
+      ],
+      "invalid_lessons": [],
+      "uncovered": [
+        2
+      ],
+      "cards": 4,
+      "iterations": 3,
+      "input_tokens": 21983,
+      "output_tokens": 808,
+      "cost_usd": 0.052046,
+      "latency_ms": 6142,
+      "error": null
+    }
+  ]
+}
