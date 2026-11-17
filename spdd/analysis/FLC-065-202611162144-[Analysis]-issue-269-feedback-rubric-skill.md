@@ -34,8 +34,8 @@
 |-------|-------|-----------|
 | #230 (dataset, `evals/LABELING.md`) | Closed (PR #265) | Source of the 15-category taxonomy and the grammar-score bands |
 | #231 (eval harness) | Closed (PR #266) | Runs the with/without comparison (AC3) |
-| #232 (decision record) | **Open** | AC3 writes into the record #232 creates (`docs/decisions/001-model-choice.md`). **Blocking for AC3 only** |
-| #268 (MCP server) | Closed (PR #276) | No dependency; this branch is cut from `main` at `63f1a5a`, which includes it |
+| #232 (decision record) | Closed (PR #277, merged as `6206019`) | Created `docs/decisions/` and record 001; switched both feature defaults to Claude Sonnet 5.5. No longer blocking |
+| #268 (MCP server) | Closed (PR #276) | No dependency. This branch was rebased onto `main` at `6206019`, which includes #268 and #232 |
 | #270 (study-coach agent) | Open | Depends on this issue: it will grade with the same rubric |
 
 ### Decisions confirmed by the user (2026-11-16)
@@ -46,6 +46,30 @@
 | How the with/without A/B is run | **App setting plus harness flag**: `FEEDBACK_RUBRIC` (bool, default `true`) in `config.py`; the harness gets `--rubric on\|off\|both` so one run compares both arms side by side. The setting doubles as a kill switch |
 | Who runs the paid eval | **Claude runs it**: `--dry-run`, then a `--limit 3` smoke run, then the full run with `--max-spend-usd 3`. The harness reads keys from `.env`; Claude never reads or prints that file |
 | Where the eval result goes, and sequencing | **Do #232 first.** This analysis is committed to `feature/issue-269-feedback-rubric-skill` now. Work then moves to #232 on its own branch; once #232's decision record exists, the prompt artifact and the implementation of #269 resume on this branch |
+
+### Revision after #232 merged (2026-11-16)
+
+#232 (PR #277) merged with no review changes. It made Claude Sonnet 5.5 the default for chat (effort `low`) and feedback (effort `medium`), created `docs/decisions/001-model-choice.md`, and committed the baseline run `evals/results/feedback_eval_20261116-042618.*`. Record 001 lists "#269's rubric A/B" as a revisit trigger for the feedback model. The user then confirmed these decisions, which **supersede** any conflicting text below:
+
+| Question | Decision |
+|----------|----------|
+| Where the A/B result goes | **Always a new record, `docs/decisions/002-feedback-rubric.md`**, whatever the result. It's linked from 001 and listed in `docs/decisions/README.md`. If the Haiku switch happens, 002 supersedes 001's feedback choice and 001's status says so |
+| Model switch inside #269 | **Yes**: if the Haiku switch rule below is met (and confirmed), this PR also changes the feedback default to `claude-haiku-5-5` (provider `anthropic`, effort `medium` unchanged) in `config.py`, `.env.example`, the tests and the docs. This issue is the authorization CLAUDE.md requires for changing a default model |
+| Rubric default rule | **On unless Sonnet regresses** (thresholds below). Mistral and Haiku results are reported but don't decide the rubric default |
+| Taxonomy reference in the skill | **Pointer page** `references/taxonomy.md`, naming `data/feedback_rubric.md` as canonical; a test checks the path |
+
+**Pre-registered thresholds** (fixed before any eval call, applied mechanically; all comparisons within one `--rubric both` run over `feedback_v1`; "errors" means detected labeled errors out of 71):
+
+1. **Rubric default.** `FEEDBACK_RUBRIC` stays `true` unless Sonnet+rubric, compared with Sonnet without the rubric, catches **≥ 3 fewer errors** OR has grammar MAE **≥ 2.0 higher**, AND shows no offsetting gain (**≥ 3 more errors** caught, or **≥ 4 fewer** false corrections). If it regresses by that rule, the default ships as `false`, and 002 says why.
+2. **Haiku switch.** Feedback moves to Haiku 5.5 only if Haiku+rubric, compared with Sonnet+rubric in the same run, meets all of:
+   - detected errors **≥ Sonnet+rubric's − 2**
+   - grammar MAE **≤ Sonnet+rubric's + 1.0**, and **≤ 9.59** (Sonnet's MAE in the 001 baseline)
+   - no-op corrections **≤ 1**
+   - false corrections **≤ Sonnet+rubric's**
+   - final schema validity **100%**
+
+   If all are met, rerun only those two arms (`--models claude-sonnet,claude-haiku --rubric on`, about $0.25). Switch only if the rule holds again in the rerun. If the rubric default is `false` by rule 1, the Haiku rule compares the no-rubric arms instead, because that's what would ship.
+3. Run-to-run variance is acknowledged: one full run per arm (plus the confirmation rerun for a switch). 002 reports the deltas against 001's baseline run as context, not as the comparison.
 
 ---
 
@@ -94,7 +118,9 @@ The issue asks for the rubric to exist once and serve two consumers: the app's f
   - `references/examples.md`: two or three worked reviews of short transcripts written for this purpose, not taken from the dataset
   - `references/taxonomy.md`: a short pointer page that sends the reader to the canonical taxonomy in `data/feedback_rubric.md`, to satisfy the AC's "reference files for the taxonomy" without a second copy. Whether to keep this stub or let SKILL.md point straight at the data file is an [open question](#requirement-ambiguities)
 - [ ] **Eval harness**: `--rubric on|off|both` (default `on`, matching the app default). With `both`, each selected model runs twice under distinct keys (e.g. `claude-sonnet` and `claude-sonnet:no-rubric`). Reports record the rubric state per configuration and the rubric file's SHA-256. The a-priori cost estimate (`evals/run_feedback_eval.py:348`) uses the composed prompt length.
-- [ ] **The A/B run**: three default models × both arms over `feedback_v1`, spend cap $3. The reports are committed under `evals/results/` and the result is written into #232's decision record.
+- [ ] **The A/B run**: three default models × both arms over `feedback_v1`, spend cap $3 (plus a two-arm confirmation rerun if the Haiku rule is met). The reports are committed under `evals/results/`.
+- [ ] **Decision record 002** `docs/decisions/002-feedback-rubric.md`: the A/B result, the pre-registered thresholds and how each was applied, the rubric default, the feedback model decision, cost and latency impact, limitations and revisit triggers. Also: `docs/decisions/README.md` index row, and a link (plus a status update if superseded) in 001.
+- [ ] **Conditional default switch** (only if the Haiku rule is met and confirmed): `FEEDBACK_MODEL` default → `claude-haiku-5-5` in `config.py`, `.env.example`, the config tests, README, VISION.md and the CLAUDE.md guardrail.
 - [ ] **Tests** (80%+ on new and changed modules):
   - taxonomy consistency: category IDs and the grammatical/vocabulary split in the rubric match `ErrorCategory` and `GRAMMATICAL_CATEGORIES`
   - skill references: every repo path SKILL.md tells Claude to read exists; the frontmatter has `name` and `description`
@@ -109,7 +135,7 @@ The issue asks for the rubric to exist once and serve two consumers: the app's f
 - [ ] **No change to the feedback JSON schema** (`schemas/session.py`, `FEEDBACK_JSON_SCHEMA` in `services/llm/base.py`). In particular, no `category` or `severity` field on corrections; the rubric shapes how the explanation is worded instead.
 - [ ] **No difficulty level in the app's feedback request.** `Session.difficulty` exists (`models/session.py:16`), but `get_feedback()` doesn't receive it, and LABELING.md scores on an absolute scale because the model isn't told the level. Passing it would change the provider interface and the meaning of the eval labels. This could be a follow-up issue.
 - [ ] **No restructuring of `evals/LABELING.md`.** It keeps its own definitions (it's the labeling contract for #230); only a pointer to the rubric is added. Deduplicating it is a possible follow-up, with the taxonomy test keeping them aligned in the meantime.
-- [ ] **No change to the default provider or model**, or to Claude effort.
+- [ ] **No change to the chat default or to Claude effort.** The feedback model default changes only under the pre-registered Haiku rule.
 - [ ] **No prompt caching.** The rubric makes the system prompt long enough that caching could pay off, but enabling it is a separate change (README: "Prompt caching is not enabled").
 - [ ] **No new dataset version** (`feedback_v2`) and no relabeling.
 - [ ] **No #270 work** (study-coach agent). The loader is public so #270 can reuse it.
@@ -137,7 +163,7 @@ The issue asks for the rubric to exist once and serve two consumers: the app's f
    **Given** the #231 harness with `--rubric both` and the three default models
    **When** the full run over `feedback_v1` completes within the $3 cap
    **Then** its JSON and Markdown reports are committed under `evals/results/`, show each model with and without the rubric (recall, precision, false corrections on clean conversations, correction accuracy, grammar MAE, cost, latency), and record the rubric file hash
-   **And** #232's decision record states the result, links the report, and says whether the rubric stays on by default.
+   **And** `docs/decisions/002-feedback-rubric.md` states the result, links the report(s), quotes the pre-registered thresholds, and records the rubric default and the feedback model that follow from them. If the Haiku rule was met and confirmed, the feedback default is switched in this PR.
 
 **Implicit AC (from the issue notes): taxonomy consistency**
 **Given** the rubric and `evals/schema.py`
@@ -200,7 +226,7 @@ The issue asks for the rubric to exist once and serve two consumers: the app's f
 6. **Extend the harness**: an `EvalConfig.rubric` field, `--rubric on|off|both`, expanded keys, per-config `Settings` with `FEEDBACK_RUBRIC`, cost estimate from the composed prompt, report fields (rubric state per config, rubric SHA-256). Add unit tests with fake providers.
 7. **Tests**: taxonomy consistency, skill references, no dataset leakage, composition, providers, harness.
 8. **Run the eval** (Claude, after #232 is merged): `--dry-run` → `--limit 3 --rubric both` → full `--rubric both --max-spend-usd 3`. Commit the reports.
-9. **Record the result** in #232's decision record and in the README, and set the default from the evidence (see the [open questions](#requirement-ambiguities)).
+9. **Record the result** in `docs/decisions/002-feedback-rubric.md` and the README, apply the pre-registered thresholds (rubric default; Haiku switch with a confirmation rerun), and, if the switch is triggered, change the feedback default.
 
 ### Key Design Decisions
 
@@ -236,9 +262,9 @@ The issue asks for the rubric to exist once and serve two consumers: the app's f
 
 | Ambiguity | What needs clarification | Recommendation |
 |-----------|-------------------------|----------------|
-| Decision-record location (AC3) | #232 creates `docs/decisions/001-model-choice.md`. Should the rubric result be a section of that record or its own record (`002-feedback-rubric.md`)? | Decide when the prompt artifact is written, after #232 merges. Leaning to **a section in 001**: the AC says "the decision record", and the rubric changes the feedback-quality evidence behind the model choice. A separate 002 is cleaner if the rubric decision needs its own revisit triggers |
-| Default after the eval | What if the rubric helps the Claude models but hurts Mistral (the default feedback provider), or raises cost more than it improves quality? | Ship `FEEDBACK_RUBRIC=true` unless the default provider (Mistral Large) shows a clear regression on precision or grammar MAE without a matching recall gain. Record the rule and the outcome in the decision record. If it regresses, ship with the default `false` and say so |
-| "Reference files for the taxonomy" | With the taxonomy in `data/`, does the AC need a file inside the skill's `references/`? | Keep `references/taxonomy.md` as a short pointer (one paragraph plus the path) so the skill's layout matches the AC literally, or drop it and let SKILL.md point directly at the data file. **Ask the user at the prompt stage**; default to the pointer page |
+| Decision-record location (AC3) | Section of 001, or its own record? | **Resolved**: always a new record, 002 (see Revision after #232) |
+| Default after the eval | What decides the rubric default now that Sonnet is the default feedback model? | **Resolved**: pre-registered rule 1, on unless Sonnet+rubric regresses (see Revision after #232) |
+| "Reference files for the taxonomy" | Does the AC need a file inside the skill's `references/`? | **Resolved**: pointer page `references/taxonomy.md` |
 | Vocabulary, fluency and overall anchors | LABELING.md only anchors `grammar_score`. Anchors for the other scores are new content with no labels to check them against | Write short band anchors for vocabulary and fluency, and define `overall_score` as a holistic judgment normally within a few points of the mean of the three. Flag them as unvalidated in the rubric header and the README |
 | LABELING.md edits | The user wanted to approve any change to the #230 labeling contract | Only add a one-line pointer to the rubric. No definitions change |
 
@@ -297,7 +323,7 @@ The issue asks for the rubric to exist once and serve two consumers: the app's f
 
 - AC1: `.claude/skills/french-feedback-rubric/SKILL.md` with a clear trigger description; reference material for the taxonomy (via the canonical `data/feedback_rubric.md`) and worked examples (`references/examples.md`).
 - AC2: the app's feedback system prompt includes the contents of `data/feedback_rubric.md`, read from disk, when `FEEDBACK_RUBRIC` is on (default), on both providers and on the retry. Off restores today's prompt exactly.
-- AC3: a `--rubric both` harness run over `feedback_v1` with the three default models, reports committed, and the result written into #232's decision record.
+- AC3: a `--rubric both` harness run over `feedback_v1` with the three default models, reports committed, and the result written into `docs/decisions/002-feedback-rubric.md`, with the pre-registered thresholds applied.
 - Implicit: taxonomy IDs and the grammatical split match `evals/schema.py`; enforced in CI.
 
 ### Examples
