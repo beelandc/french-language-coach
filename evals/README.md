@@ -121,11 +121,13 @@ python3 -m evals.run_feedback_eval --dry-run          # plan + upper-bound cost 
 python3 -m evals.run_feedback_eval --limit 3          # smoke run: 3 conversations per model
 python3 -m evals.run_feedback_eval                    # full run, default models
 python3 -m evals.run_feedback_eval --models all       # adds the Claude Opus 5.5 ceiling run
+python3 -m evals.run_feedback_eval --rubric both      # each model with and without the feedback rubric (#269)
 ```
 
 | Flag | Default | Meaning |
 |------|---------|---------|
 | `--models` | `mistral-large,claude-sonnet,claude-haiku` | Comma-separated keys, or `all` (adds `claude-opus`) |
+| `--rubric` | `on` | Feedback prompt with the rubric (`on`, the app default), without it (`off`, keys `<key>:no-rubric`), or `both` arms per model, run in turn on the same conversations (#269) |
 | `--limit N` | all | At most N conversations per model, taken in turn from each difficulty level (`--limit 4` → fb-001, fb-010, fb-019, fb-002) |
 | `--ids` | all | Comma-separated record ids (applied before `--limit`) |
 | `--max-spend-usd X` | `5.00` | Spend cap for the whole run (models + judge) |
@@ -138,7 +140,7 @@ python3 -m evals.run_feedback_eval --models all       # adds the Claude Opus 5.5
 
 Exit codes: `0` completed, `1` setup error or a model stopped after repeated provider errors, `2` stopped by the spend cap, `130` interrupted (Ctrl-C). Argument errors exit with `2` (argparse).
 
-**Configurations** (`EVAL_CONFIGS`): `mistral-large` (`mistral-large-latest`, the current baseline), `claude-sonnet` (`claude-sonnet-5-5`), `claude-haiku` (`claude-haiku-5-5`), and `claude-opus` (`claude-opus-5-5`, only with `--models all` or by name). Each runs through the app's own provider layer (`LLMService.get_feedback`): the same prompt, schema-constrained or JSON-mode output, strict validation and single corrective retry as the app.
+**Configurations** (`EVAL_CONFIGS`): `mistral-large` (`mistral-large-latest`, the current baseline), `claude-sonnet` (`claude-sonnet-5-5`), `claude-haiku` (`claude-haiku-5-5`), and `claude-opus` (`claude-opus-5-5`, only with `--models all` or by name). Each runs through the app's own provider layer (`LLMService.get_feedback`): the same prompt, schema-constrained or JSON-mode output, strict validation and single corrective retry as the app. With `--rubric`, each arm's `FEEDBACK_RUBRIC` is set by the flag, whatever `.env` says, and a missing rubric file stops the run in preflight (#269).
 
 **Cost.** The first smoke run (`--limit 3`, three models, with judge validation) cost **$0.08**: about $0.004 per conversation for Mistral Large, $0.009 for Sonnet 5.5 and $0.0006 for Haiku 5.5, plus $0.035 for the judge-validation pass. The first full default run (27 conversations × 3 models, 2026-11-16) cost **$0.43** and took 23 minutes, most of it Mistral Large (about 26 s per feedback call, against 4–5 s for the Claude models). `--dry-run` prints a deliberately pessimistic upper bound (about $3 for a full default run).
 
@@ -201,7 +203,7 @@ In the first smoke run, the judge agreed with the drafted verdicts on 20 of 22 i
 
 Each run (completed, stopped by the cap, or interrupted) writes `results/feedback_eval_<YYYYMMDD-HHMMSS>.json` and `.md`, named by UTC start time, with `-2`, `-3` appended on a collision:
 
-- **JSON**: run metadata (status, git commit, dataset path and SHA-256, options), the judge and its rationale, prices with their `checked_on` dates, **total spend** split into feedback per model, judge matching and judge validation, judge agreement, and per model its metrics plus every conversation (raw corrections, per-error match details, false corrections, outcome, cost, latency, attempts).
+- **JSON** (`schema_version` 2 since #269): run metadata (status, git commit, dataset path and SHA-256, options including `rubric`), the feedback rubric's path and SHA-256 (`rubric`, `null` when no arm used it), a `rubric` flag per model, the judge and its rationale, prices with their `checked_on` dates, **total spend** split into feedback per model, judge matching and judge validation, judge agreement, and per model its metrics plus every conversation (raw corrections, per-error match details, false corrections, outcome, cost, latency, attempts).
 - **Markdown**: the same results as tables (summary, per difficulty, details, spend, judge, prices) and the caveats.
 
 The harness never commits anything. Commit a run's reports when they're meant to be cited. #232 published the first full run, [`feedback_eval_20261116-042618`](results/feedback_eval_20261116-042618.md), in the README's [Evaluation](../README.md#evaluation) section and in [decision record 001](../docs/decisions/001-model-choice.md), which sets the app's default models.

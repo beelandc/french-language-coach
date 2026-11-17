@@ -136,6 +136,8 @@ Each scenario supports three difficulty levels that affect the AI's system promp
    | `CLAUDE_CHAT_EFFORT` | `low` when unset | Optional Claude effort for chat: `low`, `medium`, `high`, `xhigh`, `max`. |
    | `CLAUDE_FEEDBACK_EFFORT` | `medium` when unset | Optional Claude effort for feedback. |
    | `LLM_PRICING_FILE` | `data/llm_pricing.json` | Optional path to the LLM price table used for cost estimates. |
+   | `FEEDBACK_RUBRIC` | `true` | Append the French feedback rubric to the feedback prompt (Issue #269). `false` sends the original prompt. |
+   | `FEEDBACK_RUBRIC_FILE` | `data/feedback_rubric.md` | Path to the canonical rubric file. |
    | `DATABASE_URL` | `sqlite+aiosqlite:///./french_coach.db` | Database connection string. |
 
    The app refuses to start if a configured provider has no API key.
@@ -258,6 +260,7 @@ french-language-coach/
 │   │   ├── anthropic_provider.py # Claude provider (async client, first-party Anthropic API)
 │   │   ├── metrics.py       # Metrics filters, summaries, time series, model comparison report + summary, Markdown/CSV (Issues #236, #238)
 │   │   ├── pricing.py       # Loads the price table, estimates cost per call
+│   │   ├── rubric.py        # Loads data/feedback_rubric.md, builds the feedback system prompt (Issue #269)
 │   │   ├── recorder.py      # Writes one llm_calls row per call
 │   │   └── service.py       # LLMService: routes each feature to its configured provider/model, logs calls, validates feedback (one retry)
 │   └── mistral.py           # Backward-compatibility alias for services.llm.llm_service
@@ -274,6 +277,7 @@ french-language-coach/
 ├── scenarios.py             # Static list of 10 built-in conversation scenarios with system prompts
 ├── data/
 │   ├── llm_pricing.json     # LLM price table (USD per million tokens, with date checked and source link) (Issue #228)
+│   ├── feedback_rubric.md   # Canonical French feedback rubric: taxonomy, severity, correction format, score anchors (Issue #269)
 │   ├── grammar_lessons/     # Grammar lesson JSON files for Phase 2 (20+ lessons)
 │   ├── grammar/reference/   # Grammar reference entry JSON files for Phase 2 (50+ entries)
 │   ├── grammar/exercises/   # Grammar exercise JSON files for Phase 2 (5 exercises: fill-in-the-blank, multiple-choice, translation, conjugation, sentence-transformation)
@@ -392,7 +396,7 @@ french-language-coach/
 │   └── instructions.md      # Shared AI agent instructions (single source of truth for Mistral Vibe and Claude Code)
 ├── .claude/
 │   ├── settings.json        # Claude Code shared project permissions (committed)
-│   └── skills/              # Claude Code project skills: /spdd-analysis, /spdd-prompt
+│   └── skills/              # Claude Code project skills: /spdd-analysis, /spdd-prompt, /french-feedback-rubric (Issue #269)
 ├── spdd/                    # SPDD artifacts: analysis/, prompt/, template/
 ├── docs/
 │   └── decisions/           # Decision records, e.g. 001-model-choice.md (Issue #232)
@@ -539,6 +543,22 @@ When a user ends a session, the full conversation history is sent with a separat
 ```
 
 Mistral uses JSON mode (`response_format={"type": "json_object"}`). Claude uses structured outputs (`output_config.format` with a JSON schema matching `FeedbackResponse`).
+
+**Feedback rubric (Issue #269).** By default, the feedback system prompt is the French instructions above plus the French feedback rubric, read from [`data/feedback_rubric.md`](data/feedback_rubric.md) (`services/llm/rubric.py`). The rubric covers:
+
+- the 15-category error taxonomy shared with the eval labels (`evals/schema.py`, `evals/LABELING.md`)
+- what not to correct (correct-but-unusual forms, stylistic rephrasing)
+- CEFR-aware severity
+- the correction format (a verbatim, smallest span, one error per correction)
+- score anchors (the grammar bands match the labeling guide; the vocabulary, fluency and overall anchors are unvalidated)
+
+The rubric is written in English and the feedback stays in French. It's one file, also used by the `/french-feedback-rubric` Claude Code skill (`.claude/skills/french-feedback-rubric/`). Edit it there and don't copy it; `tests/test_feedback_rubric.py` keeps its taxonomy in line with the eval schema.
+
+- **Cost:** the rubric adds about 3,000 input tokens to every feedback call, retry included.
+- **Turning it off:** set `FEEDBACK_RUBRIC=false` to send the original prompt, unchanged.
+- **Missing file:** if the file is missing or empty while the rubric is on, feedback requests fail with a 500 error that names the path, rather than silently running without it.
+
+The with/without comparison and the decision to keep it on are in [decision record 002](docs/decisions/002-feedback-rubric.md).
 
 **Validation and retry (Issue #229).** For both providers, the output is validated against the Pydantic `FeedbackResponse` schema in strict mode: scores must be integers from 0 to 100 (`"72"` or `72.0` is rejected), all fields are required, and each correction needs `original`, `corrected` and `explanation`. Extra keys are dropped. If validation fails, the provider is called **once more**. The retry repeats the request, adds the model's previous output and a correction message quoting the validation error, and keeps JSON mode or the schema. If the retry also fails, `POST /sessions/{id}/feedback/` returns **502** and the session stays open (not ended, no feedback stored), so the user can try again. Refusals and empty responses aren't retried and also return 502. Default or invented scores are never returned. In the UI, the chat page shows the error with a **Retry feedback** button, and the feedback page offers **Try again**. A retry roughly doubles the wait for that request.
 
@@ -764,6 +784,28 @@ Source: run [`feedback_eval_20261116-042618`](evals/results/feedback_eval_202611
 
 See [`evals/README.md`](evals/README.md#limits) for the full list.
 
+### Feedback rubric (Issue #269)
+
+The same harness compared each model's feedback with and without the [French feedback rubric](#2-feedback-mode-feedback), using thresholds fixed before the run:
+
+| Arm | Recall | Precision (false) | False on clean | Grammar MAE (n) | Cost / conversation | p50 latency (ms) |
+|---|---|---|---|---|---|---|
+| Mistral Large + rubric | 71.8% (51/71) | 100.0% (0) | 0 | 2.82 (22) | $0.004923 | 39,265 |
+| Mistral Large, no rubric | 88.7% (63/71) | 86.3% (10) | 6 | 6.11 (27) | $0.004534 | 30,929 |
+| Claude Sonnet 5.5 + rubric | 97.2% (69/71) | 98.6% (1) | 0 | 3.63 (27) | $0.0149 | 4,378 |
+| Claude Sonnet 5.5, no rubric | 95.8% (68/71) | 86.1% (11) | 6 | 9.48 (27) | $0.008214 | 5,110 |
+| Claude Haiku 5.5 + rubric | 84.5% (60/71) | 98.4% (1) | 0 | 4.04 (27) | $0.001199 | 7,119 |
+| Claude Haiku 5.5, no rubric | 87.3% (62/71) | 87.3% (9) | 3 | 12.0 (27) | $0.000549 | 4,291 |
+
+Source: run [`feedback_eval_20261117-034654`](evals/results/feedback_eval_20261117-034654.md) ([JSON](evals/results/feedback_eval_20261117-034654.json)), 2026-11-17, $1.02 in total.
+
+- **Result:** the rubric cut false corrections in every model (0 on the clean conversations) and brought grammar scores much closer to the labels, without costing Sonnet any recall. It's **on by default**.
+- **Cost:** it roughly doubles Claude feedback cost (about 3,000 more input tokens per call).
+- **Haiku:** Haiku with the rubric matched Sonnet on calibration but caught 9 fewer errors, so feedback stays on Sonnet 5.5.
+- **Mistral:** with the rubric, Mistral Large timed out (60 s) on 5 of 27 conversations, which is why its recall is lower.
+
+See [decision record 002](docs/decisions/002-feedback-rubric.md).
+
 ## Model choice
 
 ### The case for Mistral
@@ -794,7 +836,7 @@ This project is developed using two AI coding agents, **Mistral Vibe** and **Cla
 - Multi-file refactoring assistance
 - Debugging and error resolution support
 
-Both agents follow the same rules. `.vibe/instructions.md` is the single source of truth for agent instructions: Mistral Vibe reads it directly, and Claude Code loads it through an import in `CLAUDE.md`, which adds only Claude-specific guidance (commands, architecture pointers, gotchas). Claude Code's shared project permissions live in `.claude/settings.json`, and the `/spdd-analysis` and `/spdd-prompt` project skills in `.claude/skills/` create correctly named SPDD artifacts from the templates.
+Both agents follow the same rules. `.vibe/instructions.md` is the single source of truth for agent instructions: Mistral Vibe reads it directly, and Claude Code loads it through an import in `CLAUDE.md`, which adds only Claude-specific guidance (commands, architecture pointers, gotchas). Claude Code's shared project permissions live in `.claude/settings.json`, and the `/spdd-analysis` and `/spdd-prompt` project skills in `.claude/skills/` create correctly named SPDD artifacts from the templates. The `/french-feedback-rubric` skill reviews a French learner transcript with the app's own feedback rubric (`data/feedback_rubric.md`, Issue #269); Claude Code also picks it up when you ask it to review or grade learner French.
 
 ### AI-Assisted Development Workflow
 

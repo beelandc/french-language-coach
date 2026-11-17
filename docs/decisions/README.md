@@ -5,6 +5,7 @@ Short records of significant project decisions: what was decided, on what eviden
 | Record | Decision | Status |
 |--------|----------|--------|
 | [001](001-model-choice.md) | Claude Sonnet 5.5 for chat and feedback | Accepted (2026-11-16) |
+| [002](002-feedback-rubric.md) | French feedback rubric on by default; feedback stays on Sonnet 5.5 | Accepted (2026-11-17) |
 
 ## Format
 
@@ -16,4 +17,4 @@ Short records of significant project decisions: what was decided, on what eviden
 6. **What would change this decision**: concrete evidence that would reopen it
 7. **Limitations**: how far the evidence can be trusted
 
-The feedback rubric (#269) will add its with/without comparison to the evidence for 001's feedback choice.
+The feedback rubric's with/without comparison (#269) is in 002. It tested 001's Haiku trigger, which wasn't met.

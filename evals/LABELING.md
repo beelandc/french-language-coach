@@ -29,6 +29,8 @@ These names mirror the app's feedback output (`example_corrections[].original` /
 
 ## Error categories
 
+The model-facing version of this taxonomy is the French feedback rubric, [`data/feedback_rubric.md`](../data/feedback_rubric.md) (#269), which the app's feedback prompt and the `french-feedback-rubric` Claude Code skill use. `tests/test_feedback_rubric.py` keeps its category IDs and grammar-score split identical to `evals/schema.py`. The definitions below remain the labeling contract.
+
 The first twelve are **grammatical** and count toward `grammar_score`. The last three are vocabulary issues: a good tutor should still point them out, so they're labeled, but they don't lower the grammar score.
 
 | Category | Definition | Wrong → right | Grammar score |

@@ -401,19 +401,55 @@ DELIVERABLES:
 
 ## AI Response
 
-*To be completed after implementation.*
+Implemented by Claude Code (Claude Opus 5.5) from the prompt above.
+
+- **Rubric** `data/feedback_rubric.md` (9.2k characters, English): scope; the taxonomy table (15 IDs, Yes/No grammar column, typical CEFR level); what not to correct; CEFR-aware severity; correction format; grammar bands copied from LABELING.md; new vocabulary, fluency and overall anchors (marked unvalidated); strengths and focus area. All examples are fresh (the leakage test passes).
+- **App**: `services/llm/rubric.py` (`FeedbackRubricError`, `RUBRIC_PREAMBLE`, cached `load_feedback_rubric`, `feedback_rubric_sha256`, `build_feedback_system_prompt`). `LLMProvider.feedback(..., system_prompt=FEEDBACK_PROMPT)` is used by both providers. `LLMService.get_feedback` builds the prompt once and passes it on every attempt. New settings `FEEDBACK_RUBRIC=True` and `FEEDBACK_RUBRIC_FILE`, documented in `.env.example`.
+- **Skill** `.claude/skills/french-feedback-rubric/`: SKILL.md (trigger description, workflow, output format, optional `FeedbackResponse` JSON), `references/taxonomy.md` (pointer), `references/examples.md` (three worked reviews: beginner, intermediate, advanced). Claude Code listed the skill in this session as soon as the file was written.
+- **Harness**: `EvalConfig.rubric`, `--rubric on|off|both`, `expand_rubric_arms`, per-arm `model_copy(FEEDBACK_RUBRIC=…)`, rubric preflight, per-arm prompt in the cost estimate, report schema v2 (`rubric` block, per-model flag, Markdown label and header line, rubric caveat).
+- **Paid eval**:
+  - Dry run: upper-bound estimate $6.30.
+  - Smoke run `feedback_eval_20261117-033702`: $0.1475, not committed.
+  - Full run `feedback_eval_20261117-034654`: $1.0227, committed.
+  - Rule 1: the rubric stays on (Sonnet MAE 9.48 → 3.63, false corrections 11 → 1, detected 68 → 69).
+  - Rule 2: not met (Haiku+rubric detected 60 < 67), so no confirmation rerun and no model switch.
+- **Docs**: `docs/decisions/002-feedback-rubric.md`; the index; a "See also" line in 001; README (Feedback Mode rubric paragraph, config table, project structure, skills paragraph, "Feedback rubric (Issue #269)" Evaluation subsection); `evals/README.md` (`--rubric`, schema v2); the LABELING.md pointer.
 
 ---
 
 ## Human Review Notes
 
-*To be completed after implementation.*
+### Changes Made
+- [x] **The conditional Haiku switch didn't apply**: rule 2 failed on detected errors, so `config.py`, VISION.md and CLAUDE.md are unchanged. Record 002 shows the check.
+- [x] **The confirmation rerun was skipped**, because rule 2 wasn't met (as pre-registered).
+- [x] Test `test_empty_file_is_an_error` was corrected: its first input put the BOM after a space, which isn't a realistic file. The Write tool also turned `\ufeff` / `\u2019` escapes into literal characters in `tests/test_feedback_rubric.py` and `services/llm/rubric.py`; they were replaced with escapes, and a scan confirms no literal BOMs remain.
+- [x] Extra tests beyond the prompt: `.env` `FEEDBACK_RUBRIC=false` can't override a harness arm; undecodable file; the grammar bands are identical to LABELING.md; the skill doesn't copy the taxonomy table; example rows have valid categories and severities.
+- [x] The smoke-run reports (`feedback_eval_20261117-033702.*`) are left untracked; only the full run is committed.
+
+### Quality Checks
+- [x] Code follows existing patterns (pricing-style loader, fake providers, Given/When/Then)
+- [x] Tests pass at 80%+ coverage (98.23% total; `rubric.py` 100%)
+- [x] Documentation updated
+- [x] All acceptance criteria met
+
+### Issues Found
+- **Mistral + rubric times out**: 5 of 27 calls hit the Mistral SDK's default 60 s HTTP timeout (the app sets none). Faithful to production behavior, so not worked around. Documented in 002 and the README. A follow-up to raise the Mistral timeout is suggested in the PR (not created; needs approval).
+- **Sonnet+rubric still flags the *ne explétif* trap** (fb-022), even though the rubric lists it as optional. Recorded in 002.
+- **The rubric's general rules overlap some dataset traps** (e.g. the optional *ne explétif*). No labeled spans leak (tested). Disclosed in 002's limitations.
+- **Needs maintainer review**: the rubric's teaching content, especially the CEFR level per category and the vocabulary, fluency and overall anchors (unvalidated), and the skill's worked examples.
 
 ---
 
 ## Verification
 
-*To be completed after implementation.*
+- [x] **AC1** `SKILL.md` with trigger description, plus `references/taxonomy.md` (pointer) and `references/examples.md`. Tests check the frontmatter, the referenced paths, the pointer to `data/feedback_rubric.md`, no copied taxonomy, and valid example categories. Claude Code listed `french-feedback-rubric` in its available skills.
+- [x] **AC2** The feedback prompt reads `data/feedback_rubric.md` from disk (default on; on both attempts and both providers). With the rubric off, the prompt `== FEEDBACK_PROMPT`; a missing or empty file raises `FeedbackRubricError` naming the path (service and harness preflight). All of this is tested.
+- [x] **AC3** `--rubric both` full run `evals/results/feedback_eval_20261117-034654.{json,md}` committed; result, thresholds and checks are in `docs/decisions/002-feedback-rubric.md`. Every table value in 002 and the README was checked by script against the report.
+- [x] **Implicit AC** The taxonomy IDs and the grammar split match `evals/schema.py` (`TestRubricContent`); a renamed category is caught.
+- [x] Tests in a clean copy with no `.env` and dummy keys: **1155 passed, 1 xfailed** (main: 1111), total coverage **98.23%**, `check_module_coverage.py` PASS, `services/llm/rubric.py` 100%.
+- [x] Paid spend: smoke $0.1475 + full $1.0227 = **$1.17**, within the $3 cap. No confirmation rerun.
+- [x] No frontend changes, so no frontend tests were run.
+- [ ] Human review completed (pending PR review)
 
 ---
 
