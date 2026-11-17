@@ -27,12 +27,14 @@ from evals.run_feedback_eval import (
     RunOptions,
     config_effort,
     estimate_feedback_cost,
+    expand_rubric_arms,
     parse_args,
     run_eval,
     select_records,
 )
 from evals.schema import FeedbackEvalRecord, load_dataset
-from services.llm.base import LLMProvider, LLMResult
+from services.llm.base import FEEDBACK_PROMPT, LLMProvider, LLMResult
+from services.llm.rubric import build_feedback_system_prompt, feedback_rubric_sha256
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 RECORDS = load_dataset()
@@ -73,11 +75,13 @@ class FakeProvider(LLMProvider):
         self.behaviour = behaviour or (lambda record, model, retry: feedback_json(record))
         self.judge_reply = judge_reply
         self.feedback_calls: list[tuple[str, str, bool]] = []
+        self.system_prompts: list[Optional[str]] = []
         self.chat_calls: list[str] = []
 
-    async def feedback(self, messages, model, correction=None):
+    async def feedback(self, messages, model, correction=None, system_prompt=None):
         record = BY_FIRST_TURN[messages[1]["content"]]
         self.feedback_calls.append((record.id, model, correction is not None))
+        self.system_prompts.append(system_prompt)
         result = self.behaviour(record, model, correction is not None)
         if isinstance(result, BaseException):
             raise result
@@ -281,7 +285,7 @@ class TestRun:
         assert result.estimate_usd > 0
         assert providers["mistral"].feedback_calls == [] and providers["mistral"].chat_calls == []
         assert list(tmp_path.iterdir()) == []
-        assert any("model: claude-sonnet (anthropic/claude-sonnet-5-5, effort medium)" in l for l in lines)
+        assert any("model: claude-sonnet (anthropic/claude-sonnet-5-5, effort medium, rubric on)" in l for l in lines)
 
     @pytest.mark.asyncio
     async def test_full_run_with_three_default_configs(self, tmp_path):
@@ -489,3 +493,105 @@ def test_no_workflow_runs_the_harness():
     assert workflows
     for workflow in workflows:
         assert "run_feedback_eval" not in workflow.read_text(encoding="utf-8"), workflow.name
+
+
+class TestRubricArms:
+    """Issue #269: --rubric runs each model with and/or without the feedback rubric."""
+
+    def test_rubric_flag_parsing(self):
+        assert parse_args([]).rubric == "on"
+        assert parse_args(["--rubric", "both"]).rubric == "both"
+        with pytest.raises(SystemExit):
+            parse_args(["--rubric", "maybe"])
+
+    def test_expand_rubric_arms(self):
+        configs = [EVAL_CONFIGS["mistral-large"], EVAL_CONFIGS["claude-haiku"]]
+        assert [(c.key, c.rubric) for c in expand_rubric_arms(configs, "on")] == [
+            ("mistral-large", True), ("claude-haiku", True),
+        ]
+        assert [(c.key, c.rubric) for c in expand_rubric_arms(configs, "off")] == [
+            ("mistral-large:no-rubric", False), ("claude-haiku:no-rubric", False),
+        ]
+        both = expand_rubric_arms(configs, "both")
+        assert [(c.key, c.rubric) for c in both] == [
+            ("mistral-large", True), ("mistral-large:no-rubric", False),
+            ("claude-haiku", True), ("claude-haiku:no-rubric", False),
+        ]
+        assert both[1].model == "mistral-large-latest"
+        with pytest.raises(ValueError):
+            expand_rubric_arms(configs, "sometimes")
+
+    def test_estimate_uses_the_arm_prompt(self):
+        record, config = BY_ID["fb-001"], EVAL_CONFIGS["claude-sonnet"]
+        with_rubric = build_feedback_system_prompt(fake_settings("anthropic", "claude-sonnet-5-5"))
+        assert estimate_feedback_cost(config, record, with_rubric) > estimate_feedback_cost(config, record)
+
+    @pytest.mark.asyncio
+    async def test_both_arms_send_different_prompts_and_are_reported(self, tmp_path):
+        options = make_options(tmp_path, models=["claude-haiku"], rubric="both", limit=2)
+        result, providers, lines = await run(options)
+
+        # Each arm ran the same records, with its own system prompt
+        anthropic = providers["anthropic"]
+        rubric_prompt = build_feedback_system_prompt(fake_settings("anthropic", "claude-haiku-5-5"))
+        assert anthropic.system_prompts == [rubric_prompt] * 2 + [FEEDBACK_PROMPT] * 2
+        assert [c[0] for c in anthropic.feedback_calls] == ["fb-001", "fb-010"] * 2
+
+        report = json.loads(result.json_path.read_text(encoding="utf-8"))
+        assert [(m["key"], m["rubric"]) for m in report["models"]] == [
+            ("claude-haiku", True), ("claude-haiku:no-rubric", False),
+        ]
+        assert report["options"]["rubric"] == "both"
+        assert report["rubric"] == {
+            "path": "data/feedback_rubric.md",
+            "sha256": feedback_rubric_sha256("data/feedback_rubric.md"),
+        }
+        assert set(report["spend"]["feedback_by_config"]) == {"claude-haiku", "claude-haiku:no-rubric"}
+        assert any("drafted by Claude Code from the same taxonomy" in c for c in report["caveats"])
+        markdown = result.md_path.read_text(encoding="utf-8")
+        assert "claude-haiku:no-rubric (`anthropic/claude-haiku-5-5`, effort medium, rubric off)" in markdown
+        assert "- **Feedback rubric:** `data/feedback_rubric.md` (sha256 `" in markdown
+        assert any("rubric off" in line for line in lines)
+
+    @pytest.mark.asyncio
+    async def test_rubric_off_needs_no_rubric_file(self, tmp_path):
+        def factory(provider, model, effort=None):
+            return fake_settings(provider, model, effort).model_copy(
+                update={"FEEDBACK_RUBRIC_FILE": "data/missing-rubric.md"}
+            )
+
+        options = make_options(tmp_path, models=["claude-haiku"], rubric="off", limit=1)
+        providers = {"mistral": FakeProvider("mistral"), "anthropic": FakeProvider("anthropic")}
+        result = await run_eval(options, settings_factory=factory, providers=providers, out=lambda _: None)
+        report = json.loads(result.json_path.read_text(encoding="utf-8"))
+        assert report["rubric"] is None
+        assert "- **Feedback rubric:** not used" in result.md_path.read_text(encoding="utf-8")
+        assert providers["anthropic"].system_prompts == [FEEDBACK_PROMPT]
+
+    @pytest.mark.asyncio
+    async def test_missing_rubric_file_stops_preflight(self, tmp_path):
+        def factory(provider, model, effort=None):
+            return fake_settings(provider, model, effort).model_copy(
+                update={"FEEDBACK_RUBRIC_FILE": "data/missing-rubric.md"}
+            )
+
+        with pytest.raises(PreflightError, match="rubric: .*data/missing-rubric.md"):
+            await run_eval(
+                make_options(tmp_path, models=["claude-haiku"], limit=1),
+                settings_factory=factory, out=lambda _: None,
+            )
+        assert list(tmp_path.iterdir()) == []
+
+    @pytest.mark.asyncio
+    async def test_env_rubric_setting_does_not_override_the_arm(self, tmp_path):
+        # Given settings (e.g. from .env) with the rubric turned off
+        def factory(provider, model, effort=None):
+            return fake_settings(provider, model, effort).model_copy(update={"FEEDBACK_RUBRIC": False})
+
+        options = make_options(tmp_path, models=["claude-haiku"], rubric="on", limit=1)
+        providers = {"mistral": FakeProvider("mistral"), "anthropic": FakeProvider("anthropic")}
+        await run_eval(options, settings_factory=factory, providers=providers, out=lambda _: None)
+
+        # Then the rubric arm still sends the rubric
+        assert providers["anthropic"].system_prompts[0] != FEEDBACK_PROMPT
+        assert "## Error taxonomy" in providers["anthropic"].system_prompts[0]

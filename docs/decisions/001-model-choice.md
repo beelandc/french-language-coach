@@ -4,6 +4,7 @@
 - **Date:** 2026-11-16
 - **Issue:** #232 (milestone "Model evaluation (Claude vs Mistral)", #228–#232)
 - **Decided by:** the project maintainer
+- **See also:** [002](002-feedback-rubric.md): the feedback rubric is on by default; 001's Haiku trigger was tested and not met, so the feedback choice stands
 
 ## Context
 

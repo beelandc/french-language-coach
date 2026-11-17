@@ -57,7 +57,7 @@ class FakeJudgeProvider(LLMProvider):
             raise reply
         return LLMResult(text=reply, input_tokens=1000, output_tokens=100)
 
-    async def feedback(self, messages, model, correction=None):  # pragma: no cover
+    async def feedback(self, messages, model, correction=None, system_prompt=None):  # pragma: no cover
         raise NotImplementedError
 
 

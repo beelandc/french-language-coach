@@ -78,15 +78,17 @@ class MistralProvider(LLMProvider):
         messages: list[dict[str, str]],
         model: str,
         correction: Optional[FeedbackCorrection] = None,
+        system_prompt: str = FEEDBACK_PROMPT,
     ) -> LLMResult:
-        """Request feedback in JSON mode with the shared French feedback prompt.
+        """Request feedback in JSON mode with the French feedback prompt.
 
-        On the corrective retry, the failed output and the correction turn follow the
-        transcript (see :func:`build_feedback_turns`); JSON mode is kept.
+        ``system_prompt`` is sent as the first (``system``) message. On the corrective
+        retry, the failed output and the correction turn follow the transcript (see
+        :func:`build_feedback_turns`); JSON mode is kept.
         """
         response = await self._client.chat.complete_async(
             model=model,
-            messages=[{"role": "system", "content": FEEDBACK_PROMPT}]
+            messages=[{"role": "system", "content": system_prompt}]
             + build_feedback_turns(messages, correction),
             response_format={"type": "json_object"},
         )

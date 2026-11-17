@@ -7,6 +7,7 @@ import pytest
 
 from evals.report import (
     BASE_CAVEATS,
+    RUBRIC_CAVEAT,
     SCHEMA_VERSION,
     STATUS_COMPLETED,
     STATUS_STOPPED_SPEND_CAP,
@@ -143,3 +144,40 @@ def test_write_reports_creates_dir_and_avoids_collisions(tmp_path):
     ]
     assert json.loads(first[0].read_text(encoding="utf-8"))["spend"]["total_usd"] == 0.0123
     assert first[1].read_text(encoding="utf-8").startswith("# Feedback eval")
+
+
+def test_schema_version_2_for_rubric_fields():
+    # Issue #269 added the rubric block, options.rubric and a per-model rubric flag
+    assert SCHEMA_VERSION == 2
+
+
+def test_report_without_rubric_says_not_used():
+    report = make_report(validation=VALIDATION)
+    assert report["rubric"] is None
+    assert RUBRIC_CAVEAT not in report["caveats"]
+    assert "- **Feedback rubric:** not used" in render_markdown(report)
+
+
+def test_report_with_rubric_arms():
+    metrics, conversation = metrics_for_one_conversation()
+    models = [
+        {"key": "claude-haiku", "provider": "anthropic", "model": "claude-haiku-5-5",
+         "effort": "medium", "rubric": True, "status": STATUS_COMPLETED, "metrics": metrics,
+         "conversations": [conversation]},
+        {"key": "claude-haiku:no-rubric", "provider": "anthropic", "model": "claude-haiku-5-5",
+         "effort": "medium", "rubric": False, "status": STATUS_COMPLETED, "metrics": metrics,
+         "conversations": [conversation]},
+    ]
+    report = make_report(validation=VALIDATION, models=models)
+    report = {**report, "rubric": {"path": "data/feedback_rubric.md", "sha256": "cd" * 32}}
+    md = render_markdown(report)
+    assert "- **Feedback rubric:** `data/feedback_rubric.md` (sha256 `cdcdcdcdcdcd…`)" in md
+    assert "claude-haiku (`anthropic/claude-haiku-5-5`, effort medium, rubric on)" in md
+    assert "claude-haiku:no-rubric (`anthropic/claude-haiku-5-5`, effort medium, rubric off)" in md
+
+
+def test_rubric_caveat_added_when_rubric_used():
+    from evals.report import build_caveats
+
+    caveats = build_caveats(STATUS_COMPLETED, [], {"path": "data/feedback_rubric.md", "sha256": "x"})
+    assert caveats[-1] == RUBRIC_CAVEAT

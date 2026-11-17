@@ -42,6 +42,12 @@ class Settings(BaseSettings):
     # Price table used to estimate the cost of each LLM call
     LLM_PRICING_FILE: str = "data/llm_pricing.json"
 
+    # French feedback rubric appended to the feedback prompt (issue #269). Off restores
+    # the bare prompt exactly; the file is the canonical rubric shared with the
+    # french-feedback-rubric Claude Code skill.
+    FEEDBACK_RUBRIC: bool = True
+    FEEDBACK_RUBRIC_FILE: str = "data/feedback_rubric.md"
+
     class Config:
         env_file = ".env"
 

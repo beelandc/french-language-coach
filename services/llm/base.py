@@ -197,6 +197,7 @@ class LLMProvider(ABC):
         messages: list[dict[str, str]],
         model: str,
         correction: Optional[FeedbackCorrection] = None,
+        system_prompt: str = FEEDBACK_PROMPT,
     ) -> LLMResult:
         """Return end-of-session feedback for a conversation as raw JSON text.
 
@@ -204,4 +205,7 @@ class LLMProvider(ABC):
             messages: Conversation history (``role``/``content`` dicts).
             model: Model to request.
             correction: Set on the corrective retry: the failed output and its error.
+            system_prompt: Feedback system prompt. The service passes the prompt built
+                from its settings (``FEEDBACK_PROMPT`` plus the rubric, issue #269);
+                it defaults to the bare ``FEEDBACK_PROMPT``.
         """

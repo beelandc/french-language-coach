@@ -12,7 +12,9 @@ from typing import Any, Optional
 
 from evals.scoring import DIFFICULTY_ORDER
 
-SCHEMA_VERSION = 1
+#: 2 (issue #269): adds the top-level ``rubric`` block, ``options.rubric`` and a
+#: ``rubric`` flag per model.
+SCHEMA_VERSION = 2
 
 #: Default output directory.
 RESULTS_DIR = Path(__file__).parent / "results"
@@ -40,9 +42,20 @@ BASE_CAVEATS = [
 ]
 
 
-def build_caveats(status: str, models: list[dict[str, Any]]) -> list[str]:
-    """Return the report caveats, adding a note for partial runs."""
+RUBRIC_CAVEAT = (
+    "The feedback rubric (data/feedback_rubric.md) and the dataset labels were both "
+    "drafted by Claude Code from the same taxonomy, so part of any gain from the rubric "
+    "may be alignment with the labeler's conventions rather than better feedback."
+)
+
+
+def build_caveats(
+    status: str, models: list[dict[str, Any]], rubric: Optional[dict[str, Any]] = None
+) -> list[str]:
+    """Return the report caveats, adding notes for partial runs and rubric arms."""
     caveats = list(BASE_CAVEATS)
+    if rubric:
+        caveats.append(RUBRIC_CAVEAT)
     if status != STATUS_COMPLETED:
         caveats.append(
             f"This run is partial (status: {status}). Models with status not_run were "
@@ -72,8 +85,13 @@ def build_report(
     spend: dict[str, Any],
     judge_validation: Optional[dict[str, Any]],
     models: list[dict[str, Any]],
+    rubric: Optional[dict[str, Any]] = None,
 ) -> dict[str, Any]:
-    """Assemble the JSON report document (see the #231 prompt artifact for keys)."""
+    """Assemble the JSON report document (see the #231 prompt artifact for keys).
+
+    ``rubric`` is the path and SHA-256 of the feedback rubric used by the rubric arms
+    (issue #269), or ``None`` when no arm used it.
+    """
     return {
         "schema_version": SCHEMA_VERSION,
         "run_id": run_id,
@@ -87,8 +105,9 @@ def build_report(
         "prices": prices,
         "spend": spend,
         "judge_validation": judge_validation,
+        "rubric": rubric,
         "models": models,
-        "caveats": build_caveats(status, models),
+        "caveats": build_caveats(status, models, rubric),
     }
 
 
@@ -118,6 +137,8 @@ def _ms(value: Optional[int]) -> str:
 
 def _model_label(model: dict[str, Any]) -> str:
     effort = f", effort {model['effort']}" if model.get("effort") else ""
+    if "rubric" in model:
+        effort += ", rubric on" if model["rubric"] else ", rubric off"
     return f"{model['key']} (`{model['provider']}/{model['model']}`{effort})"
 
 
@@ -244,6 +265,12 @@ def _judge_section(report: dict[str, Any]) -> list[str]:
     return lines
 
 
+def _rubric_line(rubric: Optional[dict[str, Any]]) -> str:
+    if not rubric:
+        return "not used"
+    return f"`{rubric['path']}` (sha256 `{rubric['sha256'][:12]}…`)"
+
+
 def render_markdown(report: dict[str, Any]) -> str:
     """Render a report document as Markdown."""
     dataset, options, spend = report["dataset"], report["options"], report["spend"]
@@ -259,6 +286,7 @@ def render_markdown(report: dict[str, Any]) -> str:
         f"- **Options:** limit={_cell(options['limit'])}, ids={_cell(options['ids'])}, "
         f"spend cap {_usd(options['max_spend_usd'])}, "
         f"Claude effort override={_cell(options['claude_effort'])}",
+        f"- **Feedback rubric:** {_rubric_line(report.get('rubric'))}",
         f"- **Total spend:** {_usd(spend['total_usd'])} of the {_usd(spend['cap_usd'])} cap",
         "",
         "## Results",
