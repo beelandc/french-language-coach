@@ -6,5 +6,6 @@ from .grammar_progress import router as grammar_progress_router
 from .vocabulary import router as vocabulary_router
 from .card_review import router as card_review_router
 from .metrics import router as metrics_router
+from .study_plan import router as study_plan_router
 
-__all__ = ["sessions_router", "messages_router", "feedback_router", "grammar_router", "grammar_progress_router", "vocabulary_router", "card_review_router", "metrics_router"]
+__all__ = ["sessions_router", "messages_router", "feedback_router", "grammar_router", "grammar_progress_router", "vocabulary_router", "card_review_router", "metrics_router", "study_plan_router"]

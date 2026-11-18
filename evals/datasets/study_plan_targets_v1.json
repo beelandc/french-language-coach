@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "description": "Study-plan eval targets (issue #270). For 10 records of feedback_v1.jsonl, each labeled grammar error lists the lesson ids that count as targeting it. A plan covers an error when it cites at least one of them. Vocabulary errors (register, anglicism, lexical) and spelling have no lesson and are not scored. Targets were written by the implementing AI assistant from the category map in the #270 prompt artifact, narrowed by each error's note and the lessons' section titles; they are a judgment call and open to review.",
+  "records": [
+    {
+      "id": "fb-001",
+      "targets": [
+        {"error_index": 0, "lessons": ["gender-agreement", "articles"]},
+        {"error_index": 1, "lessons": ["articles"]},
+        {"error_index": 2, "lessons": ["negation"]}
+      ]
+    },
+    {
+      "id": "fb-002",
+      "targets": [
+        {"error_index": 0, "lessons": ["gender-agreement", "articles"]},
+        {"error_index": 1, "lessons": ["gender-agreement"]},
+        {"error_index": 2, "lessons": ["prepositions-conjunctions-adverbs"]}
+      ]
+    },
+    {
+      "id": "fb-003",
+      "targets": [
+        {"error_index": 0, "lessons": ["gender-agreement"]},
+        {"error_index": 1, "lessons": ["present-tense-irregular", "passe-compose"]},
+        {"error_index": 2, "lessons": ["gender-agreement"]}
+      ]
+    },
+    {
+      "id": "fb-005",
+      "targets": [
+        {"error_index": 0, "lessons": ["subject-pronouns"]},
+        {"error_index": 1, "lessons": ["articles", "negation"]},
+        {"error_index": 2, "lessons": ["gender-agreement", "articles"]}
+      ]
+    },
+    {
+      "id": "fb-008",
+      "targets": [
+        {"error_index": 0, "lessons": ["articles"]},
+        {"error_index": 2, "lessons": ["imparfait"]}
+      ]
+    },
+    {
+      "id": "fb-011",
+      "targets": [
+        {"error_index": 0, "lessons": ["articles", "negation"]},
+        {"error_index": 1, "lessons": ["passe-compose"]},
+        {"error_index": 2, "lessons": ["gender-agreement"]}
+      ]
+    },
+    {
+      "id": "fb-014",
+      "targets": [
+        {"error_index": 0, "lessons": ["gender-agreement"]},
+        {"error_index": 1, "lessons": ["passe-compose", "direct-object-pronouns"]},
+        {"error_index": 2, "lessons": ["imparfait"]}
+      ]
+    },
+    {
+      "id": "fb-017",
+      "targets": [
+        {"error_index": 0, "lessons": ["passe-compose"]},
+        {"error_index": 1, "lessons": ["prepositions-conjunctions-adverbs", "questions-words", "questions-inversion"]},
+        {"error_index": 2, "lessons": ["conditional", "imparfait"]}
+      ]
+    },
+    {
+      "id": "fb-021",
+      "targets": [
+        {"error_index": 0, "lessons": ["subjunctive"]},
+        {"error_index": 1, "lessons": ["indirect-object-pronouns", "direct-object-pronouns"]},
+        {"error_index": 3, "lessons": ["conditional", "imparfait"]}
+      ]
+    },
+    {
+      "id": "fb-022",
+      "targets": [
+        {"error_index": 0, "lessons": ["subjunctive"]},
+        {"error_index": 1, "lessons": ["subjunctive"]},
+        {"error_index": 2, "lessons": ["prepositions-conjunctions-adverbs"]}
+      ]
+    }
+  ]
+}

@@ -18,6 +18,7 @@ export { default as LessonCard } from './LessonCard'
 export { default as LessonSearch } from './LessonSearch'
 export { default as LessonBrowser } from './LessonBrowser'
 export { default as RecommendedLessons } from './RecommendedLessons'
+export { default as StudyPlan, StudyPlanView } from './StudyPlan'
 
 // Grammar Reference Components (Phase 2)
 export { default as ReferenceCard } from './ReferenceCard'

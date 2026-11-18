@@ -243,9 +243,14 @@ export function isComparable(feature: FeatureReport): boolean {
   return feature.rows.length >= 2
 }
 
-/** Capitalised feature name for headings, e.g. "chat" -> "Chat". */
+/**
+ * Capitalised feature name for headings, e.g. "chat" -> "Chat",
+ * "study_coach" -> "Study coach" (issue #270).
+ */
 export function featureTitle(feature: string): string {
-  return feature ? feature.charAt(0).toUpperCase() + feature.slice(1) : feature
+  if (!feature) return feature
+  const words = feature.replace(/_/g, ' ')
+  return words.charAt(0).toUpperCase() + words.slice(1)
 }
 
 /** PDF filename, matching the backend's naming: llm-model-report-YYYYMMDD-HHMM.pdf. */

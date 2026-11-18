@@ -15,6 +15,10 @@ LLM_ENV_VARS = [
     "CLAUDE_CHAT_EFFORT",
     "CLAUDE_FEEDBACK_EFFORT",
     "LLM_PRICING_FILE",
+    "STUDY_COACH_ENABLED",
+    "STUDY_COACH_MODEL",
+    "CLAUDE_STUDY_COACH_EFFORT",
+    "STUDY_COACH_MAX_ITERATIONS",
 ]
 
 
@@ -157,3 +161,29 @@ class TestEffortValidation:
     def test_invalid_effort_rejected(self):
         with pytest.raises(ValidationError):
             make_settings(ANTHROPIC_API_KEY="key", CLAUDE_FEEDBACK_EFFORT="extreme")
+
+
+class TestStudyCoachSettings:
+    """Issue #270: study-coach settings."""
+
+    def test_defaults(self):
+        settings = make_settings(ANTHROPIC_API_KEY="a")
+        assert settings.STUDY_COACH_ENABLED is True
+        assert settings.STUDY_COACH_MODEL == "claude-sonnet-5-5"
+        assert settings.CLAUDE_STUDY_COACH_EFFORT is None
+        assert settings.STUDY_COACH_MAX_ITERATIONS == 8
+
+    @pytest.mark.parametrize("value", [1, 21])
+    def test_iteration_cap_bounds(self, value):
+        with pytest.raises(ValidationError):
+            make_settings(ANTHROPIC_API_KEY="a", STUDY_COACH_MAX_ITERATIONS=value)
+
+    def test_invalid_effort_rejected(self):
+        with pytest.raises(ValidationError):
+            make_settings(ANTHROPIC_API_KEY="a", CLAUDE_STUDY_COACH_EFFORT="extreme")
+
+    def test_mistral_only_setup_starts_without_anthropic_key(self):
+        """The study coach is left out of the startup key check."""
+        settings = make_settings(MISTRAL_API_KEY="m", **ALL_MISTRAL)
+        assert settings.STUDY_COACH_ENABLED is True
+        assert settings.ANTHROPIC_API_KEY is None

@@ -3,7 +3,8 @@
 Routes each feature to the provider and model chosen in config, times the call and
 records an ``llm_calls`` row per provider call. Feedback output is validated against
 ``FeedbackResponse`` and retried once on failure; there is no fallback feedback
-(issue #229).
+(issue #229). The study coach (issue #270) is one agent run per request, recorded as
+one row.
 """
 
 import logging
@@ -19,6 +20,7 @@ from schemas.session import FeedbackResponse
 from services.llm.base import (
     FEATURE_CHAT,
     FEATURE_FEEDBACK,
+    FEATURE_STUDY_COACH,
     FeedbackCorrection,
     FeedbackValidationError,
     LLMProvider,
@@ -35,6 +37,10 @@ FEEDBACK_MAX_ATTEMPTS = 2
 
 ERROR_INVALID_JSON = "invalid_json"
 ERROR_SCHEMA_MISMATCH = "schema_mismatch"
+
+
+class StudyCoachUnavailableError(RuntimeError):
+    """The study coach can't run: it's turned off or ``ANTHROPIC_API_KEY`` is missing."""
 
 
 class FeedbackOutputError(ValueError):
@@ -92,6 +98,7 @@ def build_provider(provider_id: str, config: Settings) -> LLMProvider:
             config.ANTHROPIC_API_KEY,
             chat_effort=config.CLAUDE_CHAT_EFFORT,
             feedback_effort=config.CLAUDE_FEEDBACK_EFFORT,
+            study_coach_effort=config.CLAUDE_STUDY_COACH_EFFORT,
         )
     raise ValueError(f"Unknown LLM provider: {provider_id!r}")
 
@@ -238,6 +245,83 @@ class LLMService:
             errors=errors,
             result=result,
         )
+
+    async def get_study_plan(
+        self,
+        messages: list[dict[str, str]],
+        feedback: dict[str, Any],
+        difficulty: str,
+        db: Optional[AsyncSession] = None,
+        session_id: Optional[int] = None,
+        server_factory: Optional[Callable[[], Any]] = None,
+    ) -> Any:
+        """Run the study-coach agent and return its validated plan (issue #270).
+
+        Claude only: the run uses the Anthropic provider and ``STUDY_COACH_MODEL``,
+        capped at ``STUDY_COACH_MAX_ITERATIONS`` model calls. The whole run is recorded
+        as one ``llm_calls`` row (``feature="study_coach"``) with usage summed over its
+        calls and the run's wall-clock latency, whether it succeeds or fails.
+
+        Args:
+            messages: Session transcript.
+            feedback: Stored session feedback.
+            difficulty: Session difficulty level.
+            db: Session used to record the run; no row is written when ``None``.
+            session_id: Conversation session id stored on the row.
+            server_factory: Builds the #268 MCP server (tests bind it to the test DB).
+
+        Returns:
+            A :class:`services.llm.study_coach.StudyCoachOutcome` with ``latency_ms`` set.
+
+        Raises:
+            StudyCoachUnavailableError: Turned off or no Anthropic key (nothing recorded).
+            AgentRunError: No valid plan (iteration cap or none submitted), after recording.
+            LLMProviderError: Refusal or API failure, after recording.
+            Exception: Anything else, after recording an error row without usage.
+        """
+        from services.llm.study_coach import run_study_coach
+
+        if not self._settings.STUDY_COACH_ENABLED:
+            raise StudyCoachUnavailableError(
+                "The study coach is turned off (STUDY_COACH_ENABLED=false)."
+            )
+        if "anthropic" not in self._providers and not self._settings.ANTHROPIC_API_KEY:
+            raise StudyCoachUnavailableError("The study coach needs ANTHROPIC_API_KEY.")
+
+        provider_id = "anthropic"
+        model = self._settings.STUDY_COACH_MODEL
+        provider = self.get_provider(provider_id)
+        start = time.perf_counter()
+        try:
+            outcome = await run_study_coach(
+                provider,
+                model=model,
+                max_iterations=self._settings.STUDY_COACH_MAX_ITERATIONS,
+                settings=self._settings,
+                messages=messages,
+                feedback=feedback,
+                difficulty=difficulty,
+                server_factory=server_factory,
+            )
+        except Exception as exc:
+            latency_ms = int(round((time.perf_counter() - start) * 1000))
+            usage = exc.result if isinstance(exc, LLMProviderError) else None
+            logger.warning("Study coach run failed for session %s: %s", session_id, exc)
+            await self._record(
+                db, FEATURE_STUDY_COACH, provider_id, model, latency_ms,
+                STATUS_ERROR, usage, session_id, str(exc) or type(exc).__name__,
+            )
+            raise
+        outcome.latency_ms = int(round((time.perf_counter() - start) * 1000))
+        logger.info(
+            "Study coach run for session %s: %d model call(s), stop_reason=%s",
+            session_id, outcome.result.iterations, outcome.result.stop_reason,
+        )
+        await self._record(
+            db, FEATURE_STUDY_COACH, provider_id, model, outcome.latency_ms,
+            STATUS_SUCCESS, outcome.result, session_id,
+        )
+        return outcome
 
     @staticmethod
     async def _record(

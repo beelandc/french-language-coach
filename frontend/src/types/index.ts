@@ -61,6 +61,41 @@ export interface Feedback {
   example_corrections: Correction[]
 }
 
+// Study plan types (Issue #270)
+export type CardProposalStatus = 'pending' | 'accepted' | 'rejected'
+
+/** A flashcard the study coach proposed; written only when the learner accepts it. */
+export interface CardProposal {
+  id: number
+  front: string
+  back: string
+  example: string | null
+  source: string | null
+  status: CardProposalStatus
+  already_known: boolean
+  card_id: number | null
+  deck_id: number | null
+}
+
+/** One step of a study plan: a lesson (and exercises) for some of the session's errors. */
+export interface StudyPlanItem {
+  lesson_id: string
+  lesson_title: string
+  exercise_ids: string[]
+  addresses: string[]
+  why: string
+}
+
+/** A session's study plan from the study coach. */
+export interface StudyPlan {
+  session_id: number
+  summary: string
+  items: StudyPlanItem[]
+  proposals: CardProposal[]
+  model: string
+  created_at: string
+}
+
 // API Response types
 export interface CreateSessionResponse {
   id: string

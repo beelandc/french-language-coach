@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
 from models.session import Session as SessionModel
+from models.study_plan import StudyPlan
 from pydantic import BaseModel
 from schemas.session import SessionCreate, SessionResponse, SessionListResponse, SessionSummary, PaginationInfo
 from scenarios import get_scenario, VALID_DIFFICULTIES, SCENARIOS
@@ -248,6 +249,7 @@ async def delete_session(
     
     Returns 204 on success, 404 if session not found.
     Locked sessions cannot be deleted to prevent accidental deletion of active sessions.
+    The session's study plan and card proposals are deleted with it (issue #270).
     """
     session = await db.get(SessionModel, session_id)
     if not session:
@@ -256,7 +258,13 @@ async def delete_session(
     # Check if session is locked (prevents deletion of sessions in use)
     if session.is_locked:
         raise HTTPException(status_code=400, detail="Cannot delete locked session")
-    
+
+    # SQLite doesn't enforce foreign keys here, so remove the session's study plan
+    # (and, by ORM cascade, its card proposals) explicitly. Accepted cards stay (#270).
+    plans = await db.execute(select(StudyPlan).where(StudyPlan.session_id == session_id))
+    for plan in plans.scalars().all():
+        await db.delete(plan)
+
     await db.delete(session)
     await db.commit()
     return Response(status_code=204)

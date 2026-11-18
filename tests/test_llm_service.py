@@ -561,3 +561,108 @@ class TestFeedbackSystemPrompt:
             await service.get_feedback(HISTORY, db=test_db)
         client.chat.complete_async.assert_not_awaited()
         assert await all_calls(test_db) == []
+
+
+class TestGetStudyPlan:
+    """Issue #270: the study-coach run is routed through LLMService and logged as one row."""
+
+    @staticmethod
+    def service(script, **overrides):
+        from mcp_server import create_server
+        from tests.conftest import AsyncTestingSession
+
+        service = LLMService(
+            settings=make_settings(**overrides),
+            providers={"anthropic": AnthropicProvider("a", client=script.client())},
+        )
+        factory = lambda: create_server(session_factory=AsyncTestingSession)  # noqa: E731
+        return service, factory
+
+    @pytest.mark.asyncio
+    async def test_success_records_one_row_with_summed_usage(self, test_db):
+        """AC2: cost and latency logged per run."""
+        from tests.llm_fakes import (
+            STUDY_FEEDBACK, STUDY_MESSAGES, ScriptedClaude, study_plan_input, text_turn, tool_use_turn,
+        )
+
+        script = ScriptedClaude([
+            tool_use_turn("recommend_lessons_for_focus_area", {"focus_area": "subjonctif"}, usage=(1000, 200)),
+            tool_use_turn("submit_study_plan", study_plan_input(), usage=(1500, 150)),
+            text_turn("OK.", usage=(1800, 300)),
+        ])
+        service, factory = self.service(script)
+
+        outcome = await service.get_study_plan(
+            STUDY_MESSAGES, STUDY_FEEDBACK, "intermediate", db=test_db, session_id=11,
+            server_factory=factory,
+        )
+
+        assert outcome.plan.items[0].lesson_id == "subjunctive"
+        assert outcome.latency_ms >= 0
+        [row] = await all_calls(test_db)
+        assert (row.feature, row.provider, row.model) == ("study_coach", "anthropic", "claude-sonnet-5-5")
+        assert (row.input_tokens, row.output_tokens) == (4300, 650)
+        assert row.estimated_cost_usd == pytest.approx((4300 * 2.0 + 650 * 10.0) / 1e6)
+        assert (row.status, row.session_id, row.error_message) == ("success", 11, None)
+        assert row.latency_ms == outcome.latency_ms
+
+    @pytest.mark.asyncio
+    async def test_iteration_cap_records_error_row(self, test_db):
+        from services.llm.base import AgentRunError
+        from tests.llm_fakes import STUDY_FEEDBACK, STUDY_MESSAGES, ScriptedClaude, tool_use_turn
+
+        script = ScriptedClaude([tool_use_turn("list_exercises", {}, usage=(500, 20))] * 3)
+        service, factory = self.service(script, STUDY_COACH_MAX_ITERATIONS=3)
+
+        with pytest.raises(AgentRunError):
+            await service.get_study_plan(
+                STUDY_MESSAGES, STUDY_FEEDBACK, "beginner", db=test_db, session_id=4,
+                server_factory=factory,
+            )
+
+        [row] = await all_calls(test_db)
+        assert row.status == "error"
+        assert row.error_message.startswith("iteration_cap:")
+        assert (row.input_tokens, row.output_tokens) == (1500, 60)
+
+    @pytest.mark.asyncio
+    async def test_unexpected_error_records_row_without_usage(self, test_db):
+        from tests.llm_fakes import STUDY_FEEDBACK, STUDY_MESSAGES, ScriptedClaude
+
+        service, _ = self.service(ScriptedClaude([]))
+
+        def broken_factory():
+            raise ValueError("no server")
+
+        with pytest.raises(ValueError):
+            await service.get_study_plan(
+                STUDY_MESSAGES, STUDY_FEEDBACK, "beginner", db=test_db, server_factory=broken_factory,
+            )
+
+        [row] = await all_calls(test_db)
+        assert (row.status, row.error_message, row.input_tokens) == ("error", "no server", 0)
+
+    @pytest.mark.asyncio
+    async def test_disabled_raises_without_row(self, test_db):
+        from services.llm import StudyCoachUnavailableError
+        from tests.llm_fakes import ScriptedClaude
+
+        service, _ = self.service(ScriptedClaude([]), STUDY_COACH_ENABLED=False)
+
+        with pytest.raises(StudyCoachUnavailableError, match="turned off"):
+            await service.get_study_plan([], {}, "beginner", db=test_db)
+        assert await all_calls(test_db) == []
+
+    @pytest.mark.asyncio
+    async def test_missing_key_raises_without_row(self, test_db):
+        from services.llm import StudyCoachUnavailableError
+
+        service = LLMService(settings=make_settings(ANTHROPIC_API_KEY=None))
+
+        with pytest.raises(StudyCoachUnavailableError, match="ANTHROPIC_API_KEY"):
+            await service.get_study_plan([], {}, "beginner", db=test_db)
+        assert await all_calls(test_db) == []
+
+    def test_build_provider_passes_study_coach_effort(self):
+        provider = build_provider("anthropic", make_settings(CLAUDE_STUDY_COACH_EFFORT="low"))
+        assert provider.study_coach_effort == "low"
