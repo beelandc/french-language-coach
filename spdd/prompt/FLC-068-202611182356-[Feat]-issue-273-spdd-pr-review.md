@@ -422,7 +422,7 @@ Implemented by Claude Code (Claude Opus 5.5) from the prompt above, after the us
 - [x] Code follows existing patterns (`scripts/check_module_coverage.py` style; the test loads the script with `importlib` like `tests/test_check_module_coverage.py`; workflow actions at the same major versions as the existing workflows)
 - [x] Tests pass at 80%+ coverage (99% of the script, measured explicitly)
 - [x] Documentation updated (README, SPDD.md)
-- [ ] All acceptance criteria met. AC1, AC2 and AC5 can only be fully shown by a live run on GitHub (see Verification)
+- [x] All acceptance criteria met (AC1, AC2 and AC5 confirmed by the first live run on PR #286, see Verification)
 
 ### Issues Found
 - The `pull_request_target` guard test first matched the word inside the workflow's own comment. It now checks the trigger keys.
@@ -445,7 +445,8 @@ Implemented by Claude Code (Claude Opus 5.5) from the prompt above, after the us
 - [x] AC3: advisory. `status-gateway.yml` is unchanged; `SPDD Review` isn't in `expectedWorkflowNames` (guard test); the Claude step is `continue-on-error`.
 - [x] AC4: forks, drafts and Dependabot are skipped by the job `if:`. With no key, the CLI steps are skipped and the comment shows facts only. The key is only in the Claude step's env (guard test).
 - [x] AC6: the deterministic logic is tested at 99%.
-- [ ] AC1 / AC2 / AC5: built and unit-tested. A live run on this issue's PR will confirm them: it needs the `ANTHROPIC_API_KEY` repository secret, and without it that run tests the facts-only path.
+- [x] AC1 / AC2 / AC5: confirmed live on PR #286 (run `44625679188`). The `ANTHROPIC_API_KEY` secret was already set. Every step succeeded, and `claude -p` ran with the pinned CLI and the read-only flags. `github-actions[bot]` posted exactly one marker comment with the facts table (prompt before code: ✅ proven, `e826f68` → `d6147c9` → `7af79d9`) and Claude's AC table (1 partly, 2 met). The footer showed `claude-sonnet-5-5 · $0.03 · 2 turns · budget $1.00`.
+  - Observation: 2 turns and $0.03 is well under the estimate. Claude leaned on the facts and the PR body and read little of the diff. Worth watching on larger PRs; deeper reading would be a prompt change.
 - [x] No breaking changes (new files, plus additive docs).
 - [ ] Human review completed
 
