@@ -9,6 +9,7 @@ from typing import Any, Optional
 
 import anthropic
 
+from config import DEFAULT_LLM_TIMEOUT_SECONDS
 from services.llm.base import (
     FEATURE_CHAT,
     FEATURE_FEEDBACK,
@@ -19,6 +20,7 @@ from services.llm.base import (
     FeedbackCorrection,
     LLMProvider,
     LLMProviderError,
+    LLMProviderTimeoutError,
     LLMResult,
     build_feedback_turns,
 )
@@ -64,6 +66,7 @@ class AnthropicProvider(LLMProvider):
         feedback_effort: Optional[str] = None,
         client: Any = None,
         study_coach_effort: Optional[str] = None,
+        timeout_seconds: int = DEFAULT_LLM_TIMEOUT_SECONDS,
     ):
         """Create the provider.
 
@@ -76,19 +79,32 @@ class AnthropicProvider(LLMProvider):
             client: Optional pre-built client (used by tests to inject a mock).
             study_coach_effort: Effort override for the study coach; defaults to
                 ``DEFAULT_EFFORT["study_coach"]``.
+            timeout_seconds: SDK request timeout shared by all Anthropic calls.
         """
-        self._client = (
-            client if client is not None else anthropic.AsyncAnthropic(api_key=api_key)
+        self.timeout_seconds = timeout_seconds
+        self._client = client if client is not None else anthropic.AsyncAnthropic(
+            api_key=api_key,
+            timeout=timeout_seconds,
+            max_retries=0,
         )
         self.chat_effort = chat_effort or DEFAULT_EFFORT[FEATURE_CHAT]
         self.feedback_effort = feedback_effort or DEFAULT_EFFORT[FEATURE_FEEDBACK]
         self.study_coach_effort = study_coach_effort or DEFAULT_EFFORT[FEATURE_STUDY_COACH]
 
+    async def _create_message(self, **kwargs: Any) -> Any:
+        """Create a message and normalize Anthropic SDK timeout errors."""
+        try:
+            return await self._client.messages.create(**kwargs)
+        except anthropic.APITimeoutError as exc:
+            raise LLMProviderTimeoutError(
+                "anthropic", self.timeout_seconds, exc
+            ) from exc
+
     async def chat(
         self, messages: list[dict[str, str]], system_prompt: str, model: str
     ) -> LLMResult:
         """Return the next role-play reply, with the scenario prompt as ``system``."""
-        response = await self._client.messages.create(
+        response = await self._create_message(
             model=model,
             max_tokens=MAX_TOKENS,
             system=system_prompt,
@@ -110,7 +126,7 @@ class AnthropicProvider(LLMProvider):
         output and the correction turn follow the transcript (see
         :func:`build_feedback_turns`); the schema is kept.
         """
-        response = await self._client.messages.create(
+        response = await self._create_message(
             model=model,
             max_tokens=MAX_TOKENS,
             system=system_prompt,
@@ -179,6 +195,10 @@ class AnthropicProvider(LLMProvider):
                 )
                 result.iterations += 1
                 last = message
+        except anthropic.APITimeoutError as exc:
+            raise LLMProviderTimeoutError(
+                "anthropic", self.timeout_seconds, exc, result
+            ) from exc
         except anthropic.APIError as exc:
             raise LLMProviderError(f"api_error: {type(exc).__name__}", result) from exc
 

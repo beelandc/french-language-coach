@@ -5,6 +5,8 @@ Both SDKs are mocked; no network calls.
 
 from unittest.mock import patch
 
+import anthropic
+import httpx2
 import pytest
 from mistralai.client.models import TextChunk, ThinkChunk
 from sqlalchemy import select
@@ -15,7 +17,12 @@ from models.session import Session as SessionModel
 from schemas.session import FeedbackResponse
 from services.llm.anthropic_provider import AnthropicProvider
 from services.llm.mistral_provider import EMPTY_RESPONSE_ERROR, MistralProvider
-from routers.feedback import FEEDBACK_INVALID_DETAIL, FEEDBACK_UNUSABLE_DETAIL
+from routers.feedback import (
+    FEEDBACK_INVALID_DETAIL,
+    FEEDBACK_TIMEOUT_DETAIL,
+    FEEDBACK_UNUSABLE_DETAIL,
+)
+from routers.messages import CHAT_TIMEOUT_DETAIL
 from services.llm.service import LLMService
 from tests.llm_fakes import (
     VALID_FEEDBACK_JSON,
@@ -240,6 +247,19 @@ class TestMistralContentChunks:
 TWO_MESSAGES = '[{"role": "assistant", "content": "Bonjour !"}, {"role": "user", "content": "Un café"}]'
 
 
+def timeout_provider(provider_id):
+    if provider_id == "mistral":
+        request = httpx2.Request("POST", "https://api.mistral.ai/v1/chat/completions")
+        timeout = httpx2.ReadTimeout("", request=request)
+        client = make_mistral_client(side_effect=timeout)
+        return MistralProvider("m", client=client), client, "mistral-large-latest"
+
+    request = httpx2.Request("POST", "https://api.anthropic.com/v1/messages")
+    timeout = anthropic.APITimeoutError(request)
+    client = make_claude_client(side_effect=timeout)
+    return AnthropicProvider("a", client=client), client, "claude-sonnet-5-5"
+
+
 class TestFeedbackFailures:
     """Issue #229: 502 instead of fabricated feedback; the session stays open."""
 
@@ -278,6 +298,73 @@ class TestFeedbackFailures:
             ("error", "invalid_json"), ("error", "schema_mismatch"), ("success", ""),
         ]
         assert {c["session_id"] for c in calls} == {session_id}
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("provider_id", ["mistral", "anthropic"])
+    async def test_timeout_returns_clear_502_and_keeps_session_open(
+        self, provider_id, client, test_db
+    ):
+        session_id = await create_session(test_db, TWO_MESSAGES)
+        provider, sdk_client, model = timeout_provider(provider_id)
+        service = LLMService(
+            settings=make_settings(
+                FEEDBACK_PROVIDER=provider_id,
+                FEEDBACK_MODEL=model,
+            ),
+            providers={provider_id: provider},
+        )
+
+        with patch("routers.feedback.llm_service", service):
+            response = client.post(f"/sessions/{session_id}/feedback/")
+
+        assert response.status_code == 502
+        assert response.json() == {"detail": FEEDBACK_TIMEOUT_DETAIL}
+        session = await test_db.get(SessionModel, session_id)
+        assert session.ended_at is None
+        assert session.feedback_dict is None
+        [call] = (await test_db.execute(select(LLMCall))).scalars().all()
+        assert call.status == "error"
+        assert call.error_message == (
+            f"timeout: {provider_id} request exceeded configured 120s limit "
+            f"({'ReadTimeout' if provider_id == 'mistral' else 'APITimeoutError'})"
+        )
+        if provider_id == "anthropic":
+            sdk_client.messages.create.assert_awaited_once()
+        else:
+            sdk_client.chat.complete_async.assert_awaited_once()
+
+
+class TestChatTimeouts:
+    @pytest.mark.parametrize("provider_id", ["mistral", "anthropic"])
+    @pytest.mark.asyncio
+    async def test_timeout_returns_clear_502_and_does_not_commit_partial_exchange(
+        self, provider_id, client, test_db
+    ):
+        initial_messages = '[{"role": "assistant", "content": "Bonjour !"}]'
+        session_id = await create_session(test_db, initial_messages)
+        provider, sdk_client, model = timeout_provider(provider_id)
+        service = LLMService(
+            settings=make_settings(CHAT_PROVIDER=provider_id, CHAT_MODEL=model),
+            providers={provider_id: provider},
+        )
+
+        with patch("routers.messages.llm_service", service):
+            response = client.post(
+                f"/sessions/{session_id}/messages/",
+                json={"content": "Un café"},
+            )
+
+        assert response.status_code == 502
+        assert response.json() == {"detail": CHAT_TIMEOUT_DETAIL}
+        session = await test_db.get(SessionModel, session_id)
+        assert session.messages_list == [{"role": "assistant", "content": "Bonjour !"}]
+        [call] = (await test_db.execute(select(LLMCall))).scalars().all()
+        assert call.status == "error"
+        assert call.error_message.startswith(f"timeout: {provider_id} request exceeded configured 120s")
+        if provider_id == "anthropic":
+            sdk_client.messages.create.assert_awaited_once()
+        else:
+            sdk_client.chat.complete_async.assert_awaited_once()
 
     @pytest.mark.asyncio
     async def test_claude_refusal_returns_502_without_retry(self, client, test_db):

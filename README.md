@@ -133,6 +133,7 @@ Each scenario supports three difficulty levels that affect the AI's system promp
    | `CHAT_MODEL` | `claude-sonnet-5-5` | Model for chat, e.g. `claude-haiku-5-5` with `anthropic` or `mistral-large-latest` with `mistral`. |
    | `FEEDBACK_PROVIDER` | `anthropic` | Provider for end-of-session feedback: `anthropic` or `mistral`. |
    | `FEEDBACK_MODEL` | `claude-sonnet-5-5` | Model for feedback. |
+   | `LLM_TIMEOUT_SECONDS` | `120` | SDK request timeout for both providers; SDK automatic retries are disabled. Must be positive. |
    | `CLAUDE_CHAT_EFFORT` | `low` when unset | Optional Claude effort for chat: `low`, `medium`, `high`, `xhigh`, `max`. |
    | `CLAUDE_FEEDBACK_EFFORT` | `medium` when unset | Optional Claude effort for feedback. |
    | `LLM_PRICING_FILE` | `data/llm_pricing.json` | Optional path to the LLM price table used for cost estimates. |
@@ -522,6 +523,8 @@ All LLM calls go through the provider layer in `services/llm/` (Issue #228). `LL
 | `study_coach` | Post-session study plan (`POST /sessions/{id}/study-plan/`), see [Study coach](#study-coach-issue-270) | Claude only: `STUDY_COACH_MODEL` |
 
 Both providers use async SDK clients, so LLM calls don't block the FastAPI event loop. Defaults: both features on Claude Sonnet 5.5 (`claude-sonnet-5-5`) on the first-party Anthropic API, chosen from the [evaluation](#evaluation) ([decision record 001](docs/decisions/001-model-choice.md)). Other models in scope: `claude-haiku-5-5`, optionally `claude-opus-5-5`, and Mistral `mistral-large-latest` (set a feature's provider to `mistral`).
+
+Both provider SDK clients use the positive `LLM_TIMEOUT_SECONDS` setting (default `120`). SDK automatic retries are disabled for Mistral and Anthropic so retry backoff cannot multiply a stalled request's wait. Chat and feedback timeouts return HTTP 502 with a retryable message and are recorded as failed `llm_calls` with the timeout and exception type. The shared Anthropic client also applies this timeout to study-coach requests.
 
 ### 1. Conversation Mode (`chat`)
 

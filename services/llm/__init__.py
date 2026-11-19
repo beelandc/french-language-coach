@@ -15,6 +15,7 @@ from services.llm.base import (
     FeedbackValidationError,
     LLMProvider,
     LLMProviderError,
+    LLMProviderTimeoutError,
     LLMResult,
 )
 from services.llm.service import LLMService, StudyCoachUnavailableError, llm_service
@@ -29,6 +30,7 @@ __all__ = [
     "FeedbackValidationError",
     "LLMProvider",
     "LLMProviderError",
+    "LLMProviderTimeoutError",
     "LLMResult",
     "LLMService",
     "StudyCoachUnavailableError",

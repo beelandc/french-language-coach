@@ -5,7 +5,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from database import get_db
 from models.session import Session as SessionModel
 from schemas.session import FeedbackResponse
-from services.llm import FeedbackValidationError, LLMProviderError, llm_service
+from services.llm import (
+    FeedbackValidationError,
+    LLMProviderError,
+    LLMProviderTimeoutError,
+    llm_service,
+)
 
 router = APIRouter(prefix="/sessions/{session_id}/feedback", tags=["feedback"])
 
@@ -16,6 +21,10 @@ FEEDBACK_INVALID_DETAIL = (
 )
 FEEDBACK_UNUSABLE_DETAIL = (
     "Feedback could not be generated: the AI service returned an unusable response. "
+    "Your session is still open — please try again."
+)
+FEEDBACK_TIMEOUT_DETAIL = (
+    "Feedback could not be generated because the AI service timed out. "
     "Your session is still open — please try again."
 )
 
@@ -47,6 +56,8 @@ async def generate_feedback(
 
     try:
         feedback = await llm_service.get_feedback(messages, db=db, session_id=session.id)
+    except LLMProviderTimeoutError:
+        raise HTTPException(status_code=502, detail=FEEDBACK_TIMEOUT_DETAIL) from None
     except FeedbackValidationError:
         raise HTTPException(status_code=502, detail=FEEDBACK_INVALID_DETAIL)
     except LLMProviderError:

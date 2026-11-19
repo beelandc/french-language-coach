@@ -12,6 +12,7 @@ LLM_ENV_VARS = [
     "CHAT_MODEL",
     "FEEDBACK_PROVIDER",
     "FEEDBACK_MODEL",
+    "LLM_TIMEOUT_SECONDS",
     "CLAUDE_CHAT_EFFORT",
     "CLAUDE_FEEDBACK_EFFORT",
     "LLM_PRICING_FILE",
@@ -56,6 +57,7 @@ class TestDefaults:
         assert settings.FEEDBACK_MODEL == "claude-sonnet-5-5"
         assert settings.CLAUDE_CHAT_EFFORT is None
         assert settings.CLAUDE_FEEDBACK_EFFORT is None
+        assert settings.LLM_TIMEOUT_SECONDS == 120
         assert settings.LLM_PRICING_FILE == "data/llm_pricing.json"
         assert settings.MISTRAL_API_KEY is None
 
@@ -145,11 +147,18 @@ class TestProviderValidation:
         monkeypatch.setenv("CHAT_MODEL", "claude-haiku-5-5")
         monkeypatch.setenv("FEEDBACK_PROVIDER", "anthropic")
         monkeypatch.setenv("CLAUDE_FEEDBACK_EFFORT", "high")
+        monkeypatch.setenv("LLM_TIMEOUT_SECONDS", "75")
 
         settings = make_settings()
 
         assert settings.CHAT_MODEL == "claude-haiku-5-5"
         assert settings.CLAUDE_FEEDBACK_EFFORT == "high"
+        assert settings.LLM_TIMEOUT_SECONDS == 75
+
+    @pytest.mark.parametrize("value", [0, -1])
+    def test_timeout_must_be_positive(self, value):
+        with pytest.raises(ValidationError):
+            make_settings(ANTHROPIC_API_KEY="a", LLM_TIMEOUT_SECONDS=value)
 
 
 class TestEffortValidation:

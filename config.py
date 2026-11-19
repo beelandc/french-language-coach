@@ -13,6 +13,7 @@ from pydantic_settings import BaseSettings
 
 ProviderId = Literal["mistral", "anthropic"]
 ClaudeEffort = Literal["low", "medium", "high", "xhigh", "max"]
+DEFAULT_LLM_TIMEOUT_SECONDS = 120
 
 # Environment variable that holds the API key for each provider.
 PROVIDER_KEY_SETTINGS: dict[str, str] = {
@@ -33,6 +34,7 @@ class Settings(BaseSettings):
     CHAT_MODEL: str = "claude-sonnet-5-5"
     FEEDBACK_PROVIDER: ProviderId = "anthropic"
     FEEDBACK_MODEL: str = "claude-sonnet-5-5"
+    LLM_TIMEOUT_SECONDS: int = Field(DEFAULT_LLM_TIMEOUT_SECONDS, gt=0)
 
     # Optional Claude effort overrides; when unset the provider's defaults apply
     # (chat: low, feedback: medium).

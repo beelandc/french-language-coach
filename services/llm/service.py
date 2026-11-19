@@ -90,7 +90,10 @@ def build_provider(provider_id: str, config: Settings) -> LLMProvider:
     if provider_id == "mistral":
         from services.llm.mistral_provider import MistralProvider
 
-        return MistralProvider(config.MISTRAL_API_KEY)
+        return MistralProvider(
+            config.MISTRAL_API_KEY,
+            timeout_seconds=config.LLM_TIMEOUT_SECONDS,
+        )
     if provider_id == "anthropic":
         from services.llm.anthropic_provider import AnthropicProvider
 
@@ -99,6 +102,7 @@ def build_provider(provider_id: str, config: Settings) -> LLMProvider:
             chat_effort=config.CLAUDE_CHAT_EFFORT,
             feedback_effort=config.CLAUDE_FEEDBACK_EFFORT,
             study_coach_effort=config.CLAUDE_STUDY_COACH_EFFORT,
+            timeout_seconds=config.LLM_TIMEOUT_SECONDS,
         )
     raise ValueError(f"Unknown LLM provider: {provider_id!r}")
 

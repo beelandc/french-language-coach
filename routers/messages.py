@@ -5,9 +5,10 @@ from database import get_db
 from models.session import Session as SessionModel
 from schemas.session import MessageRequest, MessageResponse
 from scenarios import get_scenario
-from services.llm import llm_service
+from services.llm import LLMProviderTimeoutError, llm_service
 
 router = APIRouter(prefix="/sessions/{session_id}/messages", tags=["messages"])
+CHAT_TIMEOUT_DETAIL = "The AI service timed out before completing your response. Please try again."
 
 
 @router.post("/", response_model=MessageResponse)
@@ -33,9 +34,12 @@ async def send_message(
     user_message = {"role": "user", "content": message_request.content}
     messages.append(user_message)
 
-    ai_response = await llm_service.get_chat_response(
-        messages, scenario["system_prompt"], db=db, session_id=session.id
-    )
+    try:
+        ai_response = await llm_service.get_chat_response(
+            messages, scenario["system_prompt"], db=db, session_id=session.id
+        )
+    except LLMProviderTimeoutError:
+        raise HTTPException(status_code=502, detail=CHAT_TIMEOUT_DETAIL) from None
 
     ai_message = {"role": "assistant", "content": ai_response}
     messages.append(ai_message)

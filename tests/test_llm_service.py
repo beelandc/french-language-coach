@@ -78,14 +78,23 @@ class TestRoutingAndProviders:
             LLMService(settings=make_settings()).route("translate")
 
     def test_build_provider_mistral(self):
-        with patch("services.llm.mistral_provider.Mistral"):
-            assert isinstance(build_provider("mistral", make_settings()), MistralProvider)
+        settings = make_settings(LLM_TIMEOUT_SECONDS=75)
+        with patch("services.llm.mistral_provider.Mistral") as sdk:
+            provider = build_provider("mistral", settings)
+        assert isinstance(provider, MistralProvider)
+        kwargs = sdk.call_args.kwargs
+        assert kwargs["timeout_ms"] == 75_000
+        assert kwargs["retry_config"].strategy == "none"
 
     def test_build_provider_anthropic_passes_effort_overrides(self):
-        settings = make_settings(CLAUDE_CHAT_EFFORT="medium", CLAUDE_FEEDBACK_EFFORT="high")
+        settings = make_settings(
+            CLAUDE_CHAT_EFFORT="medium",
+            CLAUDE_FEEDBACK_EFFORT="high",
+            LLM_TIMEOUT_SECONDS=75,
+        )
         with patch("services.llm.anthropic_provider.anthropic.AsyncAnthropic") as sdk:
             provider = build_provider("anthropic", settings)
-        sdk.assert_called_once_with(api_key="a")
+        sdk.assert_called_once_with(api_key="a", timeout=75, max_retries=0)
         assert isinstance(provider, AnthropicProvider)
         assert (provider.chat_effort, provider.feedback_effort) == ("medium", "high")
 

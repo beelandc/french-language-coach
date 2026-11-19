@@ -2,19 +2,38 @@
 
 from typing import Any, Optional
 
+import httpx
 from mistralai.client import Mistral
+from mistralai.client.utils import BackoffStrategy, RetryConfig
+from config import DEFAULT_LLM_TIMEOUT_SECONDS
+
+try:
+    import httpx2
+except ImportError:  # Mistral SDK releases before 3.x use httpx.
+    httpx2 = httpx
 
 from services.llm.base import (
     FEEDBACK_PROMPT,
     FeedbackCorrection,
     LLMProvider,
     LLMProviderError,
+    LLMProviderTimeoutError,
     LLMResult,
     build_feedback_turns,
 )
 
 #: Error recorded when a response carries no usable text (issue #243).
 EMPTY_RESPONSE_ERROR = "empty_response: Mistral returned no text content"
+MISTRAL_TIMEOUT_ERRORS = (httpx.TimeoutException, httpx2.TimeoutException)
+
+
+def _no_retries() -> RetryConfig:
+    """Build Mistral's explicit no-retry policy (the SDK still requires backoff data)."""
+    return RetryConfig(
+        strategy="none",
+        backoff=BackoffStrategy(1, 1, 1.0, 1),
+        retry_connection_errors=False,
+    )
 
 
 def _get(obj: Any, name: str) -> Any:
@@ -53,21 +72,43 @@ class MistralProvider(LLMProvider):
 
     name = "mistral"
 
-    def __init__(self, api_key: Optional[str], client: Any = None):
+    def __init__(
+        self,
+        api_key: Optional[str],
+        client: Any = None,
+        timeout_seconds: int = DEFAULT_LLM_TIMEOUT_SECONDS,
+    ):
         """Create the provider.
 
         Args:
             api_key: Mistral API key.
             client: Optional pre-built client (used by tests to inject a mock).
+            timeout_seconds: SDK request timeout shared by chat and feedback.
         """
-        self._client = client if client is not None else Mistral(api_key=api_key)
+        self.timeout_seconds = timeout_seconds
+        self._client = (
+            client
+            if client is not None
+            else Mistral(
+                api_key=api_key,
+                timeout_ms=timeout_seconds * 1000,
+                retry_config=_no_retries(),
+            )
+        )
+
+    async def _complete(self, **kwargs: Any) -> Any:
+        """Make a completion call and normalize transport timeouts for the service."""
+        try:
+            return await self._client.chat.complete_async(**kwargs)
+        except MISTRAL_TIMEOUT_ERRORS as exc:
+            raise LLMProviderTimeoutError("mistral", self.timeout_seconds, exc) from exc
 
     async def chat(
         self, messages: list[dict[str, str]], system_prompt: str, model: str
     ) -> LLMResult:
         """Send the system prompt plus conversation history, as the original client did."""
         chat_messages = [{"role": "system", "content": system_prompt}] + messages
-        response = await self._client.chat.complete_async(
+        response = await self._complete(
             model=model,
             messages=chat_messages,
         )
@@ -86,7 +127,7 @@ class MistralProvider(LLMProvider):
         retry, the failed output and the correction turn follow the transcript (see
         :func:`build_feedback_turns`); JSON mode is kept.
         """
-        response = await self._client.chat.complete_async(
+        response = await self._complete(
             model=model,
             messages=[{"role": "system", "content": system_prompt}]
             + build_feedback_turns(messages, correction),

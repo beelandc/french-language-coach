@@ -53,6 +53,30 @@ class LLMProviderError(Exception):
         self.result = result
 
 
+class LLMProviderTimeoutError(LLMProviderError):
+    """Raised when an SDK request exceeds the configured provider timeout."""
+
+    provider_id: str
+    timeout_seconds: int
+    cause_type: str
+
+    def __init__(
+        self,
+        provider_id: str,
+        timeout_seconds: int,
+        cause: Exception,
+        result: Optional[LLMResult] = None,
+    ):
+        self.provider_id = provider_id
+        self.timeout_seconds = timeout_seconds
+        self.cause_type = type(cause).__name__
+        super().__init__(
+            f"timeout: {provider_id} request exceeded configured "
+            f"{timeout_seconds}s limit ({self.cause_type})",
+            result,
+        )
+
+
 @dataclass
 class AgentRunResult(LLMResult):
     """Result of one agent run: usage summed over every model call in the run (issue #270).

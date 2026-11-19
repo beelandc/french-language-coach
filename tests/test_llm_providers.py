@@ -3,6 +3,8 @@
 from types import SimpleNamespace
 from unittest.mock import patch
 
+import anthropic
+import httpx2
 import pytest
 from mistralai.client.models import TextChunk, ThinkChunk
 
@@ -18,6 +20,7 @@ from services.llm.base import (
     FEEDBACK_PROMPT,
     FeedbackCorrection,
     LLMProviderError,
+    LLMProviderTimeoutError,
     build_feedback_turns,
     build_transcript,
 )
@@ -171,8 +174,12 @@ class TestMistralProvider:
 
     def test_builds_async_sdk_client_when_not_injected(self):
         with patch("services.llm.mistral_provider.Mistral") as sdk:
-            MistralProvider(api_key="secret")
-        sdk.assert_called_once_with(api_key="secret")
+            MistralProvider(api_key="secret", timeout_seconds=45)
+        kwargs = sdk.call_args.kwargs
+        assert kwargs["api_key"] == "secret"
+        assert kwargs["timeout_ms"] == 45_000
+        assert kwargs["retry_config"].strategy == "none"
+        assert kwargs["retry_config"].retry_connection_errors is False
 
 
 async def mistral_chat_text(content, **usage):
@@ -428,9 +435,24 @@ class TestAnthropicProvider:
 
     def test_builds_async_sdk_client_with_explicit_key(self):
         with patch("services.llm.anthropic_provider.anthropic.AsyncAnthropic") as sdk:
-            provider = AnthropicProvider(api_key="secret")
-        sdk.assert_called_once_with(api_key="secret")
+            provider = AnthropicProvider(api_key="secret", timeout_seconds=45)
+        sdk.assert_called_once_with(api_key="secret", timeout=45, max_retries=0)
         assert (provider.chat_effort, provider.feedback_effort) == ("low", "medium")
+
+    @pytest.mark.asyncio
+    async def test_chat_timeout_error_names_provider_limit_and_sdk_exception(self):
+        request = httpx2.Request("POST", "https://api.anthropic.com/v1/messages")
+        client = make_claude_client(side_effect=anthropic.APITimeoutError(request))
+
+        with pytest.raises(LLMProviderError) as exc_info:
+            await AnthropicProvider("test", client=client, timeout_seconds=45).chat(
+                [], "SYS", "claude-sonnet-5-5"
+            )
+
+        assert str(exc_info.value) == (
+            "timeout: anthropic request exceeded configured 45s limit (APITimeoutError)"
+        )
+        client.messages.create.assert_awaited_once()
 
 
 class TestRunTools:
@@ -459,6 +481,40 @@ class TestRunTools:
         assert request["system"] == "SYS"
         assert request["max_tokens"] == MAX_TOKENS
         assert request["output_config"] == {"effort": "high"}
+
+    @pytest.mark.asyncio
+    async def test_timeout_error_preserves_usage_from_prior_tool_turns(self):
+        request = httpx2.Request("POST", "https://api.anthropic.com/v1/messages")
+
+        async def run_then_timeout():
+            yield SimpleNamespace(
+                usage=SimpleNamespace(
+                    input_tokens=11,
+                    output_tokens=4,
+                    cache_read_input_tokens=2,
+                )
+            )
+            raise anthropic.APITimeoutError(request)
+
+        client = make_claude_client()
+        client.beta.messages.tool_runner.return_value = run_then_timeout()
+        provider = AnthropicProvider("a", client=client, timeout_seconds=45)
+
+        with pytest.raises(LLMProviderTimeoutError) as exc_info:
+            await provider.run_tools(
+                system_prompt="S", messages=[{"role": "user", "content": "x"}],
+                tools=[], model="m", max_iterations=2,
+            )
+
+        assert str(exc_info.value) == (
+            "timeout: anthropic request exceeded configured 45s limit (APITimeoutError)"
+        )
+        assert exc_info.value.result is not None
+        assert (
+            exc_info.value.result.input_tokens,
+            exc_info.value.result.output_tokens,
+            exc_info.value.result.cache_read_tokens,
+        ) == (11, 4, 2)
 
     def test_default_study_coach_effort(self):
         assert AnthropicProvider("a", client=object()).study_coach_effort == "medium"
