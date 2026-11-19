@@ -386,6 +386,8 @@ Before merging any PR:
 6. **✅ Documentation updated** (README, code comments)
 7. **✅ Backward compatibility** maintained (unless intentional breaking change)
 
+The advisory **SPDD Review** workflow (Issue #273, see README "GitHub Actions CI/CD") comments on each PR: whether the analysis and prompt artifacts exist, whether they came before the code, and an AI assessment of the issue's acceptance criteria. It helps check gates 1 and 6, but it's not a required check and doesn't replace human review.
+
 ## References
 
 - [Structured Prompt Driven Development (Wei Zhang & Jessie Jie Xia)](https://martinfowler.com/articles/structured-prompt-driven.html)

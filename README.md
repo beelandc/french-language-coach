@@ -289,7 +289,8 @@ french-language-coach/
 │   └── vocabulary_cards/    # Vocabulary card JSON files organized by thematic decks (Phase 3, Issue #51)
 ├── scripts/
 │   ├── validate_grammar_lessons.py  # Validation script for grammar lessons
-│   └── validate_grammar_reference.py  # Validation script for grammar reference entries
+│   ├── validate_grammar_reference.py  # Validation script for grammar reference entries
+│   └── spdd_pr_facts.py     # SPDD facts for a PR (linked issue, artifacts, prompt-before-code verdict) and the SPDD Review comment (Issue #273)
 ├── evals/                   # Offline evaluation data and the feedback eval harness; not imported by the app (Issues #230, #231)
 │   ├── schema.py            # Pydantic models for a labeled feedback record + load_dataset()
 │   ├── run_feedback_eval.py # Eval harness CLI (`python3 -m evals.run_feedback_eval`): paid API calls, never run in CI (Issue #231)
@@ -407,6 +408,9 @@ french-language-coach/
 ├── .claude/
 │   ├── settings.json        # Claude Code shared project permissions (committed)
 │   └── skills/              # Claude Code project skills: /spdd-analysis, /spdd-prompt, /french-feedback-rubric (Issue #269)
+├── .github/
+│   ├── workflows/           # CI workflows (see GitHub Actions CI/CD)
+│   └── spdd-review/prompt.md # Reviewer instructions for the advisory SPDD Review workflow (Issue #273)
 ├── spdd/                    # SPDD artifacts: analysis/, prompt/, template/
 ├── docs/
 │   └── decisions/           # Decision records, e.g. 001-model-choice.md (Issue #232)
@@ -424,6 +428,7 @@ french-language-coach/
 │   ├── test_eval_scoring.py # Feedback eval: per-conversation scores and metrics (Issue #231)
 │   ├── test_eval_report.py # Feedback eval: JSON/Markdown reports and file naming (Issue #231)
 │   ├── test_eval_runner.py # Feedback eval: CLI, preflight, spend cap, fake-provider runs, no-CI check (Issue #231)
+│   ├── test_spdd_pr_facts.py # SPDD Review: linked issue, artifacts, ordering verdicts on temp git repos, comment rendering, workflow guards (Issue #273)
 │   ├── test_scenarios.py   # Tests for difficulty levels in scenarios
 │   └── test_schemas.py     # Tests for Pydantic schemas
 └── README.md
@@ -1156,6 +1161,29 @@ This workflow always runs on PRs to main and checks the status of all test workf
 7. If all triggered workflows passed, succeeds
 
 **For branch protection:** Configure your branch protection rule to require only the `Status Gateway / Status Check Gateway` check.
+
+### Advisory Workflows
+
+**spdd-review.yml** (`SPDD Review`) - An advisory SPDD compliance review on each PR ([Issue #273](https://github.com/beelandc/french-language-coach/issues/273)). It keeps **one** PR comment, edited in place on each push:
+
+1. **Deterministic facts** from [`scripts/spdd_pr_facts.py`](scripts/spdd_pr_facts.py): the linked issue (`Closes #N` in the PR body, then `issue-N` in the branch, then `(#N)` in the title), the issue's acceptance-criteria checklist, whether the analysis and prompt artifacts exist under `spdd/`, and whether they came before the code:
+   - ✅ **proven**: the artifacts were added in commits before the first code commit (or were already on `main`)
+   - 🟡 **consistent**: the artifacts were committed together with the code, so git can't prove the order, but the filename timestamps are in order and no later than the commit time
+   - ❌ **violation**: code was committed before an artifact, or the timestamps are out of order
+   - ❔ **unknown**: an artifact is missing
+2. **AI assessment**: Claude Code runs headless (`claude -p`, pinned version, model `claude-sonnet-5-5`) with read-only tools (Read, Grep, Glob, and `git diff`/`log`/`show`) and judges each acceptance criterion against the diff, following [`.github/spdd-review/prompt.md`](.github/spdd-review/prompt.md). Claude can't post or edit anything; the workflow posts the comment.
+
+Details:
+- **Advisory only**: not in `status-gateway.yml`'s `expectedWorkflowNames` and not a required check. If the Claude step fails, the comment still shows the deterministic facts.
+- **Secret**: needs an `ANTHROPIC_API_KEY` repository secret (Settings → Secrets and variables → Actions). Without it, the comment shows the deterministic facts only and no Claude call is made.
+- **Skipped**: PRs from forks (they get no secrets, and `pull_request_target` is never used), draft PRs and Dependabot PRs.
+- **Spend**: each run is capped by `--max-budget-usd` (`SPDD_REVIEW_MAX_BUDGET_USD`, default `1.00`), a 15-minute timeout, and a concurrency group that cancels the previous run on a new push. Expect about $0.10–$0.60 per run; the comment footer shows the actual cost. The model, budget and CLI version are `env` values at the top of the workflow.
+- **Run the facts locally** before opening a PR (uses `gh` to read the issue):
+  ```bash
+  python3 scripts/spdd_pr_facts.py facts --base origin/main --head HEAD \
+      --branch "$(git branch --show-current)" --output /tmp/spdd-facts.json
+  ```
+  The ordering can only be *proven* when the analysis and prompt are committed before the code, in their own commits.
 
 ## License
 
