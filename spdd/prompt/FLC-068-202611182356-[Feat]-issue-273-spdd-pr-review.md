@@ -389,35 +389,64 @@ DELIVERABLES:
 
 ## AI Response
 
-_To be completed after implementation._
+Implemented by Claude Code (Claude Opus 5.5) from the prompt above, after the user's go-ahead on 2026-11-19. The analysis (`e826f68`) and this prompt (`d6147c9`) were committed before any code.
+
+- **`scripts/spdd_pr_facts.py`** (standard library only; 99% line coverage). Subcommands `facts` and `render`.
+  - Public functions: `find_linked_issue`, `parse_artifact_timestamp`, `find_artifacts`, `extract_acceptance_criteria`, `is_code_path`, `assess_ordering`, `run_git`, `read_branch_commits`, `gh_issue_view`, `collect_facts`, `build_review_input`, `load_claude_output`, `render_comment`, `main`.
+  - The ordering verdicts are `proven`, `consistent`, `violation`, `unknown` and `no_code`, as specified.
+- **`.github/spdd-review/prompt.md`**: the reviewer instructions. The facts are authoritative; the output is only the AC table plus up to 3 notes; PR, issue and code text is treated as untrusted.
+- **`.github/workflows/spdd-review.yml`** ("SPDD Review"):
+  - Runs on `pull_request` (opened, reopened, ready_for_review, synchronize). The job-level `if:` skips forks, drafts and Dependabot.
+  - Permissions `contents: read`, `pull-requests: write`, `issues: read`; concurrency cancel-in-progress; 15-minute timeout.
+  - Steps: facts → key check → pinned CLI `2.1.318` → `claude -p` (read-only, `continue-on-error`) → render → upsert one marker comment with github-script → job summary.
+  - The render, upsert and summary steps use `!cancelled()`, so a cancelled, superseded run doesn't overwrite the comment.
+- **`tests/test_spdd_pr_facts.py`**: 88 tests. Ordering is tested against real temporary git repos with fixed dates and offsets; the issue fetcher is stubbed; workflow guard tests parse the YAML.
+- **Docs**:
+  - README: "Advisory Workflows" subsection; project-structure entries for `.github/`, the script and the test file.
+  - SPDD.md: a note under Quality Gates.
 
 ---
 
 ## Human Review Notes
 
-_To be completed after implementation._
-
 ### Changes Made
-- _Pending._
+- [x] **Artifacts are read from the head commit, not the working tree.** The prompt described a filesystem walk. `find_artifacts(repo_root, issue, ref)` uses `git ls-tree` plus one `git grep` for the `**GitHub Issue**: #N` header fallback. Local runs on any commit range are now correct: the first smoke run against PR #281's range had found artifacts on the current checkout instead.
+- [x] **The header fallback scans the whole file, not the first 20 lines.** That's a side effect of using `git grep`. The pattern (`**GitHub Issue**: #N` followed by a non-digit) is specific enough.
+- [x] **Claude API errors get their own message.** A free check of the pinned CLI with an invalid key showed that an API failure comes back as `is_error: true` with `subtype: "success"`, `terminal_reason: "api_error"`, `api_error_status: 401` and the message in `result`. The prompt's rule would have labelled that a "partial result". `_ai_section` now reports "Claude API error 401: <message>", and uses `terminal_reason` when it's there.
+- [x] **`collect_facts(fetch_issue=None)` defaults to `gh_issue_view` at call time**, so tests can patch it.
+- [x] **Table cells are escaped** (`|`, newlines), so a `gh` error message can't break the comment table.
+- [x] **`--allowedTools` is one comma-separated string.** The 2.1.318 help says "comma or space-separated", so it can't swallow the following flags.
+- [x] **The workflow checks out the PR head SHA** (`ref: head.sha`, `fetch-depth: 0`), not the default merge ref, so Claude reads the files as the PR authored them and `base..head` history is present.
 
 ### Quality Checks
-- [ ] Code follows existing patterns
-- [ ] Tests pass at 80%+ coverage
-- [ ] Documentation updated
-- [ ] All acceptance criteria met
+- [x] Code follows existing patterns (`scripts/check_module_coverage.py` style; the test loads the script with `importlib` like `tests/test_check_module_coverage.py`; workflow actions at the same major versions as the existing workflows)
+- [x] Tests pass at 80%+ coverage (99% of the script, measured explicitly)
+- [x] Documentation updated (README, SPDD.md)
+- [ ] All acceptance criteria met. AC1, AC2 and AC5 can only be fully shown by a live run on GitHub (see Verification)
 
 ### Issues Found
-- _Pending._
+- The `pull_request_target` guard test first matched the word inside the workflow's own comment. It now checks the trigger keys.
+- Some test lines are over 100 characters. No linter is configured, and existing tests also go over 100. The script itself is kept to 100 or fewer.
+- `actionlint` isn't installed locally. The workflow was checked by parsing it with PyYAML and by the guard tests only.
 
 ---
 
 ## Verification
 
-- [ ] All acceptance criteria from issue #273 are met
-- [ ] Tests pass with 80%+ coverage
-- [ ] Code follows project conventions
-- [ ] Documentation is updated
-- [ ] No breaking changes introduced
+**Local results (2026-11-19):**
+- `python3 -m pytest tests/test_spdd_pr_facts.py --cov=scripts --cov-config=/dev/null --cov-fail-under=0 --cov-report=term-missing` → 88 passed; `scripts/spdd_pr_facts.py` 99% (1 missed line: the `if __name__ == "__main__"` call).
+- Full suite on an empty database file, as in CI: `python3 -m pytest tests/ --cov --cov-report=json` → 1304 passed, 1 xfailed; total coverage 98.36%. `python3 scripts/check_module_coverage.py coverage.json` → PASS. The `seed_database.py` warning (allowlisted but at 80%+) was already there before this change.
+- Real history:
+  - `facts` on PR #280's range (`9325359~1..44cc372`) → `proven` (analysis `9325359`, prompt `6676549`, before code `9f40fb6`).
+  - On PR #281's range (`9824e3b~1..a5d4cc4`) → `consistent` (10:22 / 10:38, at or before the commit's author time of 11:11 in its own offset).
+  - Issue #150's old-style artifact is found through the header fallback.
+- Pinned CLI `@anthropic-ai/claude-code@2.1.318` accepted the workflow's exact flags. Run with an invalid key (no spend), it returned the JSON shape the renderer handles.
+
+- [x] AC3: advisory. `status-gateway.yml` is unchanged; `SPDD Review` isn't in `expectedWorkflowNames` (guard test); the Claude step is `continue-on-error`.
+- [x] AC4: forks, drafts and Dependabot are skipped by the job `if:`. With no key, the CLI steps are skipped and the comment shows facts only. The key is only in the Claude step's env (guard test).
+- [x] AC6: the deterministic logic is tested at 99%.
+- [ ] AC1 / AC2 / AC5: built and unit-tested. A live run on this issue's PR will confirm them: it needs the `ANTHROPIC_API_KEY` repository secret, and without it that run tests the facts-only path.
+- [x] No breaking changes (new files, plus additive docs).
 - [ ] Human review completed
 
 ---
