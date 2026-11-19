@@ -1,0 +1,186 @@
+name: SPDD Review
+
+# Advisory SPDD compliance review (Issue #273)
+#
+# On each PR to main, this workflow:
+#   1. gathers the PR's SPDD facts with scripts/spdd_pr_facts.py (deterministic):
+#      the linked issue and its acceptance criteria, whether the analysis and
+#      prompt artifacts exist under spdd/, and whether they came before the code
+#      (the issue #150 lesson);
+#   2. runs Claude Code headless (`claude -p`) with read-only tools to judge the
+#      PR against the issue's acceptance criteria (.github/spdd-review/prompt.md);
+#   3. keeps ONE PR comment (marker <!-- spdd-review -->) with both, edited in
+#      place on each push. Claude never posts; the github-script step does.
+#
+# Advisory only: this workflow is NOT in status-gateway.yml's
+# expectedWorkflowNames and is not a required check, so it never blocks a merge.
+# The Claude step is continue-on-error; when it fails, the comment still shows
+# the deterministic facts.
+#
+# Secret: ANTHROPIC_API_KEY (repository secret). Without it, the comment shows
+# the deterministic facts only and no Claude call is made.
+# Forks, drafts and Dependabot PRs are skipped: fork PRs get no secrets on
+# `pull_request`, and `pull_request_target` is never used, so untrusted code
+# never runs with the key.
+#
+# Spend: Claude Sonnet 5.5, capped per run by --max-budget-usd
+# (SPDD_REVIEW_MAX_BUDGET_USD), plus a 15-minute job timeout and a concurrency
+# group that cancels the previous run when a new commit is pushed. Expect about
+# $0.10-$0.60 per run; the actual cost is in the comment footer.
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, reopened, ready_for_review, synchronize]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: read
+
+concurrency:
+  group: spdd-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  SPDD_REVIEW_MODEL: claude-sonnet-5-5
+  SPDD_REVIEW_MAX_BUDGET_USD: '1.00'
+  CLAUDE_CODE_VERSION: '2.1.318'
+
+jobs:
+  spdd-review:
+    name: SPDD Review (advisory)
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      !github.event.pull_request.draft &&
+      github.event.pull_request.user.login != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout PR head with full history
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Gather SPDD facts
+        id: facts
+        env:
+          GH_TOKEN: ${{ github.token }}
+          # Untrusted PR text reaches the script only through env vars.
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_BRANCH: ${{ github.event.pull_request.head.ref }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/spdd"
+          printf '%s' "$PR_BODY" > "$RUNNER_TEMP/spdd/pr-body.md"
+          python3 scripts/spdd_pr_facts.py facts \
+            --base "$BASE_SHA" \
+            --head "$HEAD_SHA" \
+            --pr-title "$PR_TITLE" \
+            --pr-body-file "$RUNNER_TEMP/spdd/pr-body.md" \
+            --branch "$PR_BRANCH" \
+            --prompt-file .github/spdd-review/prompt.md \
+            --output "$RUNNER_TEMP/spdd/facts.json" \
+            --input-md "$RUNNER_TEMP/spdd/review-input.md"
+          echo "issue=$(jq -r '.linked_issue.number // empty' "$RUNNER_TEMP/spdd/facts.json")" >> "$GITHUB_OUTPUT"
+
+      - name: Check for the Anthropic API key
+        id: key
+        env:
+          HAS_KEY: ${{ secrets.ANTHROPIC_API_KEY != '' }}
+        run: |
+          if [ "$HAS_KEY" = "true" ]; then
+            echo "has_key=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_key=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=SPDD Review::ANTHROPIC_API_KEY is not set, so only the deterministic SPDD facts are posted."
+          fi
+
+      - name: Set up Node
+        if: steps.key.outputs.has_key == 'true' && steps.facts.outputs.issue != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Claude Code
+        if: steps.key.outputs.has_key == 'true' && steps.facts.outputs.issue != ''
+        run: npm install -g "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}"
+
+      - name: Run Claude Code (headless, read-only)
+        id: claude
+        if: steps.key.outputs.has_key == 'true' && steps.facts.outputs.issue != ''
+        continue-on-error: true
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        # --restricted ignores the repo's .claude/settings*.json and drops Bash and
+        # WebFetch unless --tools names them; --allowedTools plus dontAsk then denies
+        # everything except reading files and read-only git commands.
+        run: |
+          claude -p \
+            --model "$SPDD_REVIEW_MODEL" \
+            --restricted \
+            --tools "Read,Grep,Glob,Bash" \
+            --allowedTools "Read,Grep,Glob,Bash(git diff:*),Bash(git log:*),Bash(git show:*)" \
+            --permission-mode dontAsk \
+            --strict-mcp-config \
+            --max-budget-usd "$SPDD_REVIEW_MAX_BUDGET_USD" \
+            --no-session-persistence \
+            --output-format json \
+            < "$RUNNER_TEMP/spdd/review-input.md" \
+            > "$RUNNER_TEMP/spdd/claude.json"
+
+      - name: Render the review comment
+        if: ${{ !cancelled() && steps.facts.outcome == 'success' }}
+        env:
+          HAS_KEY: ${{ steps.key.outputs.has_key }}
+          ISSUE: ${{ steps.facts.outputs.issue }}
+        run: |
+          skip=()
+          if [ "$HAS_KEY" != "true" ]; then
+            skip=(--skip-reason "ANTHROPIC_API_KEY is not set")
+          elif [ -z "$ISSUE" ]; then
+            skip=(--skip-reason "no linked issue found")
+          fi
+          python3 scripts/spdd_pr_facts.py render \
+            --facts "$RUNNER_TEMP/spdd/facts.json" \
+            --claude-output "$RUNNER_TEMP/spdd/claude.json" \
+            --model "$SPDD_REVIEW_MODEL" \
+            --max-budget "$SPDD_REVIEW_MAX_BUDGET_USD" \
+            --output "$RUNNER_TEMP/spdd/comment.md" \
+            "${skip[@]}"
+
+      - name: Post or update the single review comment
+        if: ${{ !cancelled() && steps.facts.outcome == 'success' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const marker = '<!-- spdd-review -->';
+            const body = fs.readFileSync(`${process.env.RUNNER_TEMP}/spdd/comment.md`, 'utf8');
+            const { owner, repo } = context.repo;
+            const issue_number = context.payload.pull_request.number;
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner, repo, issue_number, per_page: 100,
+            });
+            const existing = comments.find(
+              (c) => c.user?.login === 'github-actions[bot]' && (c.body || '').includes(marker)
+            );
+            if (existing) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+              core.info(`Updated SPDD review comment ${existing.html_url}`);
+            } else {
+              const { data } = await github.rest.issues.createComment({ owner, repo, issue_number, body });
+              core.info(`Created SPDD review comment ${data.html_url}`);
+            }
+
+      - name: Write the job summary
+        if: ${{ !cancelled() && steps.facts.outcome == 'success' }}
+        run: cat "$RUNNER_TEMP/spdd/comment.md" >> "$GITHUB_STEP_SUMMARY"
